@@ -226,10 +226,31 @@ class MultiplayerMode {
       this.vibrateController(400, 1.0, 1.0);
     });
 
+    // Time update from server
+    this.socket.on("timeUpdate", (data) => {
+      this.gameState.timeRemaining = data.timeRemaining;
+      this.gameState.gameDuration = data.gameDuration;
+      
+      // Update timer display in scoreboard
+      this.updateTimerDisplay(data.timeRemaining);
+      
+      // Warning at 10 seconds
+      if (data.timeRemaining === 10) {
+        showNotification("⏰ 10 Seconds!", "Hurry up!");
+      }
+    });
+
     // Game won
     this.socket.on("gameWon", (data) => {
       console.log("Game won:", data);
       this.gameStarted = false;
+      
+      // Stop gamepad polling
+      if (this.gamepadPollId) {
+        cancelAnimationFrame(this.gamepadPollId);
+        this.gamepadPollId = null;
+      }
+      
       showWinnerScreen(data, true); // true = show rematch option
     });
 
@@ -407,6 +428,45 @@ class MultiplayerMode {
     this.gamepadPollId = requestAnimationFrame(pollGamepads);
   }
 
+  updateTimerDisplay(timeRemaining) {
+    // Find or create timer element in scoreboard
+    let timerElement = document.getElementById('onlineGameTimer');
+    
+    if (!timerElement) {
+      // Create timer element if it doesn't exist
+      const scoreboard = document.getElementById('scoreboard');
+      if (scoreboard) {
+        timerElement = document.createElement('div');
+        timerElement.id = 'onlineGameTimer';
+        timerElement.className = 'cursed-timer';
+        timerElement.style.cssText = 'text-align: center; margin-bottom: 15px; font-size: 1.5rem; color: #ffd700;';
+        // Insert at the top of scoreboard after the title
+        const title = scoreboard.querySelector('h3');
+        if (title && title.nextSibling) {
+          scoreboard.insertBefore(timerElement, title.nextSibling);
+        } else {
+          scoreboard.prepend(timerElement);
+        }
+      }
+    }
+    
+    if (timerElement) {
+      const minutes = Math.floor(timeRemaining / 60);
+      const seconds = timeRemaining % 60;
+      timerElement.textContent = `⏳ ${minutes}:${seconds.toString().padStart(2, '0')}`;
+      
+      // Change color when low on time
+      if (timeRemaining <= 10) {
+        timerElement.style.color = '#ff4444';
+        timerElement.style.animation = 'pulse 0.5s infinite';
+      } else if (timeRemaining <= 30) {
+        timerElement.style.color = '#ff6b00';
+      } else {
+        timerElement.style.color = '#ffd700';
+      }
+    }
+  }
+
   move(direction) {
     // Check movement cooldown (faster when boosting)
     const currentTime = Date.now();
@@ -417,10 +477,7 @@ class MultiplayerMode {
     this.lastMoveTime = currentTime;
 
     if (this.socket && this.socket.connected && this.gameStarted) {
-      console.log("Sending move:", direction);
       this.socket.emit("move", direction);
-    } else {
-      console.log("Cannot move - socket:", !!this.socket, "connected:", this.socket?.connected, "gameStarted:", this.gameStarted);
     }
   }
 

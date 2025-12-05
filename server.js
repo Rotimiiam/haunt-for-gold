@@ -232,7 +232,73 @@ function createGameRoom() {
     totalPointsCollected: 0,
     difficultyThreshold: process.env.DIFFICULTY_THRESHOLD || 200,
     usedCharacters: new Set(), // Track which characters are in use in this room
+    gameDuration: 60, // 1 minute game duration
+    timeRemaining: 60,
+    gameTimer: null,
+    startTime: null,
   };
+}
+
+// Start game timer for a room
+function startGameTimer(room) {
+  room.startTime = Date.now();
+  room.timeRemaining = room.gameDuration;
+  
+  // Clear any existing timer
+  if (room.gameTimer) {
+    clearInterval(room.gameTimer);
+  }
+  
+  room.gameTimer = setInterval(() => {
+    room.timeRemaining--;
+    
+    // Send time update to all players
+    Object.keys(room.players).forEach(playerId => {
+      io.to(playerId).emit("timeUpdate", {
+        timeRemaining: room.timeRemaining,
+        gameDuration: room.gameDuration
+      });
+    });
+    
+    // Check if time is up
+    if (room.timeRemaining <= 0) {
+      endGameByTime(room);
+    }
+  }, 1000);
+  
+  console.log(`[Timer] Started for room ${room.id} - ${room.gameDuration} seconds`);
+}
+
+// End game when time runs out
+function endGameByTime(room) {
+  // Stop the timer
+  if (room.gameTimer) {
+    clearInterval(room.gameTimer);
+    room.gameTimer = null;
+  }
+  
+  room.gameStarted = false;
+  
+  // Find the winner (highest score)
+  const players = Object.values(room.players);
+  if (players.length === 0) return;
+  
+  const sortedPlayers = players.sort((a, b) => b.score - a.score);
+  const winner = sortedPlayers[0];
+  const isTie = sortedPlayers.length > 1 && sortedPlayers[0].score === sortedPlayers[1].score;
+  
+  console.log(`[Timer] Game ended for room ${room.id} - Winner: ${winner.name} with ${winner.score} points`);
+  
+  // Notify all players
+  Object.keys(room.players).forEach(playerId => {
+    io.to(playerId).emit("gameWon", {
+      winnerId: winner.id,
+      winnerName: isTie ? "Tie" : winner.name,
+      winnerScore: winner.score,
+      reason: isTie ? "tie" : "time_up",
+      finalScores: players.map(p => ({ name: p.name, score: p.score }))
+    });
+  });
 }
 
 // Get an unused character for the room
@@ -586,6 +652,9 @@ io.on("connection", (socket) => {
       room.gameStarted = true;
       console.log(`Room ${room.id} created and starting with players: ${player1.playerName}, ${player2.playerName}`);
 
+      // Start the game timer (1 minute)
+      startGameTimer(room);
+
       // Send game ready to both players
       players.forEach(p => {
         io.to(p.socketId).emit("gameReady", {
@@ -597,7 +666,9 @@ io.on("connection", (socket) => {
           mapHeight: room.mapHeight,
           difficultyLevel: room.difficultyLevel,
           winningScore: room.winningScore,
-          roomId: room.id
+          roomId: room.id,
+          gameDuration: room.gameDuration,
+          timeRemaining: room.timeRemaining
         });
       });
     }
@@ -999,10 +1070,22 @@ io.on("connection", (socket) => {
         io.to(playerId).emit("opponentLeft");
       });
 
-      // Clean up empty rooms
+      // Clean up empty rooms or stop timer if only one player left
       if (Object.keys(playerRoom.players).length === 0) {
+        // Stop the game timer
+        if (playerRoom.gameTimer) {
+          clearInterval(playerRoom.gameTimer);
+          playerRoom.gameTimer = null;
+        }
         gameRooms.delete(playerRoom.id);
         console.log(`Deleted empty room ${playerRoom.id}`);
+      } else if (Object.keys(playerRoom.players).length === 1) {
+        // Only one player left - stop timer and end game
+        if (playerRoom.gameTimer) {
+          clearInterval(playerRoom.gameTimer);
+          playerRoom.gameTimer = null;
+        }
+        playerRoom.gameStarted = false;
       }
     }
   });
