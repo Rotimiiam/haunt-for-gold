@@ -7,7 +7,7 @@
 # Copy example file
 cp .env.example .env
 
-# Edit .env and set SESSION_SECRET
+# Edit .env and setSESSION_SECRET
 # Generate with: openssl rand -base64 32
 ```
 
