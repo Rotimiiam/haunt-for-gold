@@ -431,7 +431,8 @@ class PracticeMode {
     let minDistance = Infinity;
 
     this.gameState.coins.forEach((coin) => {
-      if (!coin.collected) {
+      // AI should only target regular coins, not bombs
+      if (!coin.collected && coin.type !== 'bomb') {
         const distance =
           Math.abs(coin.x - player.x) + Math.abs(coin.y - player.y);
         if (distance < minDistance) {
@@ -722,14 +723,14 @@ class PracticeMode {
   }
 
   checkCoinRespawn() {
-    // Check if all coins are collected
+    // Check if all regular coins are collected (ignore bombs)
     const uncollectedCoins = this.gameState.coins.filter(
-      (coin) => !coin.collected
+      (coin) => !coin.collected && coin.type !== 'bomb'
     );
 
     if (uncollectedCoins.length === 0) {
-      console.log("All coins collected, respawning...");
-      // Respawn all coins
+      console.log("All regular coins collected, respawning...");
+      // Respawn all coins (including new bombs)
       this.generateCoins();
     }
   }
