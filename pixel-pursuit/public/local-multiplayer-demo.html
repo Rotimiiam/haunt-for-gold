@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Multiplayer Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        .demo-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .player-setup {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .player-card {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            background: #f9f9f9;
+        }
+        .player-card.active {
+            border-color: #007cba;
+            background: #f0f8ff;
+        }
+        .controls-display {
+            background: #000;
+            color: #00ff00;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+        .game-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: #e8f4f8;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #007cba;
+        }
+        .button {
+            background: #007cba;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .button:hover {
+            background: #005a87;
+        }
+        .button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .output {
+            background: #000;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+        .success { color: #00ff00; }
+        .error { color: #ff4444; }
+        .warning { color: #ffaa00; }
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin: 5px 0;
+        }
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <h1>Local Multiplayer Models Demo</h1>
+        <p>This demo tests the local multiplayer data models and configuration system.</p>
+        
+        <div class="button-group">
+            <button class="button" onclick="runTests()">Run Unit Tests</button>
+            <button class="button" onclick="createDemoPlayers()">Create Demo Players</button>
+            <button class="button" onclick="testGameSettings()">Test Game Settings</button>
+            <button class="button" onclick="simulateGameplay()">Simulate Gameplay</button>
+            <button class="button" onclick="clearOutput()">Clear Output</button>
+        </div>
+        
+        <div id="output" class="output">
+            Click buttons above to test the local multiplayer system...
+        </div>
+    </div>
+
+    <div class="demo-container">
+        <h2>Player Setup</h2>
+        <div class="player-setup" id="playerSetup">
+            <!-- Players will be dynamically added here -->
+        </div>
+        
+        <div>
+            <label>Number of Players:</label>
+            <select id="playerCount" onchange="updatePlayerSetup()">
+                <option value="2">2 Players</option>
+                <option value="3">3 Players</option>
+                <option value="4">4 Players</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="demo-container">
+        <h2>Game Settings</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+            <div>
+                <label>Game Duration (seconds):</label>
+                <input type="number" id="gameDuration" value="300" min="60" max="1800">
+            </div>
+            <div>
+                <label>Win Condition:</label>
+                <select id="winCondition">
+                    <option value="score">Score Target</option>
+                    <option value="time">Time Limit</option>
+                    <option value="coins">Coin Count</option>
+                </select>
+            </div>
+            <div>
+                <label>Target Score:</label>
+                <input type="number" id="targetScore" value="500" min="100" max="2000">
+            </div>
+            <div>
+                <label>Difficulty:</label>
+                <select id="difficulty">
+                    <option value="easy">Easy</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="hard">Hard</option>
+                </select>
+            </div>
+            <div>
+                <label>Map Size:</label>
+                <select id="mapSize">
+                    <option value="small">Small</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="large">Large</option>
+                </select>
+            </div>
+        </div>
+        
+        <div style="margin-top: 15px;">
+            <label><input type="checkbox" id="powerUps" checked> Power-ups Enabled</label><br>
+            <label><input type="checkbox" id="friendlyFire"> Friendly Fire</label><br>
+            <label><input type="checkbox" id="respawn"> Respawn Enabled</label>
+        </div>
+        
+        <button class="button" onclick="applyGameSettings()">Apply Settings</button>
+    </div>
+
+    <div class="demo-container">
+        <h2>Game Statistics</h2>
+        <div class="game-stats" id="gameStats">
+            <!-- Stats will be displayed here -->
+        </div>
+    </div>
+
+    <!-- Load the models and integration -->
+    <script src="local-multiplayer-models.js"></script>
+    <script src="controller-manager.js"></script>
+    <script src="collision-resolver.js"></script>
+    <script src="local-multiplayer-integration.js"></script>
+    
+    <script>
+        let currentPlayers = [];
+        let currentGameSettings = null;
+        
+        function log(message, type = 'info') {
+            const output = document.getElementById('output');
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'error' ? 'error' : type === 'success' ? 'success' : type === 'warning' ? 'warning' : '';
+            output.innerHTML += `<span class="${className}">[${timestamp}] ${message}</span>\n`;
+            output.scrollTop = output.scrollHeight;
+        }
+        
+        function clearOutput() {
+            document.getElementById('output').innerHTML = '';
+        }
+        
+        function runTests() {
+            log('Running unit tests...', 'info');
+            try {
+                if (typeof window.runLocalMultiplayerTests === 'function') {
+                    const success = window.runLocalMultiplayerTests();
+                    if (success) {
+                        log('All tests passed!', 'success');
+                    } else {
+                        log('Some tests failed', 'error');
+                    }
+                } else {
+                    log('Test function not available - running basic validation', 'warning');
+                    
+                    // Basic validation
+                    if (typeof LocalPlayer !== 'undefined') {
+                        log('✓ LocalPlayer class available', 'success');
+                    } else {
+                        log('✗ LocalPlayer class not found', 'error');
+                    }
+                    
+                    if (typeof LocalGameSettings !== 'undefined') {
+                        log('✓ LocalGameSettings class available', 'success');
+                    } else {
+                        log('✗ LocalGameSettings class not found', 'error');
+                    }
+                    
+                    if (typeof CONTROL_SCHEMES !== 'undefined') {
+                        log('✓ Control schemes available', 'success');
+                    } else {
+                        log('✗ Control schemes not found', 'error');
+                    }
+                }
+            } catch (error) {
+                log(`Test execution failed: ${error.message}`, 'error');
+            }
+        }
+        
+        function createDemoPlayers() {
+            log('Creating demo players...', 'info');
+            try {
+                const playerCount = parseInt(document.getElementById('playerCount').value);
+                const playerNames = [];
+                
+                for (let i = 0; i < playerCount; i++) {
+                    const nameInput = document.getElementById(`player${i}Name`);
+                    const name = nameInput ? nameInput.value || `Player ${i + 1}` : `Player ${i + 1}`;
+                    playerNames.push(name);
+                }
+                
+                currentPlayers = [];
+                for (let i = 0; i < playerNames.length; i++) {
+                    const player = createLocalPlayer(`demo_player_${i}`, playerNames[i], i);
+                    currentPlayers.push(player);
+                    log(`Created player: ${player.name} (${player.character}, ${player.color})`, 'success');
+                }
+                
+                updatePlayerDisplay();
+                log(`Successfully created ${currentPlayers.length} players`, 'success');
+            } catch (error) {
+                log(`Failed to create players: ${error.message}`, 'error');
+            }
+        }
+        
+        function testGameSettings() {
+            log('Testing game settings...', 'info');
+            try {
+                const settings = {
+                    playerCount: parseInt(document.getElementById('playerCount').value),
+                    gameDuration: parseInt(document.getElementById('gameDuration').value),
+                    winCondition: document.getElementById('winCondition').value,
+                    targetScore: parseInt(document.getElementById('targetScore').value),
+                    difficulty: document.getElementById('difficulty').value,
+                    mapSize: document.getElementById('mapSize').value,
+                    powerUpsEnabled: document.getElementById('powerUps').checked,
+                    friendlyFire: document.getElementById('friendlyFire').checked,
+                    respawnEnabled: document.getElementById('respawn').checked
+                };
+                
+                currentGameSettings = new LocalGameSettings(settings);
+                log('Game settings created successfully', 'success');
+                log(`Map dimensions: ${currentGameSettings.mapDimensions.width}x${currentGameSettings.mapDimensions.height}`, 'info');
+                log(`Enemy count: ${currentGameSettings.enemyCount}, Speed: ${currentGameSettings.enemySpeed}`, 'info');
+                log(`Coin spawn rate: ${currentGameSettings.coinSpawnRate}`, 'info');
+                
+                updateGameStatsDisplay();
+            } catch (error) {
+                log(`Failed to create game settings: ${error.message}`, 'error');
+            }
+        }
+        
+        function simulateGameplay() {
+            if (currentPlayers.length === 0) {
+                log('No players created. Create demo players first.', 'warning');
+                return;
+            }
+            
+            log('Simulating gameplay...', 'info');
+            
+            // Simulate some game actions
+            currentPlayers.forEach((player, index) => {
+                // Simulate movement
+                const directions = ['up', 'down', 'left', 'right'];
+                const randomDirection = directions[Math.floor(Math.random() * directions.length)];
+                const gameState = { mapWidth: 20, mapHeight: 15 };
+                
+                if (player.move(randomDirection, gameState)) {
+                    log(`${player.name} moved ${randomDirection} to (${player.position.x}, ${player.position.y})`, 'info');
+                }
+                
+                // Simulate coin collection
+                if (Math.random() < 0.3) {
+                    const coinValue = 10 + Math.floor(Math.random() * 20);
+                    player.collectCoin(coinValue);
+                    log(`${player.name} collected coin worth ${coinValue} points! Score: ${player.score}`, 'success');
+                }
+                
+                // Simulate enemy hit
+                if (Math.random() < 0.1) {
+                    player.hitByEnemy();
+                    log(`${player.name} hit by enemy! Score: ${player.score}`, 'warning');
+                }
+            });
+            
+            updatePlayerDisplay();
+            updateGameStatsDisplay();
+        }
+        
+        function applyGameSettings() {
+            testGameSettings();
+            log('Game settings applied', 'success');
+        }
+        
+        function updatePlayerSetup() {
+            const playerCount = parseInt(document.getElementById('playerCount').value);
+            const setupContainer = document.getElementById('playerSetup');
+            setupContainer.innerHTML = '';
+            
+            for (let i = 0; i < playerCount; i++) {
+                const playerCard = document.createElement('div');
+                playerCard.className = 'player-card';
+                playerCard.innerHTML = `
+                    <h4>Player ${i + 1}</h4>
+                    <label>Name:</label>
+                    <input type="text" id="player${i}Name" value="Player ${i + 1}" placeholder="Enter player name">
+                    <div class="controls-display">
+                        Controls: ${CONTROL_SCHEMES[`player${i + 1}`]?.description || 'Not assigned'}
+                    </div>
+                `;
+                setupContainer.appendChild(playerCard);
+            }
+        }
+        
+        function updatePlayerDisplay() {
+            // Update player cards with current data
+            currentPlayers.forEach((player, index) => {
+                const playerCard = document.querySelector(`.player-card:nth-child(${index + 1})`);
+                if (playerCard) {
+                    playerCard.classList.add('active');
+                    playerCard.style.borderColor = player.color;
+                    
+                    const nameInput = playerCard.querySelector('input');
+                    if (nameInput) {
+                        nameInput.value = player.name;
+                    }
+                    
+                    // Add player stats
+                    let statsDiv = playerCard.querySelector('.player-stats');
+                    if (!statsDiv) {
+                        statsDiv = document.createElement('div');
+                        statsDiv.className = 'player-stats';
+                        playerCard.appendChild(statsDiv);
+                    }
+                    
+                    statsDiv.innerHTML = `
+                        <div><strong>Score:</strong> ${player.score}</div>
+                        <div><strong>Position:</strong> (${player.position.x}, ${player.position.y})</div>
+                        <div><strong>Character:</strong> ${player.character}</div>
+                        <div><strong>Coins:</strong> ${player.stats.coinsCollected}</div>
+                    `;
+                }
+            });
+        }
+        
+        function updateGameStatsDisplay() {
+            const statsContainer = document.getElementById('gameStats');
+            
+            if (currentGameSettings) {
+                statsContainer.innerHTML = `
+                    <div class="stat-card">
+                        <h4>Game Configuration</h4>
+                        <div>Players: ${currentGameSettings.playerCount}</div>
+                        <div>Duration: ${currentGameSettings.gameDuration}s</div>
+                        <div>Win Condition: ${currentGameSettings.winCondition}</div>
+                        <div>Target Score: ${currentGameSettings.targetScore}</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Map Settings</h4>
+                        <div>Size: ${currentGameSettings.mapSize}</div>
+                        <div>Dimensions: ${currentGameSettings.mapDimensions.width}x${currentGameSettings.mapDimensions.height}</div>
+                        <div>Difficulty: ${currentGameSettings.difficulty}</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Game Features</h4>
+                        <div>Power-ups: ${currentGameSettings.powerUpsEnabled ? 'Enabled' : 'Disabled'}</div>
+                        <div>Friendly Fire: ${currentGameSettings.friendlyFire ? 'Enabled' : 'Disabled'}</div>
+                        <div>Respawn: ${currentGameSettings.respawnEnabled ? 'Enabled' : 'Disabled'}</div>
+                    </div>
+                `;
+            }
+            
+            if (currentPlayers.length > 0) {
+                const leaderboard = currentPlayers
+                    .sort((a, b) => b.score - a.score)
+                    .map((player, index) => `
+                        <div>${index + 1}. ${player.name}: ${player.score} points</div>
+                    `).join('');
+                
+                statsContainer.innerHTML += `
+                    <div class="stat-card">
+                        <h4>Leaderboard</h4>
+                        ${leaderboard}
+                    </div>
+                `;
+            }
+        }
+        
+        // Initialize the demo
+        document.addEventListener('DOMContentLoaded', function() {
+            updatePlayerSetup();
+            log('Local Multiplayer Demo initialized', 'success');
+            log('Models loaded: LocalPlayer, LocalGameSettings, Control Schemes', 'info');
+        });
+    </script>
+</body>
+</html>

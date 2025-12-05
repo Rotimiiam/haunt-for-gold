@@ -1,0 +1,149 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080">
+  <defs>
+    <!-- Gradient for sky -->
+    <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d0d0d"/>
+      <stop offset="40%" style="stop-color:#1a0a2e"/>
+      <stop offset="70%" style="stop-color:#16213e"/>
+      <stop offset="100%" style="stop-color:#0d0d0d"/>
+    </linearGradient>
+    
+    <!-- Moon glow -->
+    <radialGradient id="moonGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#ffffd0;stop-opacity:1"/>
+      <stop offset="30%" style="stop-color:#ffffa0;stop-opacity:0.8"/>
+      <stop offset="100%" style="stop-color:#ffff00;stop-opacity:0"/>
+    </radialGradient>
+    
+    <!-- Fog gradient -->
+    <linearGradient id="fogGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0"/>
+      <stop offset="50%" style="stop-color:#aaaacc;stop-opacity:0.1"/>
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Sky background -->
+  <rect width="1920" height="1080" fill="url(#skyGradient)"/>
+  
+  <!-- Stars -->
+  <g fill="#ffffff" opacity="0.6">
+    <circle cx="100" cy="80" r="1.5"/>
+    <circle cx="250" cy="120" r="1"/>
+    <circle cx="400" cy="60" r="1.5"/>
+    <circle cx="550" cy="150" r="1"/>
+    <circle cx="700" cy="90" r="2"/>
+    <circle cx="850" cy="130" r="1"/>
+    <circle cx="1000" cy="70" r="1.5"/>
+    <circle cx="1150" cy="110" r="1"/>
+    <circle cx="1300" cy="50" r="1.5"/>
+    <circle cx="1450" cy="140" r="1"/>
+    <circle cx="1600" cy="80" r="2"/>
+    <circle cx="1750" cy="120" r="1"/>
+    <circle cx="1850" cy="60" r="1.5"/>
+    <circle cx="180" cy="200" r="1"/>
+    <circle cx="350" cy="180" r="1.5"/>
+    <circle cx="520" cy="220" r="1"/>
+    <circle cx="680" cy="190" r="1"/>
+    <circle cx="920" cy="210" r="1.5"/>
+    <circle cx="1100" cy="185" r="1"/>
+    <circle cx="1280" cy="230" r="1"/>
+    <circle cx="1500" cy="195" r="1.5"/>
+    <circle cx="1700" cy="215" r="1"/>
+  </g>
+  
+  <!-- Moon -->
+  <circle cx="1600" cy="150" r="80" fill="url(#moonGlow)"/>
+  <circle cx="1600" cy="150" r="50" fill="#ffffd0"/>
+  <!-- Moon craters -->
+  <circle cx="1585" cy="135" r="8" fill="#e0e0a0" opacity="0.5"/>
+  <circle cx="1615" cy="160" r="6" fill="#e0e0a0" opacity="0.4"/>
+  <circle cx="1590" cy="165" r="4" fill="#e0e0a0" opacity="0.3"/>
+  
+  <!-- Distant mountains/hills -->
+  <path d="M0 700 Q200 600 400 680 Q600 620 800 700 Q1000 640 1200 690 Q1400 630 1600 700 Q1800 650 1920 700 L1920 1080 L0 1080 Z" fill="#0a0a15" opacity="0.8"/>
+  
+  <!-- Ground fog layer -->
+  <ellipse cx="300" cy="950" rx="400" ry="80" fill="url(#fogGradient)" opacity="0.3"/>
+  <ellipse cx="900" cy="980" rx="500" ry="100" fill="url(#fogGradient)" opacity="0.25"/>
+  <ellipse cx="1500" cy="960" rx="450" ry="90" fill="url(#fogGradient)" opacity="0.3"/>
+  
+  <!-- Dead trees silhouettes - Left side -->
+  <g fill="#050508">
+    <!-- Tree 1 -->
+    <path d="M80 1080 L90 850 L100 1080 M90 850 L60 780 M90 850 L120 790 M90 880 L50 820 M90 920 L130 860"/>
+    <!-- Tree 2 -->
+    <path d="M200 1080 L215 800 L230 1080 M215 800 L170 720 M215 800 L260 730 M215 850 L180 780 M215 900 L250 830"/>
+    <!-- Tree 3 -->
+    <path d="M350 1080 L365 750 L380 1080 M365 750 L310 660 M365 750 L420 680 M365 820 L320 740 M365 880 L410 800"/>
+  </g>
+  
+  <!-- Dead trees silhouettes - Right side -->
+  <g fill="#050508">
+    <!-- Tree 4 -->
+    <path d="M1550 1080 L1565 800 L1580 1080 M1565 800 L1520 720 M1565 800 L1610 730 M1565 850 L1530 780 M1565 900 L1600 830"/>
+    <!-- Tree 5 -->
+    <path d="M1700 1080 L1715 850 L1730 1080 M1715 850 L1680 780 M1715 850 L1750 790 M1715 880 L1690 820 M1715 920 L1740 860"/>
+    <!-- Tree 6 -->
+    <path d="M1850 1080 L1860 820 L1870 1080 M1860 820 L1830 760 M1860 820 L1890 770 M1860 860 L1840 800"/>
+  </g>
+  
+  <!-- Tombstones -->
+  <g fill="#0a0a12">
+    <!-- Left tombstones -->
+    <rect x="120" y="950" width="40" height="70" rx="5"/>
+    <ellipse cx="140" cy="950" rx="20" ry="25"/>
+    
+    <rect x="280" y="960" width="35" height="60" rx="4"/>
+    <ellipse cx="297" cy="960" rx="17" ry="22"/>
+    
+    <!-- Right tombstones -->
+    <rect x="1480" y="955" width="38" height="65" rx="5"/>
+    <ellipse cx="1499" cy="955" rx="19" ry="24"/>
+    
+    <rect x="1620" y="965" width="32" height="55" rx="4"/>
+    <ellipse cx="1636" cy="965" rx="16" ry="20"/>
+  </g>
+  
+  <!-- Crosses -->
+  <g fill="#0a0a12">
+    <rect x="450" y="920" width="10" height="80"/>
+    <rect x="430" y="940" width="50" height="10"/>
+    
+    <rect x="1380" y="930" width="10" height="70"/>
+    <rect x="1362" y="948" width="46" height="10"/>
+  </g>
+  
+  <!-- Flying bats silhouettes -->
+  <g fill="#050508">
+    <path d="M300 300 Q290 290 280 300 Q285 295 290 300 L300 300 L310 300 Q315 295 320 300 Q310 290 300 300" transform="scale(1.5)"/>
+    <path d="M800 200 Q790 190 780 200 Q785 195 790 200 L800 200 L810 200 Q815 195 820 200 Q810 190 800 200" transform="scale(1.2)"/>
+    <path d="M1200 280 Q1190 270 1180 280 Q1185 275 1190 280 L1200 280 L1210 280 Q1215 275 1220 280 Q1210 270 1200 280"/>
+  </g>
+  
+  <!-- Haunted mansion silhouette in distance -->
+  <g fill="#060610" opacity="0.6">
+    <rect x="850" y="620" width="220" height="180"/>
+    <polygon points="850,620 960,520 1070,620"/>
+    <rect x="870" y="650" width="30" height="40" fill="#0a0a15"/>
+    <rect x="920" y="650" width="30" height="40" fill="#0a0a15"/>
+    <rect x="970" y="650" width="30" height="40" fill="#0a0a15"/>
+    <rect x="1020" y="650" width="30" height="40" fill="#0a0a15"/>
+    <rect x="900" y="720" width="60" height="80" fill="#0a0a15"/>
+    <!-- Tower -->
+    <rect x="1040" y="560" width="40" height="240"/>
+    <polygon points="1040,560 1060,500 1080,560"/>
+  </g>
+  
+  <!-- Pumpkins -->
+  <g>
+    <ellipse cx="500" cy="1000" rx="25" ry="20" fill="#ff6b00"/>
+    <rect x="495" y="975" width="10" height="12" fill="#228b22"/>
+    <path d="M490 995 L495 1000 L500 995 L505 1000 L510 995" stroke="#1a0a2e" stroke-width="2" fill="none"/>
+    <polygon points="492,990 496,990 494,995" fill="#1a0a2e"/>
+    <polygon points="504,990 508,990 506,995" fill="#1a0a2e"/>
+    
+    <ellipse cx="1420" cy="1010" rx="20" ry="16" fill="#ff6b00"/>
+    <rect x="1416" y="990" width="8" height="10" fill="#228b22"/>
+  </g>
+</svg>

@@ -1,0 +1,338 @@
+/* Haunt For Gold - Spooky Animations */
+
+/* Screen Shake - for bomb explosions */
+@keyframes screenShake {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-5px, -5px); }
+  20% { transform: translate(5px, -5px); }
+  30% { transform: translate(-5px, 5px); }
+  40% { transform: translate(5px, 5px); }
+  50% { transform: translate(-3px, -3px); }
+  60% { transform: translate(3px, -3px); }
+  70% { transform: translate(-3px, 3px); }
+  80% { transform: translate(3px, 3px); }
+  90% { transform: translate(-1px, -1px); }
+}
+
+.shake {
+  animation: screenShake 0.5s ease-in-out;
+}
+
+/* Ghost Float */
+@keyframes ghostFloat {
+  0%, 100% { 
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.8;
+  }
+  25% { 
+    transform: translateY(-10px) rotate(2deg);
+    opacity: 1;
+  }
+  50% { 
+    transform: translateY(-5px) rotate(-1deg);
+    opacity: 0.9;
+  }
+  75% { 
+    transform: translateY(-15px) rotate(-2deg);
+    opacity: 1;
+  }
+}
+
+.ghost-float {
+  animation: ghostFloat 4s ease-in-out infinite;
+}
+
+/* Materialize - for enemy spawn */
+@keyframes materialize {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+    filter: blur(10px);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.1);
+    filter: blur(5px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+}
+
+.materialize {
+  animation: materialize 0.6s ease-out forwards;
+}
+
+/* Dematerialize - for enemy death */
+@keyframes dematerialize {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+    filter: blur(5px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0);
+    filter: blur(15px);
+  }
+}
+
+.dematerialize {
+  animation: dematerialize 0.4s ease-in forwards;
+}
+
+/* Coin Collect Burst */
+@keyframes coinBurst {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 0.8;
+    filter: brightness(1.5);
+  }
+  100% {
+    transform: scale(0);
+    opacity: 0;
+  }
+}
+
+.coin-burst {
+  animation: coinBurst 0.3s ease-out forwards;
+}
+
+/* Score Pop */
+@keyframes scorePop {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-50px) scale(1.5);
+    opacity: 0;
+  }
+}
+
+.score-pop {
+  animation: scorePop 0.8s ease-out forwards;
+  position: absolute;
+  font-family: 'Creepster', cursive;
+  color: var(--cursed-gold);
+  text-shadow: var(--gold-glow);
+  pointer-events: none;
+}
+
+/* Pulse Glow */
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 5px var(--ghost-green);
+  }
+  50% {
+    box-shadow: 0 0 25px var(--ghost-green), 0 0 50px rgba(0, 255, 65, 0.3);
+  }
+}
+
+.pulse-glow {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+/* Blood Drip - for title effect */
+@keyframes bloodDrip {
+  0% {
+    height: 0;
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    height: 30px;
+    opacity: 0;
+  }
+}
+
+.blood-drip::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  width: 3px;
+  background: linear-gradient(180deg, var(--blood-red), transparent);
+  animation: bloodDrip 3s ease-in-out infinite;
+}
+
+/* Lightning Flash */
+@keyframes lightningFlash {
+  0%, 100% { opacity: 0; }
+  5% { opacity: 1; }
+  10% { opacity: 0; }
+  15% { opacity: 0.8; }
+  20% { opacity: 0; }
+}
+
+.lightning-flash {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  pointer-events: none;
+  z-index: 100;
+  animation: lightningFlash 10s ease-in-out infinite;
+}
+
+/* Skeleton Loading */
+@keyframes skeletonPulse {
+  0%, 100% {
+    background-position: -200% 0;
+  }
+  50% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-loading {
+  background: linear-gradient(
+    90deg,
+    var(--haunted-purple) 0%,
+    var(--deep-purple) 50%,
+    var(--haunted-purple) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeletonPulse 2s ease-in-out infinite;
+  border-radius: 4px;
+}
+
+/* Spooky Entrance */
+@keyframes spookyEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.9);
+    filter: blur(5px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+.spooky-entrance {
+  animation: spookyEntrance 0.6s ease-out forwards;
+}
+
+/* Staggered entrance for lists */
+.spooky-entrance:nth-child(1) { animation-delay: 0.1s; }
+.spooky-entrance:nth-child(2) { animation-delay: 0.2s; }
+.spooky-entrance:nth-child(3) { animation-delay: 0.3s; }
+.spooky-entrance:nth-child(4) { animation-delay: 0.4s; }
+.spooky-entrance:nth-child(5) { animation-delay: 0.5s; }
+
+/* Victory Celebration */
+@keyframes victoryGlow {
+  0%, 100% {
+    text-shadow: 
+      0 0 10px var(--cursed-gold),
+      0 0 20px var(--cursed-gold);
+  }
+  50% {
+    text-shadow: 
+      0 0 30px var(--cursed-gold),
+      0 0 60px var(--cursed-gold),
+      0 0 90px rgba(255, 215, 0, 0.5);
+  }
+}
+
+.victory-text {
+  animation: victoryGlow 1s ease-in-out infinite;
+}
+
+/* Defeat Fade */
+@keyframes defeatFade {
+  0% {
+    filter: grayscale(0) brightness(1);
+  }
+  100% {
+    filter: grayscale(0.8) brightness(0.6);
+  }
+}
+
+.defeat-effect {
+  animation: defeatFade 1s ease-out forwards;
+}
+
+/* Floating Particles */
+@keyframes particleFloat {
+  0% {
+    transform: translateY(100vh) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.6;
+  }
+  90% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(-100px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.floating-particle {
+  position: fixed;
+  pointer-events: none;
+  animation: particleFloat 15s linear infinite;
+  z-index: 0;
+  font-size: 1.5rem;
+  opacity: 0.5;
+}
+
+/* Heartbeat for low health */
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  15% { transform: scale(1.1); }
+  30% { transform: scale(1); }
+  45% { transform: scale(1.15); }
+  60% { transform: scale(1); }
+}
+
+.heartbeat {
+  animation: heartbeat 1s ease-in-out infinite;
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .shake,
+  .ghost-float,
+  .materialize,
+  .dematerialize,
+  .coin-burst,
+  .score-pop,
+  .pulse-glow,
+  .blood-drip::after,
+  .lightning-flash,
+  .skeleton-loading,
+  .spooky-entrance,
+  .victory-text,
+  .defeat-effect,
+  .floating-particle,
+  .heartbeat {
+    animation: none !important;
+  }
+  
+  .spooky-entrance {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player Statistics Test Runner</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #1a1a1a;
+            color: #00ff41;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #00ff41;
+            text-shadow: 0 0 10px #00ff41;
+            margin-bottom: 30px;
+        }
+        
+        .test-controls {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        button {
+            background: rgba(0, 255, 65, 0.2);
+            border: 2px solid #00ff41;
+            color: #00ff41;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+        }
+        
+        button:hover {
+            background: rgba(0, 255, 65, 0.4);
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .test-output {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            min-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        
+        .test-results {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .result-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 4px solid #00ff41;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        .test-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 10px;
+        }
+        
+        .test-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 4px solid;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .test-item.passed {
+            border-left-color: #00ff41;
+        }
+        
+        .test-item.failed {
+            border-left-color: #ff4444;
+        }
+        
+        .test-name {
+            font-weight: bold;
+        }
+        
+        .test-status {
+            font-size: 18px;
+        }
+        
+        .error-details {
+            background: rgba(255, 68, 68, 0.1);
+            border: 1px solid #ff4444;
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 11px;
+            color: #ff8888;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 16px;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0, 255, 65, 0.3);
+            border-radius: 50%;
+            border-top-color: #00ff41;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Player Statistics Test Runner</h1>
+        
+        <div class="test-controls">
+            <button id="runTestsBtn">Run All Tests</button>
+            <button id="clearOutputBtn">Clear Output</button>
+            <button id="exportResultsBtn" disabled>Export Results</button>
+        </div>
+        
+        <div class="test-output" id="testOutput">
+            <div class="loading hidden" id="loadingIndicator">
+                <div class="spinner"></div>
+                Running tests...
+            </div>
+            <div id="outputContent">
+                Click "Run All Tests" to start testing the Player Statistics system.
+            </div>
+        </div>
+        
+        <div class="test-results hidden" id="testResults">
+            <h2>Test Results Summary</h2>
+            <div class="result-summary" id="resultSummary">
+                <!-- Summary cards will be populated here -->
+            </div>
+            <div class="test-list" id="testList">
+                <!-- Individual test results will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Load dependencies -->
+    <script src="../player-statistics.js"></script>
+    <script src="player-statistics.test.js"></script>
+
+    <script>
+        class PlayerStatisticsTestRunner {
+            constructor() {
+                this.testSuite = null;
+                this.isRunning = false;
+                
+                this.initializeElements();
+                this.setupEventListeners();
+            }
+            
+            initializeElements() {
+                this.runTestsBtn = document.getElementById('runTestsBtn');
+                this.clearOutputBtn = document.getElementById('clearOutputBtn');
+                this.exportResultsBtn = document.getElementById('exportResultsBtn');
+                this.testOutput = document.getElementById('testOutput');
+                this.outputContent = document.getElementById('outputContent');
+                this.loadingIndicator = document.getElementById('loadingIndicator');
+                this.testResults = document.getElementById('testResults');
+                this.resultSummary = document.getElementById('resultSummary');
+                this.testList = document.getElementById('testList');
+            }
+            
+            setupEventListeners() {
+                this.runTestsBtn.addEventListener('click', () => this.runTests());
+                this.clearOutputBtn.addEventListener('click', () => this.clearOutput());
+                this.exportResultsBtn.addEventListener('click', () => this.exportResults());
+                
+                // Capture console output
+                this.originalConsoleLog = console.log;
+                console.log = (...args) => {
+                    this.originalConsoleLog(...args);
+                    this.appendOutput(args.join(' '));
+                };
+            }
+            
+            async runTests() {
+                if (this.isRunning) return;
+                
+                this.isRunning = true;
+                this.runTestsBtn.disabled = true;
+                this.exportResultsBtn.disabled = true;
+                this.testResults.classList.add('hidden');
+                this.loadingIndicator.classList.remove('hidden');
+                
+                try {
+                    this.clearOutput();
+                    this.appendOutput('🚀 Starting Player Statistics Test Suite...\n');
+                    
+                    // Check if PlayerStatistics class is available
+                    if (typeof PlayerStatistics === 'undefined') {
+                        throw new Error('PlayerStatistics class not found. Make sure player-statistics.js is loaded.');
+                    }
+                    
+                    if (typeof PlayerStatisticsTestSuite === 'undefined') {
+                        throw new Error('PlayerStatisticsTestSuite class not found. Make sure player-statistics.test.js is loaded.');
+                    }
+                    
+                    // Create and run test suite
+                    this.testSuite = new PlayerStatisticsTestSuite();
+                    const results = await this.testSuite.runAllTests();
+                    
+                    this.appendOutput('\n✅ Test suite completed successfully!');
+                    this.displayResults(results);
+                    
+                } catch (error) {
+                    this.appendOutput(`\n❌ Test suite failed: ${error.message}`);
+                    console.error('Test suite error:', error);
+                } finally {
+                    this.isRunning = false;
+                    this.runTestsBtn.disabled = false;
+                    this.exportResultsBtn.disabled = false;
+                    this.loadingIndicator.classList.add('hidden');
+                }
+            }
+            
+            displayResults(results) {
+                const testResults = this.testSuite.getTestResults();
+                
+                // Show results section
+                this.testResults.classList.remove('hidden');
+                
+                // Create summary cards
+                this.resultSummary.innerHTML = `
+                    <div class="stat-card">
+                        <div class="stat-value">${testResults.total}</div>
+                        <div class="stat-label">Total Tests</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: #00ff41;">${testResults.passed}</div>
+                        <div class="stat-label">Passed</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" style="color: ${testResults.failed > 0 ? '#ff4444' : '#00ff41'};">${testResults.failed}</div>
+                        <div class="stat-label">Failed</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${((testResults.passed / testResults.total) * 100).toFixed(1)}%</div>
+                        <div class="stat-label">Success Rate</div>
+                    </div>
+                `;
+                
+                // Create individual test result items
+                this.testList.innerHTML = testResults.results.map(test => `
+                    <div class="test-item ${test.passed ? 'passed' : 'failed'}">
+                        <div class="test-name">${test.name}</div>
+                        <div class="test-status">${test.passed ? '✅' : '❌'}</div>
+                    </div>
+                    ${!test.passed ? `<div class="error-details">Error: ${test.error}</div>` : ''}
+                `).join('');
+            }
+            
+            appendOutput(text) {
+                this.outputContent.innerHTML += text + '\n';
+                this.testOutput.scrollTop = this.testOutput.scrollHeight;
+            }
+            
+            clearOutput() {
+                this.outputContent.innerHTML = '';
+                this.testResults.classList.add('hidden');
+            }
+            
+            exportResults() {
+                if (!this.testSuite) {
+                    alert('No test results to export. Run tests first.');
+                    return;
+                }
+                
+                const results = this.testSuite.getTestResults();
+                const exportData = {
+                    timestamp: new Date().toISOString(),
+                    testSuite: 'PlayerStatistics',
+                    summary: {
+                        total: results.total,
+                        passed: results.passed,
+                        failed: results.failed,
+                        successRate: ((results.passed / results.total) * 100).toFixed(1) + '%'
+                    },
+                    results: results.results
+                };
+                
+                const dataStr = JSON.stringify(exportData, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(dataBlob);
+                link.download = `player-statistics-test-results-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.json`;
+                link.click();
+            }
+        }
+        
+        // Initialize test runner when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.testRunner = new PlayerStatisticsTestRunner();
+        });
+    </script>
+</body>
+</html>

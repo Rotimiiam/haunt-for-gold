@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1a0a2e">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <title>👻 Privacy Policy - Haunt For Gold</title>
+  <link rel="stylesheet" href="css/spooky-theme.css">
+  <link rel="stylesheet" href="css/spooky-components.css">
+  <style>
+    html, body {
+      height: 100%;
+      overflow-y: auto !important;
+      overflow-x: hidden;
+    }
+    
+    body {
+      background: var(--spooky-black);
+      background-image: url('assets/spooky-background.svg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      color: var(--bone-white);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+      min-height: 100vh;
+    }
+    
+    h1 {
+      font-family: 'Creepster', cursive;
+      color: var(--ghost-green);
+      text-shadow: 0 0 10px var(--ghost-green);
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 30px;
+    }
+    
+    h2 {
+      color: var(--pumpkin-orange);
+      border-bottom: 1px solid var(--haunted-purple);
+      padding-bottom: 10px;
+      margin-top: 30px;
+    }
+    
+    .policy-container {
+      background: rgba(26, 10, 46, 0.8);
+      border: 2px solid var(--ghost-green);
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+      margin-bottom: 40px;
+    }
+    
+    a {
+      color: var(--ghost-green);
+    }
+    
+    ul {
+      padding-left: 20px;
+    }
+    
+    li {
+      margin-bottom: 8px;
+    }
+    
+    .back-btn {
+      display: inline-block;
+      margin-bottom: 20px;
+      padding: 10px 20px;
+      background: var(--haunted-purple);
+      border: 2px solid var(--ghost-green);
+      color: var(--bone-white);
+      text-decoration: none;
+      border-radius: 8px;
+      font-family: 'Creepster', cursive;
+      transition: all 0.3s;
+    }
+    
+    .back-btn:hover,
+    .back-btn:focus,
+    .back-btn.controller-focus {
+      background: var(--deep-purple);
+      box-shadow: 0 0 15px var(--ghost-green);
+      outline: none;
+    }
+    
+    .last-updated {
+      text-align: center;
+      color: var(--tombstone-gray);
+      font-size: 0.9rem;
+      margin-top: 30px;
+    }
+    
+    /* Controller navigation hint */
+    .controller-hint {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(26, 10, 46, 0.9);
+      border: 1px solid var(--ghost-green);
+      border-radius: 8px;
+      padding: 10px 15px;
+      font-size: 0.85rem;
+      color: var(--bone-white);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    
+    .controller-hint.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="controller-hint" id="controllerHint">
+    🎮 D-Pad: Scroll | ✕/A: Back to Game | ○/B: Back
+  </div>
+  <a href="index.html" class="back-btn">👻 Back to Game</a>
+  
+  <div class="policy-container">
+    <h1>🎃 Privacy Policy 🎃</h1>
+    
+    <p>Welcome to Haunt For Gold! This privacy policy explains how we collect, use, and protect your information when you play our game.</p>
+    
+    <h2>👻 Information We Collect</h2>
+    <p>We collect minimal information to provide you with the best gaming experience:</p>
+    <ul>
+      <li><strong>Player Name:</strong> The display name you choose to identify yourself in the game</li>
+      <li><strong>Game Statistics:</strong> Your scores, wins, and gameplay data for leaderboards</li>
+      <li><strong>Technical Data:</strong> Browser type and basic connection information for game functionality</li>
+    </ul>
+    
+    <h2>🍪 Cookies We Use</h2>
+    <p>We use cookies to enhance your experience:</p>
+    <ul>
+      <li><strong>Player Name Cookie:</strong> Remembers your chosen display name so you don't have to enter it each time</li>
+      <li><strong>Cookie Consent:</strong> Remembers that you've accepted our cookie policy</li>
+      <li><strong>Game Preferences:</strong> Stores your sound and display preferences</li>
+    </ul>
+    
+    <h2>🔒 How We Protect Your Data</h2>
+    <ul>
+      <li>We do not collect personal information like email addresses or passwords</li>
+      <li>Player names are stored locally in your browser and in our database for uniqueness validation</li>
+      <li>We do not share your data with third parties</li>
+      <li>Game data is transmitted securely via WebSocket connections</li>
+    </ul>
+    
+    <h2>🎮 Multiplayer Data</h2>
+    <p>When playing multiplayer games:</p>
+    <ul>
+      <li>Your player name is visible to other players in the same game</li>
+      <li>Game scores are shared in real-time during matches</li>
+      <li>High scores may appear on public leaderboards</li>
+    </ul>
+    
+    <h2>💀 Data Retention</h2>
+    <ul>
+      <li>Cookies expire after 30 days of inactivity</li>
+      <li>Player names are stored indefinitely to ensure uniqueness</li>
+      <li>Game statistics may be retained for leaderboard purposes</li>
+    </ul>
+    
+    <h2>🦇 Your Rights</h2>
+    <p>You have the right to:</p>
+    <ul>
+      <li>Clear your cookies at any time through your browser settings</li>
+      <li>Choose a new player name by clearing your cookies</li>
+      <li>Contact us to request deletion of your data</li>
+    </ul>
+    
+    <h2>📧 Contact Us</h2>
+    <p>If you have questions about this privacy policy, please reach out through our GitHub repository.</p>
+    
+    <h2>🔄 Changes to This Policy</h2>
+    <p>We may update this privacy policy from time to time. Any changes will be posted on this page.</p>
+    
+    <p class="last-updated">Last updated: December 2024</p>
+  </div>
+
+  <script>
+    // Controller navigation for privacy policy page
+    class PrivacyPageController {
+      constructor() {
+        this.scrollSpeed = 50;
+        this.gamepadPollId = null;
+        this.lastInputTime = 0;
+        this.inputCooldown = 50; // Faster response for smooth scrolling
+        this.controllerConnected = false;
+        this.buttonStates = {}; // Track button states for edge detection
+        
+        this.init();
+      }
+      
+      init() {
+        // Listen for gamepad connections
+        window.addEventListener('gamepadconnected', (e) => {
+          console.log('Controller connected:', e.gamepad.id);
+          this.controllerConnected = true;
+          this.showControllerHint();
+        });
+        
+        window.addEventListener('gamepaddisconnected', () => {
+          this.controllerConnected = false;
+          this.hideControllerHint();
+        });
+        
+        // Always start polling - it will check for gamepads each frame
+        this.startPolling();
+        
+        // Focus the back button for controller navigation
+        document.querySelector('.back-btn')?.focus();
+      }
+      
+      showControllerHint() {
+        const hint = document.getElementById('controllerHint');
+        if (hint) hint.classList.add('visible');
+      }
+      
+      hideControllerHint() {
+        const hint = document.getElementById('controllerHint');
+        if (hint) hint.classList.remove('visible');
+      }
+      
+      startPolling() {
+        if (this.gamepadPollId) return;
+        
+        const poll = () => {
+          this.handleGamepadInput();
+          this.gamepadPollId = requestAnimationFrame(poll);
+        };
+        
+        this.gamepadPollId = requestAnimationFrame(poll);
+      }
+      
+      handleGamepadInput() {
+        const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+        let gamepad = null;
+        
+        // Find first connected gamepad
+        for (let i = 0; i < gamepads.length; i++) {
+          if (gamepads[i] && gamepads[i].connected) {
+            gamepad = gamepads[i];
+            break;
+          }
+        }
+        
+        if (!gamepad) return;
+        
+        // Show hint if controller detected
+        if (!this.controllerConnected) {
+          this.controllerConnected = true;
+          this.showControllerHint();
+        }
+        
+        const now = Date.now();
+        
+        // Continuous scrolling with D-pad or left stick (no cooldown for smooth scroll)
+        let scrollAmount = 0;
+        
+        // D-pad up (button 12) or left stick up
+        if (gamepad.buttons[12]?.pressed || gamepad.axes[1] < -0.3) {
+          scrollAmount = -this.scrollSpeed;
+        }
+        
+        // D-pad down (button 13) or left stick down
+        if (gamepad.buttons[13]?.pressed || gamepad.axes[1] > 0.3) {
+          scrollAmount = this.scrollSpeed;
+        }
+        
+        // Apply scroll
+        if (scrollAmount !== 0) {
+          window.scrollBy({ top: scrollAmount, behavior: 'auto' });
+        }
+        
+        // Button presses with edge detection (only trigger once per press)
+        // A/X button (button 0) - go back to game
+        if (gamepad.buttons[0]?.pressed && !this.buttonStates[0]) {
+          this.buttonStates[0] = true;
+          window.location.href = 'index.html';
+        } else if (!gamepad.buttons[0]?.pressed) {
+          this.buttonStates[0] = false;
+        }
+        
+        // B/Circle button (button 1) - also go back
+        if (gamepad.buttons[1]?.pressed && !this.buttonStates[1]) {
+          this.buttonStates[1] = true;
+          window.location.href = 'index.html';
+        } else if (!gamepad.buttons[1]?.pressed) {
+          this.buttonStates[1] = false;
+        }
+      }
+    }
+    
+    // Initialize controller support
+    document.addEventListener('DOMContentLoaded', () => {
+      new PrivacyPageController();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,340 @@
+/* Haunt For Gold - Spooky UI Components */
+
+/* Spooky Button Base */
+.spooky-btn {
+  background: linear-gradient(180deg, var(--deep-purple) 0%, var(--haunted-purple) 50%, var(--spooky-black) 100%);
+  border: 2px solid var(--ghost-green);
+  color: var(--bone-white);
+  padding: 16px 32px;
+  font-family: 'Creepster', cursive;
+  font-size: 1.3rem;
+  letter-spacing: 0.05em;
+  text-shadow: 0 0 10px var(--ghost-green);
+  box-shadow: 
+    var(--ghost-glow),
+    var(--inner-shadow);
+  cursor: pointer;
+  border-radius: 8px;
+  transition: var(--spooky-transition);
+  position: relative;
+  overflow: hidden;
+  text-transform: uppercase;
+}
+
+.spooky-btn::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(0,255,65,0.1) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.spooky-btn:hover {
+  background: linear-gradient(180deg, var(--midnight-blue) 0%, var(--deep-purple) 50%, var(--haunted-purple) 100%);
+  border-color: var(--ghost-green);
+  box-shadow: var(--ghost-glow-intense);
+  transform: translateY(-3px) scale(1.02);
+  text-shadow: 0 0 20px var(--ghost-green);
+}
+
+.spooky-btn:hover::before {
+  opacity: 1;
+}
+
+.spooky-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Controller Focus State */
+.spooky-btn.controller-focused,
+.controller-focused {
+  outline: 3px solid var(--ghost-green) !important;
+  outline-offset: 4px !important;
+  box-shadow: 
+    var(--ghost-glow-intense),
+    0 0 30px var(--ghost-green),
+    0 0 60px rgba(0, 255, 65, 0.4) !important;
+  animation: controllerPulse 1s ease-in-out infinite;
+}
+
+@keyframes controllerPulse {
+  0%, 100% {
+    box-shadow: 
+      var(--ghost-glow-intense),
+      0 0 30px var(--ghost-green),
+      0 0 60px rgba(0, 255, 65, 0.4);
+  }
+  50% {
+    box-shadow: 
+      var(--ghost-glow-intense),
+      0 0 40px var(--ghost-green),
+      0 0 80px rgba(0, 255, 65, 0.6);
+  }
+}
+
+.spooky-btn:focus {
+  outline: none;
+  box-shadow: 
+    var(--ghost-glow-intense),
+    0 0 0 3px rgba(0, 255, 65, 0.3);
+}
+
+/* Spooky Button Variants */
+.spooky-btn.orange {
+  border-color: var(--pumpkin-orange);
+  text-shadow: 0 0 10px var(--pumpkin-orange);
+  box-shadow: var(--pumpkin-glow), var(--inner-shadow);
+}
+
+.spooky-btn.orange:hover {
+  box-shadow: 0 0 30px rgba(255, 107, 0, 0.8);
+}
+
+.spooky-btn.gold {
+  border-color: var(--cursed-gold);
+  text-shadow: 0 0 10px var(--cursed-gold);
+  box-shadow: var(--gold-glow), var(--inner-shadow);
+}
+
+.spooky-btn.danger {
+  border-color: var(--blood-red);
+  text-shadow: 0 0 10px var(--blood-red);
+  box-shadow: var(--blood-glow), var(--inner-shadow);
+}
+
+/* Haunted Scoreboard */
+.haunted-scoreboard {
+  background: linear-gradient(180deg, 
+    rgba(45, 27, 78, 0.9) 0%, 
+    rgba(26, 10, 46, 0.95) 100%);
+  border: 3px solid var(--ancient-gold);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 
+    var(--haunted-shadow),
+    var(--inner-shadow),
+    0 0 15px rgba(184, 134, 11, 0.3);
+  position: relative;
+}
+
+.haunted-scoreboard::before {
+  content: '🕯️';
+  position: absolute;
+  top: -20px;
+  left: 15px;
+  font-size: 28px;
+  animation: flicker 2s infinite;
+  filter: drop-shadow(0 0 10px rgba(255, 200, 100, 0.8));
+}
+
+.haunted-scoreboard::after {
+  content: '🕯️';
+  position: absolute;
+  top: -20px;
+  right: 15px;
+  font-size: 28px;
+  animation: flicker 2s infinite 0.3s;
+  filter: drop-shadow(0 0 10px rgba(255, 200, 100, 0.8));
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  25% { opacity: 0.8; transform: scale(0.98); }
+  50% { opacity: 0.9; transform: scale(1.02); }
+  75% { opacity: 0.7; transform: scale(0.99); }
+}
+
+.haunted-scoreboard h3 {
+  font-family: 'Creepster', cursive;
+  color: var(--cursed-gold);
+  text-shadow: var(--gold-glow);
+  text-align: center;
+  margin: 0 0 15px 0;
+  font-size: 1.4rem;
+  border-bottom: 2px solid var(--ancient-gold);
+  padding-bottom: 10px;
+}
+
+/* Score Items */
+.spooky-score-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  margin-bottom: 8px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--tombstone-gray);
+  border-radius: 8px;
+  transition: var(--spooky-transition);
+}
+
+.spooky-score-item:hover {
+  background: rgba(0, 255, 65, 0.1);
+  border-color: var(--ghost-green);
+}
+
+.spooky-score-item.first-place {
+  background: linear-gradient(90deg, rgba(255, 107, 0, 0.2), rgba(255, 215, 0, 0.2));
+  border: 2px solid var(--cursed-gold);
+  box-shadow: var(--gold-glow);
+}
+
+.spooky-score-item .rank {
+  font-family: 'Creepster', cursive;
+  font-size: 1.2rem;
+  color: var(--pumpkin-orange);
+  min-width: 30px;
+}
+
+.spooky-score-item .score {
+  font-family: 'Creepster', cursive;
+  font-size: 1.1rem;
+  color: var(--cursed-gold);
+  text-shadow: 0 0 5px var(--cursed-gold);
+}
+
+/* Ghost Notification */
+.ghost-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: linear-gradient(180deg, var(--deep-purple), var(--haunted-purple));
+  border: 2px solid var(--ghost-green);
+  border-radius: 12px;
+  padding: 16px 24px;
+  color: var(--bone-white);
+  box-shadow: var(--ghost-glow), var(--haunted-shadow);
+  z-index: 1000;
+  animation: ghostAppear 0.5s ease-out;
+  max-width: 300px;
+}
+
+.ghost-notification::before {
+  content: '👻';
+  margin-right: 10px;
+}
+
+@keyframes ghostAppear {
+  0% {
+    opacity: 0;
+    transform: translateX(100%) scale(0.8);
+  }
+  50% {
+    transform: translateX(-10px) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+/* Spectral Input */
+.spectral-input {
+  background: rgba(0, 0, 0, 0.6);
+  border: 2px solid var(--tombstone-gray);
+  border-radius: 8px;
+  padding: 14px 18px;
+  color: var(--bone-white);
+  font-size: 1rem;
+  transition: var(--spooky-transition);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.spectral-input:focus {
+  outline: none;
+  border-color: var(--ghost-green);
+  box-shadow: var(--ghost-glow);
+  background: rgba(0, 255, 65, 0.05);
+}
+
+.spectral-input::placeholder {
+  color: var(--tombstone-gray);
+}
+
+/* Haunted Card/Panel */
+.haunted-panel {
+  background: linear-gradient(180deg, 
+    rgba(45, 27, 78, 0.85) 0%, 
+    rgba(13, 13, 13, 0.9) 100%);
+  border: 2px solid var(--haunted-purple);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: var(--haunted-shadow);
+  position: relative;
+}
+
+.haunted-panel.glow {
+  border-color: var(--ghost-green);
+  box-shadow: var(--ghost-glow), var(--haunted-shadow);
+}
+
+/* Cursed Timer */
+.cursed-timer {
+  font-family: 'Creepster', cursive;
+  font-size: 2rem;
+  color: var(--blood-red);
+  text-shadow: 0 0 10px var(--blood-red);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: timerPulse 1s ease-in-out infinite;
+}
+
+.cursed-timer::before {
+  content: '⏳';
+  font-size: 1.5rem;
+  animation: hourglassFlip 2s ease-in-out infinite;
+}
+
+@keyframes timerPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes hourglassFlip {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(180deg); }
+}
+
+/* Bat Decorations */
+.bat-decoration {
+  position: fixed;
+  font-size: 2rem;
+  opacity: 0.6;
+  animation: batFly 15s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bat-decoration:nth-child(1) { top: 10%; animation-delay: 0s; }
+.bat-decoration:nth-child(2) { top: 30%; animation-delay: 3s; }
+.bat-decoration:nth-child(3) { top: 50%; animation-delay: 6s; }
+
+@keyframes batFly {
+  0% { left: -50px; transform: scaleX(1); }
+  49% { transform: scaleX(1); }
+  50% { left: calc(100% + 50px); transform: scaleX(-1); }
+  99% { transform: scaleX(-1); }
+  100% { left: -50px; transform: scaleX(1); }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .spooky-btn,
+  .haunted-scoreboard::before,
+  .haunted-scoreboard::after,
+  .ghost-notification,
+  .cursed-timer,
+  .bat-decoration {
+    animation: none;
+  }
+  
+  .spooky-btn:hover {
+    transform: none;
+  }
+}

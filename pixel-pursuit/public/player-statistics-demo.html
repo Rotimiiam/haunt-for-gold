@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player Statistics Demo</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #1a1a1a;
+            color: #00ff41;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #00ff41;
+            text-shadow: 0 0 10px #00ff41;
+            margin-bottom: 30px;
+        }
+        
+        .demo-controls {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        button {
+            background: rgba(0, 255, 65, 0.2);
+            border: 2px solid #00ff41;
+            color: #00ff41;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+        }
+        
+        button:hover {
+            background: rgba(0, 255, 65, 0.4);
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .demo-layout {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 20px;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .game-simulation {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            min-height: 300px;
+        }
+        
+        .simulation-log {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 5px;
+            padding: 15px;
+            height: 250px;
+            overflow-y: auto;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        
+        .post-game-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            min-height: 400px;
+        }
+        
+        .real-time-display-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+        }
+        
+        .section-title {
+            color: #00ff41;
+            font-size: 18px;
+            margin-bottom: 15px;
+            text-align: center;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+        }
+        
+        .player-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .action-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #333;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #00ff41;
+        }
+        
+        .stats-summary {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 15px;
+            font-size: 11px;
+        }
+        
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 2px 0;
+        }
+        
+        .log-entry.milestone {
+            color: #ffd700;
+        }
+        
+        .log-entry.achievement {
+            color: #ff8844;
+        }
+        
+        .log-entry.score {
+            color: #00ff41;
+        }
+        
+        .log-entry.damage {
+            color: #ff4444;
+        }
+        
+        @media (max-width: 1200px) {
+            .demo-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                order: -1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 Player Statistics System Demo</h1>
+        
+        <div class="demo-controls">
+            <button id="startDemoBtn">Start Demo</button>
+            <button id="simulateGameBtn" disabled>Simulate Game</button>
+            <button id="resetDemoBtn">Reset Demo</button>
+            <button id="exportStatsBtn" disabled>Export Statistics</button>
+        </div>
+        
+        <div class="demo-layout">
+            <div class="main-content">
+                <div class="game-simulation">
+                    <div class="section-title">Game Simulation</div>
+                    
+                    <div class="player-actions" id="playerActions">
+                        <!-- Player action buttons will be populated here -->
+                    </div>
+                    
+                    <div class="simulation-log" id="simulationLog">
+                        Click "Start Demo" to begin the player statistics demonstration.
+                    </div>
+                </div>
+                
+                <div class="post-game-container" id="postGameContainer">
+                    <div class="section-title">Post-Game Summary</div>
+                    <div id="postGameContent">
+                        Post-game statistics will appear here after the demo.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar">
+                <div class="real-time-display-container">
+                    <div class="section-title">Real-Time Statistics</div>
+                    <div id="realTimeDisplay">
+                        <!-- Real-time score display will be rendered here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load dependencies -->
+    <script src="player-statistics.js"></script>
+    <script src="components/real-time-score-display.js"></script>
+    <script src="components/post-game-summary.js"></script>
+
+    <script>
+        class PlayerStatisticsDemo {
+            constructor() {
+                this.players = new Map();
+                this.gameActive = false;
+                this.simulationInterval = null;
+                this.realTimeDisplay = null;
+                this.postGameSummary = null;
+                
+                this.initializeElements();
+                this.setupEventListeners();
+            }
+            
+            initializeElements() {
+                this.startDemoBtn = document.getElementById('startDemoBtn');
+                this.simulateGameBtn = document.getElementById('simulateGameBtn');
+                this.resetDemoBtn = document.getElementById('resetDemoBtn');
+                this.exportStatsBtn = document.getElementById('exportStatsBtn');
+                this.playerActions = document.getElementById('playerActions');
+                this.simulationLog = document.getElementById('simulationLog');
+                this.postGameContainer = document.getElementById('postGameContainer');
+                this.postGameContent = document.getElementById('postGameContent');
+                this.realTimeDisplayContainer = document.getElementById('realTimeDisplay');
+            }
+            
+            setupEventListeners() {
+                this.startDemoBtn.addEventListener('click', () => this.startDemo());
+                this.simulateGameBtn.addEventListener('click', () => this.simulateGame());
+                this.resetDemoBtn.addEventListener('click', () => this.resetDemo());
+                this.exportStatsBtn.addEventListener('click', () => this.exportStatistics());
+            }
+            
+            startDemo() {
+                this.log('🚀 Starting Player Statistics Demo...');
+                
+                // Create demo players
+                this.createDemoPlayers();
+                
+                // Initialize real-time display
+                this.initializeRealTimeDisplay();
+                
+                // Initialize post-game summary
+                this.initializePostGameSummary();
+                
+                // Create player action buttons
+                this.createPlayerActionButtons();
+                
+                this.gameActive = true;
+                this.startDemoBtn.disabled = true;
+                this.simulateGameBtn.disabled = false;
+                this.exportStatsBtn.disabled = false;
+                
+                this.log('✅ Demo initialized with ' + this.players.size + ' players');
+            }
+            
+            createDemoPlayers() {
+                const playerConfigs = [
+                    { id: 'player1', name: 'Alice', color: '#ff4444' },
+                    { id: 'player2', name: 'Bob', color: '#4444ff' },
+                    { id: 'player3', name: 'Charlie', color: '#44ff44' },
+                    { id: 'player4', name: 'Diana', color: '#ffff44' }
+                ];
+                
+                playerConfigs.forEach(config => {
+                    const playerStats = new PlayerStatistics(config.id, config.name);
+                    this.players.set(config.id, {
+                        stats: playerStats,
+                        config: config
+                    });
+                });
+            }
+            
+            initializeRealTimeDisplay() {
+                // Create a container div for the real-time display
+                this.realTimeDisplayContainer.innerHTML = '<div id="realTimeScoreDisplay"></div>';
+                
+                this.realTimeDisplay = new RealTimeScoreDisplay('realTimeScoreDisplay');
+                
+                // Add all players to the display
+                for (const [playerId, player] of this.players) {
+                    const displayData = {
+                        ...player.stats.getRealTimeDisplayData(),
+                        color: player.config.color
+                    };
+                    this.realTimeDisplay.addPlayer(playerId, displayData);
+                }
+                
+                this.realTimeDisplay.show();
+                this.realTimeDisplay.startUpdates(2000); // Update every 2 seconds
+            }
+            
+            initializePostGameSummary() {
+                // Create a container div for the post-game summary
+                this.postGameContent.innerHTML = '<div id="postGameSummaryDisplay"></div>';
+                
+                this.postGameSummary = new PostGameSummary('postGameSummaryDisplay');
+            }
+            
+            createPlayerActionButtons() {
+                this.playerActions.innerHTML = '';
+                
+                for (const [playerId, player] of this.players) {
+                    const playerDiv = document.createElement('div');
+                    playerDiv.innerHTML = `
+                        <h4 style="color: ${player.config.color}; margin: 0 0 10px 0;">${player.config.name}</h4>
+                        <button class="action-btn" onclick="demo.collectCoin('${playerId}')">Collect Coin</button>
+                        <button class="action-btn" onclick="demo.hitEnemy('${playerId}')">Hit Enemy</button>
+                        <button class="action-btn" onclick="demo.hitBomb('${playerId}')">Hit Bomb</button>
+                        <button class="action-btn" onclick="demo.movePlayer('${playerId}')">Move</button>
+                    `;
+                    this.playerActions.appendChild(playerDiv);
+                }
+            }
+            
+            collectCoin(playerId) {
+                const player = this.players.get(playerId);
+                if (!player) return;
+                
+                const coinValue = Math.floor(Math.random() * 20) + 5; // 5-25 points
+                const oldScore = player.stats.stats.currentScore;
+                
+                player.stats.updateScore(oldScore + coinValue, coinValue, 'coin');
+                player.stats.updateCollectionStats('coin', coinValue);
+                
+                this.log(`💰 ${player.config.name} collected a coin worth ${coinValue} points!`, 'score');
+                this.updateRealTimeDisplay();
+            }
+            
+            hitEnemy(playerId) {
+                const player = this.players.get(playerId);
+                if (!player) return;
+                
+                const damage = Math.floor(Math.random() * 10) + 5; // 5-15 damage
+                const oldScore = player.stats.stats.currentScore;
+                const newScore = Math.max(0, oldScore - damage);
+                
+                player.stats.updateScore(newScore, -damage, 'enemy');
+                player.stats.updateCombatStats('enemy_hit', damage);
+                
+                this.log(`👹 ${player.config.name} hit an enemy and lost ${damage} points!`, 'damage');
+                this.updateRealTimeDisplay();
+            }
+            
+            hitBomb(playerId) {
+                const player = this.players.get(playerId);
+                if (!player) return;
+                
+                const damage = Math.floor(Math.random() * 25) + 15; // 15-40 damage
+                const oldScore = player.stats.stats.currentScore;
+                const newScore = Math.max(0, oldScore - damage);
+                
+                player.stats.updateScore(newScore, -damage, 'bomb');
+                player.stats.updateCombatStats('bomb_hit', damage);
+                
+                this.log(`💥 ${player.config.name} hit a bomb and lost ${damage} points!`, 'damage');
+                this.updateRealTimeDisplay();
+            }
+            
+            movePlayer(playerId) {
+                const player = this.players.get(playerId);
+                if (!player) return;
+                
+                const directions = [
+                    { x: 1, y: 0 }, { x: -1, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 }
+                ];
+                const direction = directions[Math.floor(Math.random() * directions.length)];
+                const currentPos = player.stats.lastPosition;
+                const newPos = {
+                    x: currentPos.x + direction.x,
+                    y: currentPos.y + direction.y
+                };
+                
+                player.stats.updateMovementStats(newPos);
+                
+                this.log(`🏃 ${player.config.name} moved to position (${newPos.x}, ${newPos.y})`);
+                this.updateRealTimeDisplay();
+            }
+            
+            updateRealTimeDisplay() {
+                if (!this.realTimeDisplay) return;
+                
+                // Update all players in the real-time display
+                for (const [playerId, player] of this.players) {
+                    const displayData = {
+                        ...player.stats.getRealTimeDisplayData(),
+                        color: player.config.color
+                    };
+                    this.realTimeDisplay.updatePlayer(playerId, displayData);
+                }
+            }
+            
+            simulateGame() {
+                this.log('🎲 Starting automatic game simulation...');
+                this.simulateGameBtn.disabled = true;
+                
+                let actionCount = 0;
+                const maxActions = 50;
+                
+                this.simulationInterval = setInterval(() => {
+                    if (actionCount >= maxActions) {
+                        this.endSimulation();
+                        return;
+                    }
+                    
+                    // Pick a random player and action
+                    const playerIds = Array.from(this.players.keys());
+                    const randomPlayerId = playerIds[Math.floor(Math.random() * playerIds.length)];
+                    const actions = ['collectCoin', 'hitEnemy', 'hitBomb', 'movePlayer'];
+                    const randomAction = actions[Math.floor(Math.random() * actions.length)];
+                    
+                    // Execute the action
+                    this[randomAction](randomPlayerId);
+                    
+                    actionCount++;
+                }, 500); // Action every 500ms
+            }
+            
+            endSimulation() {
+                if (this.simulationInterval) {
+                    clearInterval(this.simulationInterval);
+                    this.simulationInterval = null;
+                }
+                
+                this.log('🏁 Game simulation completed!');
+                this.simulateGameBtn.disabled = false;
+                
+                // Show post-game summary
+                this.showPostGameSummary();
+            }
+            
+            showPostGameSummary() {
+                // Prepare game result data
+                const playerStats = Array.from(this.players.values()).map(player => ({
+                    ...player.stats.getDetailedStats(),
+                    color: player.config.color
+                }));
+                
+                // Sort players by score for leaderboard
+                const leaderboard = playerStats
+                    .sort((a, b) => b.stats.currentScore - a.stats.currentScore)
+                    .map((player, index) => ({
+                        rank: index + 1,
+                        playerId: player.playerId,
+                        playerName: player.playerName,
+                        score: player.stats.currentScore,
+                        stats: player.stats,
+                        color: player.color
+                    }));
+                
+                const gameResult = {
+                    winnerId: leaderboard[0].playerId,
+                    winnerName: leaderboard[0].playerName,
+                    reason: 'demo_completed',
+                    duration: 60000, // 1 minute demo
+                    playerCount: this.players.size,
+                    finalScores: {},
+                    leaderboard: leaderboard,
+                    gameStats: {
+                        totalCoinsCollected: playerStats.reduce((sum, p) => sum + p.stats.coinsCollected, 0),
+                        totalEnemiesHit: playerStats.reduce((sum, p) => sum + p.stats.enemiesHit, 0),
+                        totalBombsHit: playerStats.reduce((sum, p) => sum + p.stats.bombsHit, 0),
+                        totalMoves: playerStats.reduce((sum, p) => sum + p.stats.movesCount, 0)
+                    }
+                };
+                
+                // Populate final scores
+                leaderboard.forEach(player => {
+                    gameResult.finalScores[player.playerId] = {
+                        name: player.playerName,
+                        score: player.score,
+                        stats: player.stats
+                    };
+                });
+                
+                this.postGameSummary.showSummary(gameResult, playerStats);
+                this.log('📊 Post-game summary displayed');
+            }
+            
+            resetDemo() {
+                this.log('🔄 Resetting demo...');
+                
+                // Stop any running simulation
+                if (this.simulationInterval) {
+                    clearInterval(this.simulationInterval);
+                    this.simulationInterval = null;
+                }
+                
+                // Reset all player statistics
+                for (const [playerId, player] of this.players) {
+                    player.stats.reset();
+                }
+                
+                // Clear displays
+                if (this.realTimeDisplay) {
+                    this.realTimeDisplay.clear();
+                    this.realTimeDisplay.destroy();
+                    this.realTimeDisplay = null;
+                }
+                
+                if (this.postGameSummary) {
+                    this.postGameSummary.hide();
+                    this.postGameSummary.clear();
+                }
+                
+                // Reset UI
+                this.players.clear();
+                this.gameActive = false;
+                this.startDemoBtn.disabled = false;
+                this.simulateGameBtn.disabled = true;
+                this.exportStatsBtn.disabled = true;
+                this.playerActions.innerHTML = '';
+                this.realTimeDisplayContainer.innerHTML = '';
+                this.postGameContent.innerHTML = 'Post-game statistics will appear here after the demo.';
+                
+                // Clear log
+                this.simulationLog.innerHTML = 'Click "Start Demo" to begin the player statistics demonstration.';
+                
+                this.log('✅ Demo reset complete');
+            }
+            
+            exportStatistics() {
+                if (this.players.size === 0) {
+                    alert('No statistics to export. Start the demo first.');
+                    return;
+                }
+                
+                const exportData = {
+                    timestamp: new Date().toISOString(),
+                    demoType: 'PlayerStatisticsDemo',
+                    players: {}
+                };
+                
+                for (const [playerId, player] of this.players) {
+                    exportData.players[playerId] = {
+                        config: player.config,
+                        statistics: player.stats.getDetailedStats()
+                    };
+                }
+                
+                const dataStr = JSON.stringify(exportData, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(dataBlob);
+                link.download = `player-statistics-demo-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.json`;
+                link.click();
+                
+                this.log('📁 Statistics exported successfully');
+            }
+            
+            log(message, type = 'info') {
+                const timestamp = new Date().toLocaleTimeString();
+                const logEntry = document.createElement('div');
+                logEntry.className = `log-entry ${type}`;
+                logEntry.textContent = `[${timestamp}] ${message}`;
+                
+                this.simulationLog.appendChild(logEntry);
+                this.simulationLog.scrollTop = this.simulationLog.scrollHeight;
+                
+                // Limit log entries to prevent memory issues
+                while (this.simulationLog.children.length > 100) {
+                    this.simulationLog.removeChild(this.simulationLog.firstChild);
+                }
+            }
+        }
+        
+        // Initialize demo when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.demo = new PlayerStatisticsDemo();
+        });
+    </script>
+</body>
+</html>

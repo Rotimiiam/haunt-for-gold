@@ -1,0 +1,28 @@
+{
+  "production": {
+    "type": "ssh",
+    "host": "74.207.254.40",
+    "port": 22,
+    "username": "root",
+    "password": "$M34Etnf@pqNHDC",
+    // "privateKeyPath": "/path/to/your/id_rsa",
+    "proxy": false,
+    "upload_on_save": true,
+    "watch": false,
+    "submit_git_before_upload": false,
+    "compress": true,
+    "remote_unpacked": true,
+    "delete_remote_compress": true,
+    "delete_local_compress": true,
+    "distPath": [],
+    "upload_to_root": false,
+    "deleteRemote": false,
+    "remotePath": "/home/haunt-for-gold",
+    "excludePath": [
+      "node_modules",
+      ".git",
+      "*.log"
+    ],
+    "default": true
+  }
+}

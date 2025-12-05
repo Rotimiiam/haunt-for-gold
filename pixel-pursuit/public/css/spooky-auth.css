@@ -1,0 +1,278 @@
+/**
+ * Spooky Authentication Styles Override
+ * Halloween theme for auth modals and user profile
+ */
+
+/* Spooky Auth Modal */
+.auth-modal {
+  background: rgba(13, 13, 13, 0.95);
+}
+
+.auth-modal-content,
+.auth-modal-content.cadence-style-modal {
+  background: linear-gradient(180deg, #2d1b4e 0%, #1a0a2e 50%, #0d0d0d 100%);
+  border: 2px solid var(--ghost-green, #00ff41);
+  box-shadow: 
+    0 0 30px rgba(0, 255, 65, 0.3),
+    inset 0 0 30px rgba(0, 0, 0, 0.5);
+  border-radius: 16px;
+}
+
+.auth-modal-header {
+  border-bottom: 1px solid rgba(0, 255, 65, 0.3);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.auth-tab {
+  font-family: 'Creepster', cursive;
+  color: #bone-white;
+  letter-spacing: 1px;
+}
+
+.auth-tab.active {
+  background: linear-gradient(180deg, #2d1b4e, #1a0a2e);
+  color: var(--ghost-green, #00ff41);
+  text-shadow: 0 0 10px var(--ghost-green, #00ff41);
+  border: 1px solid var(--ghost-green, #00ff41);
+}
+
+.auth-tab:hover:not(.active) {
+  background: rgba(0, 255, 65, 0.1);
+  color: var(--ghost-green, #00ff41);
+}
+
+.auth-close-btn {
+  color: var(--pumpkin-orange, #ff6b00);
+}
+
+.auth-close-btn:hover {
+  background: rgba(255, 107, 0, 0.2);
+  color: var(--pumpkin-orange, #ff6b00);
+  text-shadow: 0 0 10px var(--pumpkin-orange, #ff6b00);
+}
+
+/* Spooky Input Fields */
+.auth-input-group input,
+.spectral-input {
+  background: rgba(0, 0, 0, 0.6);
+  border: 2px solid #4a4a4a;
+  color: #e8e8e8;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.auth-input-group input:focus,
+.spectral-input:focus {
+  border-color: var(--ghost-green, #00ff41);
+  box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+  background: rgba(0, 255, 65, 0.05);
+}
+
+.auth-input-group label {
+  color: #b8b8b8;
+  font-weight: 500;
+}
+
+/* Spooky Buttons */
+.auth-btn.primary,
+.auth-btn.primary.cadence-btn {
+  background: linear-gradient(180deg, #2d7d31, #1b5e20);
+  border: 2px solid var(--ghost-green, #00ff41);
+  color: white;
+  text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+  box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+  font-family: 'Creepster', cursive;
+  letter-spacing: 1px;
+}
+
+.auth-btn.primary:hover {
+  background: linear-gradient(180deg, #388e3c, #2d7d31);
+  box-shadow: 0 0 25px rgba(0, 255, 65, 0.5);
+  transform: translateY(-2px);
+}
+
+.auth-btn.secondary,
+.auth-btn.secondary.cadence-btn {
+  background: linear-gradient(180deg, #2d1b4e, #1a0a2e);
+  border: 2px solid var(--pumpkin-orange, #ff6b00);
+  color: var(--pumpkin-orange, #ff6b00);
+  font-family: 'Creepster', cursive;
+}
+
+.auth-btn.secondary:hover {
+  background: rgba(255, 107, 0, 0.2);
+  box-shadow: 0 0 15px rgba(255, 107, 0, 0.3);
+}
+
+/* OAuth Buttons */
+.oauth-btn {
+  background: rgba(0, 0, 0, 0.5);
+  border: 2px solid #4a4a4a;
+  color: #e8e8e8;
+}
+
+.oauth-btn:hover {
+  border-color: var(--ghost-green, #00ff41);
+  box-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
+}
+
+.oauth-btn.google {
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+}
+
+.oauth-btn.google:hover {
+  background: white;
+  border-color: #4285f4;
+}
+
+/* Dividers */
+.auth-divider {
+  color: #666;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  border-color: rgba(0, 255, 65, 0.2);
+}
+
+/* Error Messages */
+.auth-error {
+  background: rgba(139, 0, 0, 0.2);
+  border: 1px solid var(--blood-red, #8b0000);
+  color: #ff6b6b;
+}
+
+/* Profile Modal Spooky Styles */
+.profile-modal {
+  background: rgba(13, 13, 13, 0.95);
+}
+
+.profile-modal-content {
+  background: linear-gradient(180deg, #2d1b4e 0%, #1a0a2e 50%, #0d0d0d 100%);
+  border: 2px solid var(--cursed-gold, #ffd700);
+  box-shadow: 
+    0 0 30px rgba(255, 215, 0, 0.2),
+    inset 0 0 30px rgba(0, 0, 0, 0.5);
+}
+
+.profile-modal-header {
+  background: rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.profile-tab.active {
+  background: linear-gradient(180deg, #b8860b, #8b6914);
+  border-color: var(--cursed-gold, #ffd700);
+  color: white;
+}
+
+.profile-info h2 {
+  font-family: 'Creepster', cursive;
+  color: var(--cursed-gold, #ffd700);
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.profile-avatar {
+  border: 3px solid var(--ghost-green, #00ff41);
+  box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+}
+
+/* Stats Cards */
+.stats-card {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(0, 255, 65, 0.3);
+}
+
+.stats-card .stats-value {
+  color: var(--cursed-gold, #ffd700);
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.stats-section {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(0, 255, 65, 0.2);
+}
+
+.stats-section h3 {
+  font-family: 'Creepster', cursive;
+  color: var(--pumpkin-orange, #ff6b00);
+}
+
+/* History Items */
+.history-item {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.history-item.win {
+  border-left: 4px solid var(--ghost-green, #00ff41);
+}
+
+.history-item.lose {
+  border-left: 4px solid var(--blood-red, #8b0000);
+}
+
+.history-item:hover {
+  background: rgba(0, 255, 65, 0.05);
+}
+
+/* User Menu Spooky Style */
+.user-menu .account-btn {
+  background: linear-gradient(180deg, #2d1b4e, #1a0a2e);
+  border: 2px solid var(--ghost-green, #00ff41);
+  color: var(--ghost-green, #00ff41);
+  text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+  font-family: 'Creepster', cursive;
+  letter-spacing: 1px;
+}
+
+.user-menu .account-btn:hover {
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.4);
+  transform: translateY(-2px);
+}
+
+.user-menu .account-btn:before,
+.user-menu .account-btn:after {
+  background: var(--pumpkin-orange, #ff6b00);
+  box-shadow: 0 0 5px var(--pumpkin-orange, #ff6b00);
+}
+
+.user-avatar {
+  border: 2px solid var(--cursed-gold, #ffd700);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+.user-avatar:hover {
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+}
+
+/* Login Prompt Modal */
+.login-prompt-modal .auth-modal-content {
+  background: linear-gradient(180deg, #2d1b4e 0%, #1a0a2e 100%);
+  border: 2px solid var(--ghost-green, #00ff41);
+}
+
+.login-prompt-modal h2 {
+  font-family: 'Creepster', cursive;
+  color: var(--pumpkin-orange, #ff6b00);
+  text-shadow: 0 0 10px rgba(255, 107, 0, 0.5);
+}
+
+/* Cadence style buttons with spooky theme */
+.cadence-btn {
+  background: linear-gradient(180deg, #2d1b4e, #1a0a2e) !important;
+  border: 2px solid var(--ghost-green, #00ff41) !important;
+  color: #e8e8e8 !important;
+  font-family: 'Creepster', cursive;
+}
+
+.cadence-btn:hover {
+  box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+}
+
+.cadence-btn:before,
+.cadence-btn:after {
+  background: var(--pumpkin-orange, #ff6b00) !important;
+  box-shadow: 0 0 5px var(--pumpkin-orange, #ff6b00);
+}

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Multiplayer Setup Tests</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .test-output {
+            background: #000;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .test-button {
+            background: #007cba;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #005a87;
+        }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+        .warning { color: #ffc107; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Local Multiplayer Setup Component Tests</h1>
+        <p>This page tests the LocalMultiplayerSetup component functionality.</p>
+        
+        <div>
+            <button class="test-button" onclick="runAllTests()">Run All Tests</button>
+            <button class="test-button" onclick="runSetupTests()">Setup Tests</button>
+            <button class="test-button" onclick="runControllerTests()">Controller Tests</button>
+            <button class="test-button" onclick="runUITests()">UI Tests</button>
+            <button class="test-button" onclick="clearOutput()">Clear Output</button>
+        </div>
+        
+        <div id="testOutput" class="test-output">
+            Click "Run All Tests" to start testing the LocalMultiplayerSetup component...
+        </div>
+    </div>
+
+    <!-- Load Dependencies -->
+    <script src="local-multiplayer-models.js"></script>
+    <script src="controller-manager.js"></script>
+    <script src="local-multiplayer-integration.js"></script>
+    <script src="components/local-multiplayer-setup.js"></script>
+    <script src="tests/local-multiplayer-setup.test.js"></script>
+    
+    <script>
+        function log(message, type = 'info') {
+            const output = document.getElementById('testOutput');
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'error' ? 'error' : type === 'success' ? 'success' : type === 'warning' ? 'warning' : '';
+            output.innerHTML += `<span class="${className}">[${timestamp}] ${message}</span>\n`;
+            output.scrollTop = output.scrollHeight;
+        }
+        
+        function clearOutput() {
+            document.getElementById('testOutput').innerHTML = '';
+        }
+        
+        function runAllTests() {
+            clearOutput();
+            log('Starting comprehensive test suite for LocalMultiplayerSetup...', 'info');
+            
+            try {
+                // Check dependencies
+                log('Checking dependencies...', 'info');
+                const dependencies = [
+                    'LocalMultiplayerSetup',
+                    'LocalPlayer', 
+                    'LocalGameSettings',
+                    'ControllerManager'
+                ];
+                
+                const missing = dependencies.filter(dep => typeof window[dep] === 'undefined');
+                if (missing.length > 0) {
+                    log(`Missing dependencies: ${missing.join(', ')}`, 'warning');
+                } else {
+                    log('All dependencies loaded successfully', 'success');
+                }
+                
+                // Run test suites
+                log('\n=== Running Setup Component Tests ===', 'info');
+                const setupResults = runLocalMultiplayerSetupTests();
+                
+                log('\n=== Running Controller Integration Tests ===', 'info');
+                const controllerResults = runControllerIntegrationTests();
+                
+                log('\n=== Running UI Interaction Tests ===', 'info');
+                const uiResults = runUIInteractionTests();
+                
+                // Summary
+                log('\n=== TEST SUMMARY ===', 'info');
+                if (setupResults && controllerResults && uiResults) {
+                    log('🎉 ALL TESTS PASSED! The LocalMultiplayerSetup component is working correctly.', 'success');
+                } else {
+                    log('⚠️ Some tests failed. Check the detailed output above.', 'warning');
+                }
+                
+            } catch (error) {
+                log(`Test execution failed: ${error.message}`, 'error');
+                console.error('Test error:', error);
+            }
+        }
+        
+        function runSetupTests() {
+            clearOutput();
+            log('Running LocalMultiplayerSetup component tests...', 'info');
+            try {
+                const result = runLocalMultiplayerSetupTests();
+                if (result) {
+                    log('Setup tests completed successfully!', 'success');
+                } else {
+                    log('Some setup tests failed.', 'warning');
+                }
+            } catch (error) {
+                log(`Setup test error: ${error.message}`, 'error');
+            }
+        }
+        
+        function runControllerTests() {
+            clearOutput();
+            log('Running controller integration tests...', 'info');
+            try {
+                const result = runControllerIntegrationTests();
+                if (result) {
+                    log('Controller tests completed successfully!', 'success');
+                } else {
+                    log('Some controller tests failed.', 'warning');
+                }
+            } catch (error) {
+                log(`Controller test error: ${error.message}`, 'error');
+            }
+        }
+        
+        function runUITests() {
+            clearOutput();
+            log('Running UI interaction tests...', 'info');
+            try {
+                const result = runUIInteractionTests();
+                if (result) {
+                    log('UI tests completed successfully!', 'success');
+                } else {
+                    log('Some UI tests failed.', 'warning');
+                }
+            } catch (error) {
+                log(`UI test error: ${error.message}`, 'error');
+            }
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            log('Test runner initialized. Ready to run tests.', 'success');
+            
+            // Quick dependency check
+            if (typeof LocalMultiplayerSetup === 'undefined') {
+                log('ERROR: LocalMultiplayerSetup component not loaded!', 'error');
+            } else {
+                log('LocalMultiplayerSetup component loaded successfully.', 'success');
+            }
+        });
+    </script>
+</body>
+</html>

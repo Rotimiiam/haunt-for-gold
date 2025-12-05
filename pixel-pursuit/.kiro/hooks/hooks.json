@@ -1,0 +1,74 @@
+{
+  "hooks": [
+    {
+      "id": "spooky-css-check",
+      "name": "Spooky Theme Validator",
+      "description": "Reminds to use spooky theme colors when editing CSS files",
+      "trigger": {
+        "type": "onFileSave",
+        "pattern": "**/*.css"
+      },
+      "action": {
+        "type": "sendMessage",
+        "message": "CSS file saved! Remember to use the spooky theme variables (--spooky-black, --haunted-purple, --ghost-green, --pumpkin-orange) for consistency with the Halloween theme. Check if any hardcoded colors should use CSS custom properties instead."
+      },
+      "enabled": true
+    },
+    {
+      "id": "game-code-review",
+      "name": "Game Code Quality Check",
+      "description": "Reviews game JavaScript for performance and best practices",
+      "trigger": {
+        "type": "onFileSave",
+        "pattern": "public/**/*.js"
+      },
+      "action": {
+        "type": "sendMessage",
+        "message": "Game code updated! Quick checks: 1) Are event listeners properly cleaned up? 2) Is requestAnimationFrame used for animations? 3) Are Socket.IO events validated? 4) Any memory leaks from object creation in loops?"
+      },
+      "enabled": true
+    },
+    {
+      "id": "accessibility-reminder",
+      "name": "Accessibility Check",
+      "description": "Reminds about accessibility when HTML is modified",
+      "trigger": {
+        "type": "onFileSave",
+        "pattern": "**/*.html"
+      },
+      "action": {
+        "type": "sendMessage",
+        "message": "HTML updated! Accessibility checklist: Are ARIA labels present for interactive elements? Is keyboard navigation supported? Do images have alt text? Is color contrast sufficient for the spooky theme?"
+      },
+      "enabled": true
+    },
+    {
+      "id": "test-runner",
+      "name": "Run Tests on Save",
+      "description": "Runs tests when test files are saved",
+      "trigger": {
+        "type": "onFileSave",
+        "pattern": "test-*.js"
+      },
+      "action": {
+        "type": "runCommand",
+        "command": "node ${file}"
+      },
+      "enabled": true
+    },
+    {
+      "id": "server-restart-reminder",
+      "name": "Server Restart Reminder",
+      "description": "Reminds to restart server when server code changes",
+      "trigger": {
+        "type": "onFileSave",
+        "pattern": "server.js"
+      },
+      "action": {
+        "type": "sendMessage",
+        "message": "Server code changed! Remember to restart the server with 'npm start' to apply changes."
+      },
+      "enabled": true
+    }
+  ]
+}

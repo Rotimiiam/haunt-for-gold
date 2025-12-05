@@ -1,0 +1,454 @@
+<!-- Multiplayer Setup Modal -->
+<div id="multiplayerSetupModal" class="modal" style="display: none;">
+  <div class="modal-content multiplayer-setup">
+    <button class="close-btn" onclick="closeMultiplayerSetup()">&times;</button>
+    
+    <h2>Multiplayer Setup</h2>
+    
+    <!-- Mode Selection -->
+    <div class="mode-selection">
+      <button id="localModeBtn" class="mode-btn active" onclick="selectMode('local')">
+        <span class="mode-icon">🎮</span>
+        <span class="mode-title">Local Multiplayer</span>
+        <span class="mode-desc">2-10 players on same device</span>
+      </button>
+      <button id="onlineModeBtn" class="mode-btn" onclick="selectMode('online')">
+        <span class="mode-icon">🌐</span>
+        <span class="mode-title">Online Multiplayer</span>
+        <span class="mode-desc">Play against others online</span>
+      </button>
+    </div>
+    
+    <!-- Local Multiplayer Setup -->
+    <div id="localSetup" class="setup-section">
+      <div class="player-count-section">
+        <label for="playerCount">Number of Players:</label>
+        <div class="player-count-selector">
+          <button onclick="decrementPlayers()" class="count-btn">-</button>
+          <span id="playerCountDisplay">2</span>
+          <button onclick="incrementPlayers()" class="count-btn">+</button>
+        </div>
+        <p class="winning-score-info">Winning Score: <span id="winningScoreDisplay">200</span> points</p>
+      </div>
+      
+      <h3>Select Characters</h3>
+      <div id="characterGrid" class="character-grid">
+        <!-- Character selection will be populated by JavaScript -->
+      </div>
+      
+      <button id="startLocalGameBtn" class="start-game-btn" onclick="startLocalGame()">
+        Start Local Game
+      </button>
+    </div>
+    
+    <!-- Online Multiplayer Setup -->
+    <div id="onlineSetup" class="setup-section" style="display: none;">
+      <p class="online-desc">Join an online game and compete against players from around the world!</p>
+      <button id="startOnlineGameBtn" class="start-game-btn" onclick="startOnlineGame()">
+        Join Online Game
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+.multiplayer-setup {
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.multiplayer-setup h2 {
+  text-align: center;
+  color: #ffd700;
+  margin-bottom: 30px;
+}
+
+.mode-selection {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.mode-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.mode-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 215, 0, 0.6);
+  transform: translateY(-2px);
+}
+
+.mode-btn.active {
+  background: rgba(255, 215, 0, 0.2);
+  border-color: #ffd700;
+}
+
+.mode-icon {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.mode-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 5px;
+}
+
+.mode-desc {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.setup-section {
+  margin-top: 20px;
+}
+
+.player-count-section {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.player-count-section label {
+  display: block;
+  font-size: 16px;
+  color: #ffd700;
+  margin-bottom: 10px;
+}
+
+.player-count-selector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 10px;
+}
+
+.count-btn {
+  width: 40px;
+  height: 40px;
+  font-size: 24px;
+  background: rgba(255, 215, 0, 0.2);
+  border: 2px solid #ffd700;
+  border-radius: 50%;
+  color: #ffd700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.count-btn:hover {
+  background: rgba(255, 215, 0, 0.3);
+  transform: scale(1.1);
+}
+
+#playerCountDisplay {
+  font-size: 32px;
+  font-weight: bold;
+  color: #ffd700;
+  min-width: 50px;
+  text-align: center;
+}
+
+.winning-score-info {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+}
+
+.character-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+}
+
+.character-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.character-card:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 215, 0, 0.5);
+  transform: translateY(-2px);
+}
+
+.character-card.selected {
+  background: rgba(255, 215, 0, 0.2);
+  border-color: #ffd700;
+}
+
+.character-card.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.character-preview {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 10px;
+}
+
+.character-name {
+  font-size: 14px;
+  color: #fff;
+  text-align: center;
+  margin-bottom: 5px;
+}
+
+.player-badge {
+  font-size: 12px;
+  padding: 2px 8px;
+  background: #ffd700;
+  color: #000;
+  border-radius: 10px;
+  font-weight: bold;
+}
+
+.start-game-btn {
+  width: 100%;
+  padding: 15px;
+  font-size: 18px;
+  font-weight: bold;
+  background: linear-gradient(135deg, #ffd700, #ffed4e);
+  color: #000;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.start-game-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+}
+
+.start-game-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.online-desc {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 30px;
+  font-size: 16px;
+}
+</style>
+
+<script>
+// Multiplayer setup state
+let selectedMode = 'local';
+let playerCount = 2;
+let selectedCharacters = {}; // { playerIndex: characterName }
+
+// Show multiplayer setup modal
+function showMultiplayerSetup() {
+  document.getElementById('multiplayerSetupModal').style.display = 'flex';
+  populateCharacterGrid();
+}
+
+// Close multiplayer setup modal
+function closeMultiplayerSetup() {
+  document.getElementById('multiplayerSetupModal').style.display = 'none';
+  resetSetup();
+}
+
+// Reset setup state
+function resetSetup() {
+  selectedMode = 'local';
+  playerCount = 2;
+  selectedCharacters = {};
+  updatePlayerCountDisplay();
+  populateCharacterGrid();
+}
+
+// Select mode (local or online)
+function selectMode(mode) {
+  selectedMode = mode;
+  
+  // Update button states
+  document.getElementById('localModeBtn').classList.toggle('active', mode === 'local');
+  document.getElementById('onlineModeBtn').classList.toggle('active', mode === 'online');
+  
+  // Show/hide setup sections
+  document.getElementById('localSetup').style.display = mode === 'local' ? 'block' : 'none';
+  document.getElementById('onlineSetup').style.display = mode === 'online' ? 'block' : 'none';
+}
+
+// Increment player count
+function incrementPlayers() {
+  if (playerCount < 10) {
+    playerCount++;
+    updatePlayerCountDisplay();
+    populateCharacterGrid();
+  }
+}
+
+// Decrement player count
+function decrementPlayers() {
+  if (playerCount > 2) {
+    playerCount--;
+    // Remove character selections for players that no longer exist
+    Object.keys(selectedCharacters).forEach(playerIndex => {
+      if (parseInt(playerIndex) >= playerCount) {
+        delete selectedCharacters[playerIndex];
+      }
+    });
+    updatePlayerCountDisplay();
+    populateCharacterGrid();
+  }
+}
+
+// Update player count display
+function updatePlayerCountDisplay() {
+  document.getElementById('playerCountDisplay').textContent = playerCount;
+  document.getElementById('winningScoreDisplay').textContent = playerCount * 100;
+}
+
+// Populate character grid
+function populateCharacterGrid() {
+  const grid = document.getElementById('characterGrid');
+  if (!grid) return;
+  
+  grid.innerHTML = '';
+  
+  const characters = Object.keys(characterData);
+  
+  characters.forEach(charName => {
+    const card = document.createElement('div');
+    card.className = 'character-card';
+    card.onclick = () => selectCharacter(charName, card);
+    
+    // Check if character is already selected
+    const assignedPlayer = Object.keys(selectedCharacters).find(
+      playerIndex => selectedCharacters[playerIndex] === charName
+    );
+    
+    if (assignedPlayer !== undefined) {
+      card.classList.add('selected');
+    }
+    
+    // Character preview (using SVG)
+    const preview = document.createElement('div');
+    preview.className = 'character-preview';
+    preview.innerHTML = characterData[charName].svgs.right_happy;
+    card.appendChild(preview);
+    
+    // Character name
+    const name = document.createElement('div');
+    name.className = 'character-name';
+    name.textContent = charName;
+    card.appendChild(name);
+    
+    // Player badge if selected
+    if (assignedPlayer !== undefined) {
+      const badge = document.createElement('div');
+      badge.className = 'player-badge';
+      badge.textContent = `P${parseInt(assignedPlayer) + 1}`;
+      card.appendChild(badge);
+    }
+    
+    grid.appendChild(card);
+  });
+}
+
+// Select character for next available player
+function selectCharacter(charName, cardElement) {
+  // Find if character is already selected
+  const assignedPlayer = Object.keys(selectedCharacters).find(
+    playerIndex => selectedCharacters[playerIndex] === charName
+  );
+  
+  if (assignedPlayer !== undefined) {
+    // Deselect character
+    delete selectedCharacters[assignedPlayer];
+  } else {
+    // Find next available player slot
+    for (let i = 0; i < playerCount; i++) {
+      if (!selectedCharacters[i]) {
+        selectedCharacters[i] = charName;
+        break;
+      }
+    }
+  }
+  
+  populateCharacterGrid();
+  updateStartButtonState();
+}
+
+// Update start button state
+function updateStartButtonState() {
+  const startBtn = document.getElementById('startLocalGameBtn');
+  if (!startBtn) return;
+  
+  const allPlayersSelected = Object.keys(selectedCharacters).length === playerCount;
+  startBtn.disabled = !allPlayersSelected;
+}
+
+// Start local game
+function startLocalGame() {
+  const allPlayersSelected = Object.keys(selectedCharacters).length === playerCount;
+  
+  if (!allPlayersSelected) {
+    alert(`Please select characters for all ${playerCount} players!`);
+    return;
+  }
+  
+  // Close modal
+  closeMultiplayerSetup();
+  
+  // Start local multiplayer mode
+  if (typeof window.startLocalMultiplayer === 'function') {
+    window.startLocalMultiplayer(playerCount, selectedCharacters);
+  } else {
+    console.error('Local multiplayer mode not implemented yet');
+    alert('Local multiplayer mode is coming soon!');
+  }
+}
+
+// Start online game
+function startOnlineGame() {
+  closeMultiplayerSetup();
+  
+  // Start online multiplayer mode (existing functionality)
+  if (typeof window.startMultiplayerMode === 'function') {
+    const playerName = window.playerName || 'Player';
+    window.startMultiplayerMode(playerName);
+  } else {
+    console.error('Online multiplayer mode not found');
+  }
+}
+
+// Make functions globally accessible
+window.showMultiplayerSetup = showMultiplayerSetup;
+window.closeMultiplayerSetup = closeMultiplayerSetup;
+window.selectMode = selectMode;
+window.incrementPlayers = incrementPlayers;
+window.decrementPlayers = decrementPlayers;
+window.selectCharacter = selectCharacter;
+window.startLocalGame = startLocalGame;
+window.startOnlineGame = startOnlineGame;
+</script>

@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Multiplayer HUD Test Runner</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #1a1a1a;
+            color: #00ff41;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 2px solid #00ff41;
+            border-radius: 10px;
+            background: rgba(0, 255, 65, 0.1);
+        }
+        
+        .test-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            background: rgba(0, 255, 65, 0.2);
+            border: 2px solid #00ff41;
+            color: #00ff41;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: rgba(0, 255, 65, 0.3);
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.5);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn.danger {
+            border-color: #ff4444;
+            color: #ff4444;
+            background: rgba(255, 68, 68, 0.2);
+        }
+        
+        .btn.danger:hover {
+            background: rgba(255, 68, 68, 0.3);
+            box-shadow: 0 0 15px rgba(255, 68, 68, 0.5);
+        }
+        
+        .test-output {
+            background: #000;
+            border: 2px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 400px;
+            max-height: 600px;
+            overflow-y: auto;
+            font-size: 13px;
+            line-height: 1.4;
+            white-space: pre-wrap;
+        }
+        
+        .test-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .summary-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .summary-card.passed {
+            border-color: #00ff41;
+            background: rgba(0, 255, 65, 0.1);
+        }
+        
+        .summary-card.failed {
+            border-color: #ff4444;
+            background: rgba(255, 68, 68, 0.1);
+        }
+        
+        .summary-number {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .summary-label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        .test-progress {
+            width: 100%;
+            height: 20px;
+            background: #333;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff41, #00cc33);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-running {
+            background: #ffaa00;
+            animation: pulse 1s infinite;
+        }
+        
+        .status-passed {
+            background: #00ff41;
+        }
+        
+        .status-failed {
+            background: #ff4444;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .test-details {
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .test-details.visible {
+            display: block;
+        }
+        
+        .test-item {
+            padding: 8px 12px;
+            margin: 5px 0;
+            border-radius: 4px;
+            border-left: 4px solid;
+        }
+        
+        .test-item.passed {
+            border-left-color: #00ff41;
+            background: rgba(0, 255, 65, 0.1);
+        }
+        
+        .test-item.failed {
+            border-left-color: #ff4444;
+            background: rgba(255, 68, 68, 0.1);
+        }
+        
+        .test-name {
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        
+        .test-description {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        .hud-demo-container {
+            position: relative;
+            background: #222;
+            border: 2px solid #333;
+            border-radius: 8px;
+            height: 300px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .demo-label {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #00ff41;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎮 Local Multiplayer HUD Test Suite</h1>
+        <p>Comprehensive testing for the Local Multiplayer HUD component</p>
+    </div>
+
+    <div class="test-controls">
+        <button class="btn" id="runAllTests">🧪 Run All Tests</button>
+        <button class="btn" id="runCoreTests">⚙️ Core Tests Only</button>
+        <button class="btn" id="runUITests">🎨 UI Tests Only</button>
+        <button class="btn" id="showDemo">👁️ Show Demo</button>
+        <button class="btn danger" id="clearOutput">🗑️ Clear Output</button>
+    </div>
+
+    <div class="test-summary" id="testSummary" style="display: none;">
+        <div class="summary-card" id="totalCard">
+            <div class="summary-number" id="totalTests">0</div>
+            <div class="summary-label">Total Tests</div>
+        </div>
+        <div class="summary-card passed" id="passedCard">
+            <div class="summary-number" id="passedTests">0</div>
+            <div class="summary-label">Passed</div>
+        </div>
+        <div class="summary-card failed" id="failedCard">
+            <div class="summary-number" id="failedTests">0</div>
+            <div class="summary-label">Failed</div>
+        </div>
+        <div class="summary-card" id="successCard">
+            <div class="summary-number" id="successRate">0%</div>
+            <div class="summary-label">Success Rate</div>
+        </div>
+    </div>
+
+    <div class="test-progress">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div class="hud-demo-container" id="hudDemoContainer" style="display: none;">
+        <div class="demo-label">HUD Demo Instance</div>
+        <div id="hudDemo"></div>
+    </div>
+
+    <div class="test-output" id="testOutput">
+        <span class="status-indicator status-running"></span>Ready to run tests...
+        
+        Click "Run All Tests" to start the comprehensive test suite.
+        
+        Available test categories:
+        • Core Tests: HUD initialization, player management, timer functionality
+        • UI Tests: Pause menu, responsive design, keyboard shortcuts
+        • Integration Tests: Game integration, event system
+        
+        The HUD component provides:
+        ✓ Multi-player scoreboard with real-time updates
+        ✓ Game timer with warning states
+        ✓ Control reminders for each player
+        ✓ Pause menu with local multiplayer options
+        ✓ Responsive design for different screen sizes
+        ✓ Comprehensive keyboard shortcuts
+        ✓ Message system for game notifications
+    </div>
+
+    <div class="test-details" id="testDetails">
+        <h3>📊 Detailed Test Results</h3>
+        <div id="testResultsList"></div>
+    </div>
+
+    <!-- Load dependencies -->
+    <script src="../player-statistics.js"></script>
+    <script src="../local-multiplayer-models.js"></script>
+    <script src="../components/local-multiplayer-hud.js"></script>
+    <script src="local-multiplayer-hud.test.js"></script>
+
+    <script>
+        let currentTestSuite = null;
+        let isTestRunning = false;
+
+        // DOM elements
+        const runAllTestsBtn = document.getElementById('runAllTests');
+        const runCoreTestsBtn = document.getElementById('runCoreTests');
+        const runUITestsBtn = document.getElementById('runUITests');
+        const showDemoBtn = document.getElementById('showDemo');
+        const clearOutputBtn = document.getElementById('clearOutput');
+        const testOutput = document.getElementById('testOutput');
+        const testSummary = document.getElementById('testSummary');
+        const testDetails = document.getElementById('testDetails');
+        const progressBar = document.getElementById('progressBar');
+        const hudDemoContainer = document.getElementById('hudDemoContainer');
+
+        // Event listeners
+        runAllTestsBtn.addEventListener('click', () => runTests('all'));
+        runCoreTestsBtn.addEventListener('click', () => runTests('core'));
+        runUITestsBtn.addEventListener('click', () => runTests('ui'));
+        showDemoBtn.addEventListener('click', showHUDDemo);
+        clearOutputBtn.addEventListener('click', clearOutput);
+
+        /**
+         * Run tests based on category
+         */
+        async function runTests(category = 'all') {
+            if (isTestRunning) {
+                log('Tests are already running...', 'warning');
+                return;
+            }
+
+            isTestRunning = true;
+            updateButtonStates(true);
+            clearOutput();
+            
+            log('🚀 Starting Local Multiplayer HUD tests...', 'info');
+            log(`Category: ${category.toUpperCase()}`, 'info');
+            log('=' .repeat(60), 'info');
+
+            try {
+                // Create test suite
+                currentTestSuite = new LocalMultiplayerHUDTests();
+                
+                // Run tests based on category
+                let report;
+                if (category === 'all') {
+                    report = await currentTestSuite.runAllTests();
+                } else {
+                    // For specific categories, we'll run all tests but could filter in the future
+                    report = await currentTestSuite.runAllTests();
+                }
+
+                // Display results
+                displayTestResults(report);
+                
+                const success = report.summary.failed === 0;
+                log(`\n🏁 Tests completed! ${success ? 'All tests passed!' : 'Some tests failed.'}`, 
+                    success ? 'success' : 'error');
+
+            } catch (error) {
+                log(`❌ Test execution failed: ${error.message}`, 'error');
+                console.error('Test execution error:', error);
+            } finally {
+                isTestRunning = false;
+                updateButtonStates(false);
+                progressBar.style.width = '100%';
+            }
+        }
+
+        /**
+         * Show HUD demo
+         */
+        function showHUDDemo() {
+            if (hudDemoContainer.style.display === 'none') {
+                hudDemoContainer.style.display = 'block';
+                showDemoBtn.textContent = '🙈 Hide Demo';
+                
+                // Create demo HUD instance
+                try {
+                    const demoHUD = new LocalMultiplayerHUD('hudDemo');
+                    
+                    // Initialize with demo data
+                    const demoPlayers = [
+                        {
+                            id: 'demo1',
+                            name: 'Alice',
+                            score: 150,
+                            color: '#00ff41',
+                            stats: { coinsCollected: 15, movesCount: 45 },
+                            controlScheme: { up: 'KeyW', down: 'KeyS', left: 'KeyA', right: 'KeyD', type: 'keyboard' }
+                        },
+                        {
+                            id: 'demo2',
+                            name: 'Bob',
+                            score: 120,
+                            color: '#ff4444',
+                            stats: { coinsCollected: 12, movesCount: 38 },
+                            controlScheme: { up: 'ArrowUp', down: 'ArrowDown', left: 'ArrowLeft', right: 'ArrowRight', type: 'keyboard' }
+                        }
+                    ];
+                    
+                    const demoSettings = { gameDuration: 300 };
+                    demoHUD.initialize(demoSettings, demoPlayers);
+                    demoHUD.updateStatus('playing');
+                    demoHUD.updateTimer(180);
+                    demoHUD.show();
+                    
+                    log('🎮 HUD demo instance created and initialized', 'success');
+                    
+                } catch (error) {
+                    log(`❌ Failed to create demo: ${error.message}`, 'error');
+                }
+            } else {
+                hudDemoContainer.style.display = 'none';
+                showDemoBtn.textContent = '👁️ Show Demo';
+                
+                // Clean up demo
+                const demoElement = document.getElementById('hudDemo');
+                if (demoElement) {
+                    demoElement.innerHTML = '';
+                }
+            }
+        }
+
+        /**
+         * Display test results
+         */
+        function displayTestResults(report) {
+            // Update summary
+            testSummary.style.display = 'grid';
+            document.getElementById('totalTests').textContent = report.summary.total;
+            document.getElementById('passedTests').textContent = report.summary.passed;
+            document.getElementById('failedTests').textContent = report.summary.failed;
+            document.getElementById('successRate').textContent = report.summary.successRate;
+
+            // Update progress bar
+            const successPercentage = parseFloat(report.summary.successRate);
+            progressBar.style.width = `${successPercentage}%`;
+            
+            if (successPercentage === 100) {
+                progressBar.style.background = 'linear-gradient(90deg, #00ff41, #00cc33)';
+            } else if (successPercentage >= 80) {
+                progressBar.style.background = 'linear-gradient(90deg, #ffaa00, #ff8800)';
+            } else {
+                progressBar.style.background = 'linear-gradient(90deg, #ff4444, #cc3333)';
+            }
+
+            // Show detailed results
+            testDetails.classList.add('visible');
+            const resultsList = document.getElementById('testResultsList');
+            resultsList.innerHTML = report.results.map(result => `
+                <div class="test-item ${result.passed ? 'passed' : 'failed'}">
+                    <div class="test-name">
+                        ${result.passed ? '✅' : '❌'} ${result.name}
+                    </div>
+                    <div class="test-description">${result.description}</div>
+                </div>
+            `).join('');
+        }
+
+        /**
+         * Update button states
+         */
+        function updateButtonStates(disabled) {
+            runAllTestsBtn.disabled = disabled;
+            runCoreTestsBtn.disabled = disabled;
+            runUITestsBtn.disabled = disabled;
+            
+            if (disabled) {
+                runAllTestsBtn.textContent = '⏳ Running...';
+            } else {
+                runAllTestsBtn.textContent = '🧪 Run All Tests';
+            }
+        }
+
+        /**
+         * Clear output
+         */
+        function clearOutput() {
+            testOutput.innerHTML = '<span class="status-indicator status-running"></span>Ready to run tests...';
+            testSummary.style.display = 'none';
+            testDetails.classList.remove('visible');
+            progressBar.style.width = '0%';
+        }
+
+        /**
+         * Log message to output
+         */
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            let icon = '';
+            
+            switch (type) {
+                case 'success':
+                    icon = '<span class="status-indicator status-passed"></span>';
+                    break;
+                case 'error':
+                    icon = '<span class="status-indicator status-failed"></span>';
+                    break;
+                case 'warning':
+                    icon = '<span class="status-indicator status-running"></span>';
+                    break;
+                default:
+                    icon = '<span class="status-indicator status-running"></span>';
+            }
+            
+            testOutput.innerHTML += `\n${icon}[${timestamp}] ${message}`;
+            testOutput.scrollTop = testOutput.scrollHeight;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            log('🎮 Local Multiplayer HUD Test Runner initialized', 'success');
+            log('Dependencies loaded: PlayerStatistics, LocalMultiplayerModels, LocalMultiplayerHUD', 'info');
+            log('Ready to run tests!', 'info');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Multiplayer Setup Demo</title>
+    
+    <!-- Load CSS -->
+    <link rel="stylesheet" href="css/local-multiplayer-setup.css">
+    
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .demo-header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .demo-header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .demo-header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .demo-controls {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .demo-controls h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        
+        .control-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        
+        .demo-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .demo-btn.primary {
+            background: #007cba;
+            color: white;
+        }
+        
+        .demo-btn.primary:hover {
+            background: #005a87;
+        }
+        
+        .demo-btn.secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .demo-btn.secondary:hover {
+            background: #545b62;
+        }
+        
+        .demo-btn.success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .demo-btn.success:hover {
+            background: #218838;
+        }
+        
+        .demo-btn.warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        
+        .demo-btn.warning:hover {
+            background: #e0a800;
+        }
+        
+        .demo-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .demo-status {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #007cba;
+            margin-bottom: 15px;
+        }
+        
+        .demo-log {
+            background: #000;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        
+        .setup-container {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .game-result {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .game-result h2 {
+            color: #28a745;
+            margin-bottom: 20px;
+        }
+        
+        .game-config-display {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: left;
+            margin: 20px 0;
+        }
+        
+        .config-section {
+            margin-bottom: 15px;
+        }
+        
+        .config-section h4 {
+            color: #495057;
+            margin-bottom: 8px;
+        }
+        
+        .player-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        
+        .player-item {
+            background: white;
+            padding: 10px;
+            border-radius: 4px;
+            border-left: 4px solid #007cba;
+        }
+        
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #f5c6cb;
+            margin: 15px 0;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .demo-header h1 {
+                font-size: 2em;
+            }
+            
+            .control-buttons {
+                justify-content: center;
+            }
+            
+            .demo-btn {
+                flex: 1;
+                min-width: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-header">
+        <h1>🎮 Local Multiplayer Setup</h1>
+        <p>Complete setup system for local multiplayer gaming with controller detection and player configuration</p>
+    </div>
+    
+    <div class="demo-controls">
+        <h3>Demo Controls</h3>
+        
+        <div class="control-buttons">
+            <button class="demo-btn primary" onclick="startSetup()">Start Setup</button>
+            <button class="demo-btn secondary" onclick="resetDemo()">Reset Demo</button>
+            <button class="demo-btn success" onclick="runTests()">Run Tests</button>
+            <button class="demo-btn warning" onclick="simulateControllers()">Simulate Controllers</button>
+            <button class="demo-btn secondary" onclick="clearLog()">Clear Log</button>
+        </div>
+        
+        <div class="demo-status" id="demoStatus">
+            <strong>Status:</strong> Ready to start setup demo
+        </div>
+        
+        <div class="demo-log" id="demoLog">
+            Demo initialized. Click "Start Setup" to begin the local multiplayer setup process.
+            
+            Instructions:
+            1. Connect 2 or more controllers to your computer
+            2. Click "Start Setup" to begin the setup process
+            3. Follow the on-screen instructions to configure players
+            4. Complete the setup to see the final game configuration
+            
+            Note: If you don't have controllers, click "Simulate Controllers" to test with mock data.
+        </div>
+    </div>
+    
+    <!-- Setup Container -->
+    <div id="setupContainer" class="setup-container hidden">
+        <!-- LocalMultiplayerSetup component will be rendered here -->
+    </div>
+    
+    <!-- Game Result Display -->
+    <div id="gameResult" class="game-result hidden">
+        <h2>🎉 Setup Complete!</h2>
+        <p>Your local multiplayer game is ready to start.</p>
+        
+        <div class="game-config-display" id="gameConfigDisplay">
+            <!-- Game configuration will be displayed here -->
+        </div>
+        
+        <div class="control-buttons">
+            <button class="demo-btn success" onclick="startGame()">Start Game</button>
+            <button class="demo-btn secondary" onclick="setupAgain()">Setup Again</button>
+        </div>
+    </div>
+    
+    <!-- Error Display -->
+    <div id="errorDisplay" class="error-message hidden">
+        <!-- Error messages will be displayed here -->
+    </div>
+    
+    <!-- Load Dependencies -->
+    <script src="local-multiplayer-models.js"></script>
+    <script src="controller-manager.js"></script>
+    <script src="local-multiplayer-integration.js"></script>
+    <script src="components/local-multiplayer-setup.js"></script>
+    <script src="tests/local-multiplayer-setup.test.js"></script>
+    
+    <script>
+        // Demo state
+        let currentSetup = null;
+        let gameConfiguration = null;
+        let simulatedControllers = false;
+        
+        // Demo logging
+        function log(message, type = 'info') {
+            const logElement = document.getElementById('demoLog');
+            const timestamp = new Date().toLocaleTimeString();
+            const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
+            
+            logElement.textContent += `\n[${timestamp}] ${prefix} ${message}`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+        
+        function clearLog() {
+            document.getElementById('demoLog').textContent = 'Log cleared.';
+        }
+        
+        function updateStatus(message) {
+            document.getElementById('demoStatus').innerHTML = `<strong>Status:</strong> ${message}`;
+        }
+        
+        function showError(message) {
+            const errorDisplay = document.getElementById('errorDisplay');
+            errorDisplay.textContent = message;
+            errorDisplay.classList.remove('hidden');
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                errorDisplay.classList.add('hidden');
+            }, 5000);
+        }
+        
+        function hideError() {
+            document.getElementById('errorDisplay').classList.add('hidden');
+        }
+        
+        // Setup management
+        function startSetup() {
+            try {
+                hideError();
+                log('Starting local multiplayer setup...', 'info');
+                updateStatus('Initializing setup component...');
+                
+                // Show setup container
+                const setupContainer = document.getElementById('setupContainer');
+                setupContainer.classList.remove('hidden');
+                
+                // Hide other sections
+                document.getElementById('gameResult').classList.add('hidden');
+                
+                // Create setup component
+                currentSetup = new LocalMultiplayerSetup('setupContainer', {
+                    maxPlayers: 4,
+                    minPlayers: 2,
+                    autoDetectControllers: true,
+                    showControllerTest: true,
+                    allowKeyboardFallback: true
+                });
+                
+                // Set up event handlers
+                currentSetup.on('onReady', handleSetupComplete);
+                currentSetup.on('onCancel', handleSetupCancel);
+                currentSetup.on('onPlayerChange', handlePlayerChange);
+                currentSetup.on('onSettingsChange', handleSettingsChange);
+                
+                log('Setup component initialized successfully', 'success');
+                updateStatus('Setup component ready - waiting for controllers...');
+                
+                // If we have simulated controllers, add them
+                if (simulatedControllers) {
+                    setTimeout(() => {
+                        addSimulatedControllers();
+                    }, 1000);
+                }
+                
+            } catch (error) {
+                log(`Failed to start setup: ${error.message}`, 'error');
+                showError(`Setup initialization failed: ${error.message}`);
+                updateStatus('Setup failed');
+            }
+        }
+        
+        function handleSetupComplete(config) {
+            log('Setup completed successfully!', 'success');
+            updateStatus('Setup complete - game ready to start');
+            
+            gameConfiguration = config;
+            
+            // Hide setup container
+            document.getElementById('setupContainer').classList.add('hidden');
+            
+            // Show game result
+            displayGameResult(config);
+            
+            // Cleanup setup component
+            if (currentSetup) {
+                currentSetup.destroy();
+                currentSetup = null;
+            }
+        }
+        
+        function handleSetupCancel() {
+            log('Setup cancelled by user', 'warning');
+            updateStatus('Setup cancelled');
+            
+            resetDemo();
+        }
+        
+        function handlePlayerChange(data) {
+            log('Player configuration changed', 'info');
+        }
+        
+        function handleSettingsChange(data) {
+            log('Game settings changed', 'info');
+        }
+        
+        function displayGameResult(config) {
+            const resultContainer = document.getElementById('gameResult');
+            const configDisplay = document.getElementById('gameConfigDisplay');
+            
+            // Build configuration display
+            let configHTML = '';
+            
+            // Players section
+            configHTML += `
+                <div class="config-section">
+                    <h4>Players (${config.players.length})</h4>
+                    <div class="player-list">
+                        ${config.players.map(player => `
+                            <div class="player-item" style="border-left-color: ${player.color}">
+                                <strong>${player.name}</strong><br>
+                                <small>Character: ${player.character}</small><br>
+                                <small>Controller: ${getControllerName(player.controllerIndex)}</small>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            // Game settings section
+            if (config.gameSettings) {
+                const settings = config.gameSettings;
+                configHTML += `
+                    <div class="config-section">
+                        <h4>Game Settings</h4>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+                            <div><strong>Duration:</strong> ${Math.floor(settings.gameDuration / 60)}:${(settings.gameDuration % 60).toString().padStart(2, '0')}</div>
+                            <div><strong>Win Condition:</strong> ${settings.winCondition}</div>
+                            <div><strong>Difficulty:</strong> ${settings.difficulty}</div>
+                            <div><strong>Map Size:</strong> ${settings.mapSize}</div>
+                            <div><strong>Power-ups:</strong> ${settings.powerUpsEnabled ? 'Enabled' : 'Disabled'}</div>
+                            <div><strong>Friendly Fire:</strong> ${settings.friendlyFire ? 'Enabled' : 'Disabled'}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Controller assignments section
+            configHTML += `
+                <div class="config-section">
+                    <h4>Controller Assignments</h4>
+                    <div style="font-family: monospace; font-size: 0.9em;">
+                        ${Object.entries(config.controllerAssignments).map(([playerIndex, controllerIndex]) => 
+                            `Player ${parseInt(playerIndex) + 1} → Controller ${controllerIndex}`
+                        ).join('<br>')}
+                    </div>
+                </div>
+            `;
+            
+            configDisplay.innerHTML = configHTML;
+            resultContainer.classList.remove('hidden');
+            
+            log('Game configuration displayed', 'success');
+        }
+        
+        function getControllerName(controllerIndex) {
+            if (simulatedControllers) {
+                return `Simulated Controller ${controllerIndex + 1}`;
+            }
+            
+            if (currentSetup && currentSetup.state.availableControllers) {
+                const controller = currentSetup.state.availableControllers.find(c => c.index === controllerIndex);
+                return controller ? controller.name : `Controller ${controllerIndex}`;
+            }
+            
+            return `Controller ${controllerIndex}`;
+        }
+        
+        function startGame() {
+            log('Starting game with configuration...', 'success');
+            updateStatus('Game starting...');
+            
+            if (gameConfiguration) {
+                // Here you would typically initialize the actual game
+                // For demo purposes, we'll just show a message
+                alert(`Game would start now with ${gameConfiguration.players.length} players!\n\nIn a real implementation, this would:\n1. Initialize the game engine\n2. Set up player controls\n3. Apply game settings\n4. Start the gameplay loop`);
+                
+                log('Game started successfully (demo mode)', 'success');
+                updateStatus('Game running (demo mode)');
+            } else {
+                showError('No game configuration available');
+            }
+        }
+        
+        function setupAgain() {
+            resetDemo();
+            setTimeout(startSetup, 500);
+        }
+        
+        function resetDemo() {
+            log('Resetting demo...', 'info');
+            updateStatus('Resetting...');
+            
+            // Cleanup setup component
+            if (currentSetup) {
+                currentSetup.destroy();
+                currentSetup = null;
+            }
+            
+            // Hide all sections
+            document.getElementById('setupContainer').classList.add('hidden');
+            document.getElementById('gameResult').classList.add('hidden');
+            hideError();
+            
+            // Clear state
+            gameConfiguration = null;
+            
+            log('Demo reset complete', 'success');
+            updateStatus('Ready to start setup demo');
+        }
+        
+        // Testing functions
+        function runTests() {
+            log('Running comprehensive test suite...', 'info');
+            updateStatus('Running tests...');
+            
+            try {
+                // Run all test suites
+                const setupTests = runLocalMultiplayerSetupTests();
+                const controllerTests = runControllerIntegrationTests();
+                const uiTests = runUIInteractionTests();
+                
+                const allPassed = setupTests && controllerTests && uiTests;
+                
+                if (allPassed) {
+                    log('All tests passed successfully! ✅', 'success');
+                    updateStatus('All tests passed');
+                } else {
+                    log('Some tests failed. Check console for details.', 'warning');
+                    updateStatus('Tests completed with failures');
+                }
+                
+            } catch (error) {
+                log(`Test execution failed: ${error.message}`, 'error');
+                showError(`Test execution failed: ${error.message}`);
+                updateStatus('Test execution failed');
+            }
+        }
+        
+        function simulateControllers() {
+            log('Simulating controller connections...', 'info');
+            updateStatus('Simulating controllers...');
+            
+            simulatedControllers = true;
+            
+            // If setup is already running, add controllers
+            if (currentSetup) {
+                addSimulatedControllers();
+            }
+            
+            log('Controller simulation enabled', 'success');
+            updateStatus('Simulated controllers ready');
+        }
+        
+        function addSimulatedControllers() {
+            if (!currentSetup) return;
+            
+            // Add simulated controllers to the setup
+            const simulatedControllerData = [
+                {
+                    index: 0,
+                    id: 'simulated-xbox-controller-1',
+                    name: 'Xbox Controller (Simulated)',
+                    capabilities: {
+                        buttonCount: 16,
+                        axesCount: 4,
+                        hasRequiredButtons: true,
+                        hasRequiredAxes: true,
+                        supportedButtons: Array.from({length: 16}, (_, i) => `button${i}`),
+                        supportedAxes: Array.from({length: 4}, (_, i) => `axis${i}`)
+                    },
+                    assignedToPlayer: null
+                },
+                {
+                    index: 1,
+                    id: 'simulated-ps4-controller-1',
+                    name: 'PlayStation 4 Controller (Simulated)',
+                    capabilities: {
+                        buttonCount: 16,
+                        axesCount: 4,
+                        hasRequiredButtons: true,
+                        hasRequiredAxes: true,
+                        supportedButtons: Array.from({length: 16}, (_, i) => `button${i}`),
+                        supportedAxes: Array.from({length: 4}, (_, i) => `axis${i}`)
+                    },
+                    assignedToPlayer: null
+                },
+                {
+                    index: 2,
+                    id: 'simulated-switch-controller-1',
+                    name: 'Nintendo Switch Pro Controller (Simulated)',
+                    capabilities: {
+                        buttonCount: 16,
+                        axesCount: 4,
+                        hasRequiredButtons: true,
+                        hasRequiredAxes: true,
+                        supportedButtons: Array.from({length: 16}, (_, i) => `button${i}`),
+                        supportedAxes: Array.from({length: 4}, (_, i) => `axis${i}`)
+                    },
+                    assignedToPlayer: null
+                }
+            ];
+            
+            currentSetup.state.availableControllers = simulatedControllerData;
+            currentSetup.updateUI();
+            
+            log(`Added ${simulatedControllerData.length} simulated controllers`, 'success');
+        }
+        
+        // Initialize demo
+        document.addEventListener('DOMContentLoaded', function() {
+            log('Local Multiplayer Setup Demo initialized', 'success');
+            updateStatus('Demo ready');
+            
+            // Check for required dependencies
+            const dependencies = [
+                'LocalMultiplayerSetup',
+                'LocalPlayer',
+                'LocalGameSettings',
+                'ControllerManager'
+            ];
+            
+            const missing = dependencies.filter(dep => typeof window[dep] === 'undefined');
+            
+            if (missing.length > 0) {
+                log(`Warning: Missing dependencies: ${missing.join(', ')}`, 'warning');
+                if (missing.includes('ControllerManager')) {
+                    log('Controller features will be limited without ControllerManager', 'warning');
+                }
+            } else {
+                log('All dependencies loaded successfully', 'success');
+            }
+        });
+        
+        // Handle page unload
+        window.addEventListener('beforeunload', function() {
+            if (currentSetup) {
+                currentSetup.destroy();
+            }
+        });
+    </script>
+</body>
+</html>

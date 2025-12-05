@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Multiplayer Game State Management Demo</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1a1a1a;
+            color: #00ff41;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700;
+            margin-bottom: 30px;
+        }
+        
+        .demo-section {
+            background: #222;
+            border: 2px solid #444;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .demo-section h2 {
+            color: #ffd700;
+            margin-top: 0;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+        
+        button {
+            background: #333;
+            color: #00ff41;
+            border: 2px solid #00ff41;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            background: #00ff41;
+            color: #1a1a1a;
+            box-shadow: 0 0 10px #00ff41;
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .game-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .info-card {
+            background: #000;
+            border: 1px solid #333;
+            border-radius: 3px;
+            padding: 15px;
+        }
+        
+        .info-card h3 {
+            color: #ffd700;
+            margin-top: 0;
+            font-size: 14px;
+        }
+        
+        .player-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .player-item {
+            background: #333;
+            margin: 5px 0;
+            padding: 8px;
+            border-radius: 3px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .player-score {
+            font-weight: bold;
+            color: #ffd700;
+        }
+        
+        .leaderboard {
+            background: #000;
+            border: 2px solid #ffd700;
+            border-radius: 5px;
+            padding: 15px;
+        }
+        
+        .leaderboard h3 {
+            color: #ffd700;
+            margin-top: 0;
+            text-align: center;
+        }
+        
+        .rank-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            margin: 5px 0;
+            background: #222;
+            border-radius: 3px;
+        }
+        
+        .rank-1 { border-left: 4px solid #ffd700; }
+        .rank-2 { border-left: 4px solid #c0c0c0; }
+        .rank-3 { border-left: 4px solid #cd7f32; }
+        
+        .log-output {
+            background: #000;
+            border: 2px solid #333;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            height: 200px;
+            overflow-y: auto;
+            font-size: 11px;
+            white-space: pre-wrap;
+        }
+        
+        .status-active { color: #00ff41; }
+        .status-inactive { color: #666; }
+        .status-setup { color: #ffaa00; }
+        
+        .timer {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700;
+        }
+        
+        .timer.warning {
+            color: #ff4444;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 Local Multiplayer Game State Management Demo</h1>
+        
+        <div class="demo-section">
+            <h2>Game Controls</h2>
+            <div class="controls">
+                <button id="addPlayer1">Add Player 1 (Alice)</button>
+                <button id="addPlayer2">Add Player 2 (Bob)</button>
+                <button id="addPlayer3">Add Player 3 (Charlie)</button>
+                <button id="addPlayer4">Add Player 4 (Diana)</button>
+                <button id="startGame">Start Game</button>
+                <button id="pauseGame">Pause Game</button>
+                <button id="resumeGame">Resume Game</button>
+                <button id="endGame">End Game</button>
+                <button id="resetDemo">Reset Demo</button>
+            </div>
+        </div>
+        
+        <div class="game-info">
+            <div class="info-card">
+                <h3>Game Status</h3>
+                <div>Status: <span id="gameStatus" class="status-inactive">Not Started</span></div>
+                <div>Players: <span id="playerCount">0</span>/4</div>
+                <div>Round: <span id="currentRound">1</span></div>
+                <div class="timer" id="gameTimer">05:00</div>
+            </div>
+            
+            <div class="info-card">
+                <h3>Game Settings</h3>
+                <div>Duration: <span id="gameDuration">300</span>s</div>
+                <div>Win Condition: <span id="winCondition">Score</span></div>
+                <div>Target Score: <span id="targetScore">500</span></div>
+                <div>Difficulty: <span id="difficulty">Medium</span></div>
+            </div>
+            
+            <div class="info-card">
+                <h3>Game Objects</h3>
+                <div>Coins: <span id="coinCount">0</span></div>
+                <div>Bombs: <span id="bombCount">0</span></div>
+                <div>Enemies: <span id="enemyCount">0</span></div>
+                <div>Difficulty Level: <span id="difficultyLevel">1</span></div>
+            </div>
+            
+            <div class="info-card">
+                <h3>Statistics</h3>
+                <div>Total Coins Collected: <span id="totalCoins">0</span></div>
+                <div>Total Bombs Hit: <span id="totalBombs">0</span></div>
+                <div>Total Enemies Hit: <span id="totalEnemies">0</span></div>
+                <div>Game Events: <span id="gameEvents">0</span></div>
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>Players</h2>
+            <ul class="player-list" id="playerList">
+                <li style="color: #666; font-style: italic;">No players added yet</li>
+            </ul>
+        </div>
+        
+        <div class="demo-section">
+            <h2>Leaderboard</h2>
+            <div class="leaderboard">
+                <h3>🏆 Current Rankings</h3>
+                <div id="leaderboard">
+                    <div style="color: #666; font-style: italic; text-align: center;">Game not started</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>Score Actions</h2>
+            <div class="controls">
+                <button id="giveCoins">Give Random Player Coins (+10)</button>
+                <button id="hitEnemy">Random Player Hits Enemy (-5)</button>
+                <button id="hitBomb">Random Player Hits Bomb (-20)</button>
+                <button id="massiveScore">Give Random Player Massive Score (+100)</button>
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>Event Log</h2>
+            <div class="log-output" id="eventLog">Demo initialized. Add players and start the game to see events...</div>
+        </div>
+    </div>
+
+    <!-- Load dependencies -->
+    <script src="characters.js"></script>
+    <script src="local-multiplayer-models.js"></script>
+    <script src="local-multiplayer-game.js"></script>
+
+    <script>
+        class LocalMultiplayerGameDemo {
+            constructor() {
+                this.game = null;
+                this.timerInterval = null;
+                this.setupEventListeners();
+                this.log('Demo initialized. Ready to create game!');
+            }
+
+            setupEventListeners() {
+                // Player management
+                document.getElementById('addPlayer1').addEventListener('click', () => this.addPlayer('Alice', 0));
+                document.getElementById('addPlayer2').addEventListener('click', () => this.addPlayer('Bob', 1));
+                document.getElementById('addPlayer3').addEventListener('click', () => this.addPlayer('Charlie', 2));
+                document.getElementById('addPlayer4').addEventListener('click', () => this.addPlayer('Diana', 3));
+                
+                // Game control
+                document.getElementById('startGame').addEventListener('click', () => this.startGame());
+                document.getElementById('pauseGame').addEventListener('click', () => this.pauseGame());
+                document.getElementById('resumeGame').addEventListener('click', () => this.resumeGame());
+                document.getElementById('endGame').addEventListener('click', () => this.endGame());
+                document.getElementById('resetDemo').addEventListener('click', () => this.resetDemo());
+                
+                // Score actions
+                document.getElementById('giveCoins').addEventListener('click', () => this.giveRandomPlayerCoins());
+                document.getElementById('hitEnemy').addEventListener('click', () => this.randomPlayerHitsEnemy());
+                document.getElementById('hitBomb').addEventListener('click', () => this.randomPlayerHitsBomb());
+                document.getElementById('massiveScore').addEventListener('click', () => this.giveRandomPlayerMassiveScore());
+            }
+
+            resetDemo() {
+                if (this.game) {
+                    this.game.destroy();
+                }
+                
+                if (this.timerInterval) {
+                    clearInterval(this.timerInterval);
+                    this.timerInterval = null;
+                }
+                
+                this.game = new LocalMultiplayerGame(new LocalGameSettings({
+                    gameDuration: 300,
+                    winCondition: 'score',
+                    targetScore: 500,
+                    difficulty: 'medium'
+                }));
+                
+                this.setupGameEventListeners();
+                this.updateUI();
+                this.log('Demo reset. New game created!');
+            }
+
+            setupGameEventListeners() {
+                if (!this.game) return;
+                
+                this.game.on('playerJoined', (data) => {
+                    this.log(`🎮 Player joined: ${data.player.name} (${data.playerCount} total players)`);
+                    this.updateUI();
+                });
+                
+                this.game.on('gameStarted', (data) => {
+                    this.log(`🚀 Game started with ${data.players.length} players!`);
+                    this.startTimerDisplay();
+                    this.updateUI();
+                });
+                
+                this.game.on('scoreUpdated', (data) => {
+                    this.log(`💰 ${data.player.name} scored ${data.change > 0 ? '+' : ''}${data.change} points (${data.reason}). New score: ${data.newScore}`);
+                    this.updateUI();
+                });
+                
+                this.game.on('gameEnded', (data) => {
+                    this.log(`🏁 Game ended! Winner: ${data.winner ? data.winner.name : 'None'} (${data.reason})`);
+                    this.stopTimerDisplay();
+                    this.updateUI();
+                });
+                
+                this.game.on('gamePaused', () => {
+                    this.log('⏸️ Game paused');
+                    this.updateUI();
+                });
+                
+                this.game.on('gameResumed', () => {
+                    this.log('▶️ Game resumed');
+                    this.updateUI();
+                });
+                
+                this.game.on('timeWarning', (data) => {
+                    this.log(`⏰ Time warning: ${data.message}`);
+                    const timer = document.getElementById('gameTimer');
+                    timer.classList.add('warning');
+                    setTimeout(() => timer.classList.remove('warning'), 2000);
+                });
+            }
+
+            addPlayer(name, index) {
+                if (!this.game) {
+                    this.resetDemo();
+                }
+                
+                try {
+                    const playerId = `player${index + 1}`;
+                    const controlScheme = CONTROL_SCHEMES[`player${index + 1}`] || CONTROL_SCHEMES.player1;
+                    const visualConfig = createPlayerVisualConfig(playerId, index);
+                    
+                    this.game.addPlayer(playerId, name, controlScheme, visualConfig);
+                    
+                } catch (error) {
+                    this.log(`❌ Error adding player ${name}: ${error.message}`);
+                }
+            }
+
+            startGame() {
+                if (!this.game) {
+                    this.log('❌ No game created. Reset demo first.');
+                    return;
+                }
+                
+                try {
+                    this.game.startGame();
+                } catch (error) {
+                    this.log(`❌ Error starting game: ${error.message}`);
+                }
+            }
+
+            pauseGame() {
+                if (!this.game) return;
+                
+                const paused = this.game.pauseGame();
+                if (!paused) {
+                    this.log('❌ Cannot pause game (not active or already paused)');
+                }
+            }
+
+            resumeGame() {
+                if (!this.game) return;
+                
+                const resumed = this.game.resumeGame();
+                if (!resumed) {
+                    this.log('❌ Cannot resume game (not active or not paused)');
+                }
+            }
+
+            endGame() {
+                if (!this.game) return;
+                
+                const players = Array.from(this.game.players.values());
+                if (players.length > 0) {
+                    // End with highest scoring player as winner
+                    const winner = players.reduce((prev, current) => 
+                        (prev.score > current.score) ? prev : current
+                    );
+                    this.game.endGame(winner.id, 'manual_end');
+                } else {
+                    this.game.endGame(null, 'manual_end');
+                }
+            }
+
+            giveRandomPlayerCoins() {
+                if (!this.game || !this.game.isActive) {
+                    this.log('❌ Game not active');
+                    return;
+                }
+                
+                const players = Array.from(this.game.players.keys());
+                if (players.length === 0) return;
+                
+                const randomPlayer = players[Math.floor(Math.random() * players.length)];
+                this.game.updatePlayerScore(randomPlayer, 10, 'coin');
+            }
+
+            randomPlayerHitsEnemy() {
+                if (!this.game || !this.game.isActive) {
+                    this.log('❌ Game not active');
+                    return;
+                }
+                
+                const players = Array.from(this.game.players.keys());
+                if (players.length === 0) return;
+                
+                const randomPlayer = players[Math.floor(Math.random() * players.length)];
+                this.game.updatePlayerScore(randomPlayer, 5, 'enemy');
+            }
+
+            randomPlayerHitsBomb() {
+                if (!this.game || !this.game.isActive) {
+                    this.log('❌ Game not active');
+                    return;
+                }
+                
+                const players = Array.from(this.game.players.keys());
+                if (players.length === 0) return;
+                
+                const randomPlayer = players[Math.floor(Math.random() * players.length)];
+                this.game.updatePlayerScore(randomPlayer, 20, 'bomb');
+            }
+
+            giveRandomPlayerMassiveScore() {
+                if (!this.game || !this.game.isActive) {
+                    this.log('❌ Game not active');
+                    return;
+                }
+                
+                const players = Array.from(this.game.players.keys());
+                if (players.length === 0) return;
+                
+                const randomPlayer = players[Math.floor(Math.random() * players.length)];
+                this.game.updatePlayerScore(randomPlayer, 100, 'coin');
+            }
+
+            startTimerDisplay() {
+                if (this.timerInterval) {
+                    clearInterval(this.timerInterval);
+                }
+                
+                this.timerInterval = setInterval(() => {
+                    if (this.game && this.game.isActive && !this.game.isPaused) {
+                        this.updateTimerDisplay();
+                    }
+                }, 1000);
+            }
+
+            stopTimerDisplay() {
+                if (this.timerInterval) {
+                    clearInterval(this.timerInterval);
+                    this.timerInterval = null;
+                }
+            }
+
+            updateTimerDisplay() {
+                if (!this.game) return;
+                
+                const minutes = Math.floor(this.game.timeRemaining / 60);
+                const seconds = this.game.timeRemaining % 60;
+                const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                const timerElement = document.getElementById('gameTimer');
+                timerElement.textContent = timeString;
+                
+                if (this.game.timeRemaining <= 30) {
+                    timerElement.classList.add('warning');
+                } else {
+                    timerElement.classList.remove('warning');
+                }
+            }
+
+            updateUI() {
+                if (!this.game) return;
+                
+                const gameState = this.game.getGameState();
+                const gameStats = this.game.getGameStats();
+                
+                // Game status
+                let status = 'Not Started';
+                let statusClass = 'status-inactive';
+                
+                if (this.game.isSetupPhase) {
+                    status = 'Setup Phase';
+                    statusClass = 'status-setup';
+                } else if (this.game.isActive) {
+                    status = this.game.isPaused ? 'Paused' : 'Active';
+                    statusClass = 'status-active';
+                } else if (gameState.gameEnded) {
+                    status = 'Ended';
+                    statusClass = 'status-inactive';
+                }
+                
+                document.getElementById('gameStatus').textContent = status;
+                document.getElementById('gameStatus').className = statusClass;
+                
+                // Basic info
+                document.getElementById('playerCount').textContent = this.game.players.size;
+                document.getElementById('currentRound').textContent = this.game.currentRound;
+                document.getElementById('gameDuration').textContent = this.game.gameDuration;
+                document.getElementById('winCondition').textContent = this.game.winCondition;
+                document.getElementById('targetScore').textContent = this.game.targetScore;
+                document.getElementById('difficulty').textContent = this.game.gameSettings.difficulty;
+                
+                // Game objects
+                document.getElementById('coinCount').textContent = gameState.coins.length;
+                document.getElementById('bombCount').textContent = gameState.bombs.length;
+                document.getElementById('enemyCount').textContent = gameState.enemies.length;
+                document.getElementById('difficultyLevel').textContent = gameState.difficultyLevel;
+                
+                // Statistics
+                document.getElementById('totalCoins').textContent = gameStats.totalCoinsCollected;
+                document.getElementById('totalBombs').textContent = gameStats.totalBombsHit;
+                document.getElementById('totalEnemies').textContent = gameStats.totalEnemiesHit;
+                document.getElementById('gameEvents').textContent = gameStats.gameEvents.length;
+                
+                // Players list
+                this.updatePlayersList();
+                
+                // Leaderboard
+                this.updateLeaderboard();
+                
+                // Update timer display
+                if (this.game.isActive) {
+                    this.updateTimerDisplay();
+                }
+            }
+
+            updatePlayersList() {
+                const playerList = document.getElementById('playerList');
+                
+                if (this.game.players.size === 0) {
+                    playerList.innerHTML = '<li style="color: #666; font-style: italic;">No players added yet</li>';
+                    return;
+                }
+                
+                playerList.innerHTML = '';
+                
+                for (const [playerId, player] of this.game.players) {
+                    const li = document.createElement('li');
+                    li.className = 'player-item';
+                    li.innerHTML = `
+                        <span style="color: ${player.color}">● ${player.name}</span>
+                        <span class="player-score">${player.score} pts</span>
+                    `;
+                    playerList.appendChild(li);
+                }
+            }
+
+            updateLeaderboard() {
+                const leaderboard = document.getElementById('leaderboard');
+                
+                if (this.game.leaderboard.length === 0) {
+                    leaderboard.innerHTML = '<div style="color: #666; font-style: italic; text-align: center;">No players or game not started</div>';
+                    return;
+                }
+                
+                leaderboard.innerHTML = '';
+                
+                this.game.leaderboard.forEach((entry, index) => {
+                    const div = document.createElement('div');
+                    div.className = `rank-item rank-${entry.rank}`;
+                    
+                    const rankEmoji = ['🥇', '🥈', '🥉', '🏅'][index] || '🏅';
+                    
+                    div.innerHTML = `
+                        <span>${rankEmoji} #${entry.rank} ${entry.playerName}</span>
+                        <span style="color: ${entry.color}; font-weight: bold;">${entry.score} pts</span>
+                    `;
+                    
+                    leaderboard.appendChild(div);
+                });
+            }
+
+            log(message) {
+                const logOutput = document.getElementById('eventLog');
+                const timestamp = new Date().toLocaleTimeString();
+                const logLine = `[${timestamp}] ${message}\n`;
+                
+                logOutput.textContent += logLine;
+                logOutput.scrollTop = logOutput.scrollHeight;
+            }
+        }
+
+        // Initialize demo when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.demo = new LocalMultiplayerGameDemo();
+            window.demo.resetDemo(); // Initialize with a fresh game
+            console.log('Local Multiplayer Game Demo initialized');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-player Renderer Tests</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f0f0f0;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .test-results {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+        }
+        .test-pass {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .test-fail {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .test-output {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            margin-top: 10px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #gameCanvas {
+            border: 1px solid #ccc;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Multi-player Renderer Tests</h1>
+        <p>This test suite validates the multi-player rendering system functionality.</p>
+        
+        <button onclick="runAllTests()">Run All Tests</button>
+        <button onclick="runIndividualTest('testMultiPlayerRendering')">Test Multi-player Rendering</button>
+        <button onclick="runIndividualTest('testUniqueVisualIndicators')">Test Visual Indicators</button>
+        <button onclick="runIndividualTest('testNameTagsAndScores')">Test Name Tags & Scores</button>
+        <button onclick="runIndividualTest('testCollisionVisualFeedback')">Test Collision Feedback</button>
+        <button onclick="runIntegrationTests()">Run Integration Tests</button>
+        
+        <div id="testResults" class="test-results" style="display: none;"></div>
+        <div id="testOutput" class="test-output" style="display: none;"></div>
+        
+        <!-- Hidden canvas for testing -->
+        <canvas id="gameCanvas" width="640" height="480" style="display: none;"></canvas>
+    </div>
+
+    <!-- Load dependencies -->
+    <script src="../character-data.js"></script>
+    <script src="../game-renderer.js"></script>
+    <script src="multiplayer-renderer.test.js"></script>
+    <script src="integration-multiplayer-rendering.test.js"></script>
+
+    <script>
+        // Test runner functionality
+        let testOutput = '';
+        
+        // Override console.log to capture test output
+        const originalConsoleLog = console.log;
+        const originalConsoleError = console.error;
+        
+        console.log = function(...args) {
+            testOutput += args.join(' ') + '\n';
+            originalConsoleLog.apply(console, args);
+        };
+        
+        console.error = function(...args) {
+            testOutput += 'ERROR: ' + args.join(' ') + '\n';
+            originalConsoleError.apply(console, args);
+        };
+        
+        function runAllTests() {
+            testOutput = '';
+            const resultsDiv = document.getElementById('testResults');
+            const outputDiv = document.getElementById('testOutput');
+            
+            resultsDiv.style.display = 'block';
+            outputDiv.style.display = 'block';
+            
+            resultsDiv.innerHTML = '<p>Running tests...</p>';
+            outputDiv.innerHTML = '';
+            
+            try {
+                const unitSuccess = runMultiPlayerRenderingTests();
+                const integrationSuccess = runIntegrationMultiPlayerRenderingTests();
+                const success = unitSuccess && integrationSuccess;
+                
+                if (success) {
+                    resultsDiv.className = 'test-results test-pass';
+                    resultsDiv.innerHTML = '<h3>✅ All Tests Passed!</h3><p>Multi-player rendering system is working correctly.</p>';
+                } else {
+                    resultsDiv.className = 'test-results test-fail';
+                    resultsDiv.innerHTML = '<h3>❌ Tests Failed</h3><p>Some tests did not pass. Check the output below for details.</p>';
+                }
+            } catch (error) {
+                resultsDiv.className = 'test-results test-fail';
+                resultsDiv.innerHTML = '<h3>❌ Test Error</h3><p>' + error.message + '</p>';
+                testOutput += 'FATAL ERROR: ' + error.message + '\n' + error.stack + '\n';
+            }
+            
+            outputDiv.innerHTML = testOutput;
+        }
+        
+        function runIntegrationTests() {
+            testOutput = '';
+            const resultsDiv = document.getElementById('testResults');
+            const outputDiv = document.getElementById('testOutput');
+            
+            resultsDiv.style.display = 'block';
+            outputDiv.style.display = 'block';
+            
+            resultsDiv.innerHTML = '<p>Running integration tests...</p>';
+            outputDiv.innerHTML = '';
+            
+            try {
+                const success = runIntegrationMultiPlayerRenderingTests();
+                
+                if (success) {
+                    resultsDiv.className = 'test-results test-pass';
+                    resultsDiv.innerHTML = '<h3>✅ Integration Tests Passed!</h3><p>Multi-player rendering integration is working correctly.</p>';
+                } else {
+                    resultsDiv.className = 'test-results test-fail';
+                    resultsDiv.innerHTML = '<h3>❌ Integration Tests Failed</h3><p>Some integration tests did not pass. Check the output below for details.</p>';
+                }
+            } catch (error) {
+                resultsDiv.className = 'test-results test-fail';
+                resultsDiv.innerHTML = '<h3>❌ Integration Test Error</h3><p>' + error.message + '</p>';
+                testOutput += 'FATAL ERROR: ' + error.message + '\n' + error.stack + '\n';
+            }
+            
+            outputDiv.innerHTML = testOutput;
+        }
+        
+        function runIndividualTest(testName) {
+            testOutput = '';
+            const resultsDiv = document.getElementById('testResults');
+            const outputDiv = document.getElementById('testOutput');
+            
+            resultsDiv.style.display = 'block';
+            outputDiv.style.display = 'block';
+            
+            resultsDiv.innerHTML = '<p>Running ' + testName + '...</p>';
+            outputDiv.innerHTML = '';
+            
+            try {
+                if (typeof window[testName] === 'function') {
+                    window[testName]();
+                    resultsDiv.className = 'test-results test-pass';
+                    resultsDiv.innerHTML = '<h3>✅ Test Passed!</h3><p>' + testName + ' completed successfully.</p>';
+                } else {
+                    throw new Error('Test function ' + testName + ' not found');
+                }
+            } catch (error) {
+                resultsDiv.className = 'test-results test-fail';
+                resultsDiv.innerHTML = '<h3>❌ Test Failed</h3><p>' + error.message + '</p>';
+                testOutput += 'ERROR: ' + error.message + '\n' + error.stack + '\n';
+            }
+            
+            outputDiv.innerHTML = testOutput;
+        }
+        
+        // Initialize when page loads
+        window.addEventListener('load', function() {
+            console.log('Multi-player renderer test runner loaded');
+            console.log('GameRenderer available:', typeof GameRenderer !== 'undefined');
+            console.log('Test functions available:', typeof runMultiPlayerRenderingTests !== 'undefined');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+# Audio Files Directory
+
+## Required Files:
+- the-race-is-on-racing-soundtrack-videogame-instrumental-378331.mp3
+
+## Instructions:
+1. Place the background music file in this directory
+2. The game will automatically load and play it during gameplay
+3. Volume is set to 30% for comfortable listening
+
+## File Requirements:
+- Format: MP3
+- Recommended: Loop-friendly audio (seamless when repeated)
+- Size: Keep under 5MB for faster loading

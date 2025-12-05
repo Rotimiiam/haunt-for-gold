@@ -1,0 +1,318 @@
+/* Haunt For Gold - Spooky Theme */
+@import url('https://fonts.googleapis.com/css2?family=Creepster&display=swap');
+
+:root {
+  /* Spooky Color Palette */
+  --spooky-black: #0d0d0d;
+  --haunted-purple: #1a0a2e;
+  --deep-purple: #2d1b4e;
+  --midnight-blue: #16213e;
+  --ghost-green: #00ff41;
+  --ghost-green-dim: #00cc33;
+  --pumpkin-orange: #ff6b00;
+  --blood-red: #8b0000;
+  --cursed-gold: #ffd700;
+  --ancient-gold: #b8860b;
+  --bone-white: #e8e8e8;
+  --fog-white: rgba(255, 255, 255, 0.08);
+  --tombstone-gray: #4a4a4a;
+  
+  /* Glow Effects */
+  --ghost-glow: 0 0 20px rgba(0, 255, 65, 0.5);
+  --ghost-glow-intense: 0 0 30px rgba(0, 255, 65, 0.8);
+  --pumpkin-glow: 0 0 15px rgba(255, 107, 0, 0.6);
+  --gold-glow: 0 0 20px rgba(255, 215, 0, 0.5);
+  --blood-glow: 0 0 10px rgba(139, 0, 0, 0.5);
+  
+  /* Transitions */
+  --spooky-transition: all 0.3s ease-in-out;
+  --flicker-transition: opacity 0.1s ease-in-out;
+  
+  /* Shadows */
+  --haunted-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+  --inner-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Base Spooky Body */
+body.spooky-theme {
+  background: linear-gradient(180deg, 
+    var(--spooky-black) 0%, 
+    var(--haunted-purple) 50%, 
+    var(--midnight-blue) 100%);
+  background-attachment: fixed;
+  color: var(--bone-white);
+  font-family: 'Segoe UI', sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Hide all scrollbars completely */
+html, body {
+  overflow: hidden !important;
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* IE/Edge */
+  max-width: 100vw;
+  max-height: 100vh;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none !important; /* Chrome/Safari */
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+}
+
+/* Home screen - no scrolling, side by side layout */
+#homeScreen {
+  overflow: hidden;
+}
+
+/* Spooky Scrollbar Styles (for modals and scrollable areas) */
+.spooky-scrollbar,
+.local-multiplayer-setup,
+.modal-content,
+[style*="overflow: auto"],
+[style*="overflow-y: auto"] {
+  scrollbar-width: thin;
+  scrollbar-color: var(--ghost-green) var(--haunted-purple);
+}
+
+.spooky-scrollbar::-webkit-scrollbar,
+.local-multiplayer-setup::-webkit-scrollbar,
+.modal-content::-webkit-scrollbar,
+[style*="overflow: auto"]::-webkit-scrollbar,
+[style*="overflow-y: auto"]::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.spooky-scrollbar::-webkit-scrollbar-track,
+.local-multiplayer-setup::-webkit-scrollbar-track,
+.modal-content::-webkit-scrollbar-track,
+[style*="overflow: auto"]::-webkit-scrollbar-track,
+[style*="overflow-y: auto"]::-webkit-scrollbar-track {
+  background: var(--haunted-purple);
+  border-radius: 4px;
+}
+
+.spooky-scrollbar::-webkit-scrollbar-thumb,
+.local-multiplayer-setup::-webkit-scrollbar-thumb,
+.modal-content::-webkit-scrollbar-thumb,
+[style*="overflow: auto"]::-webkit-scrollbar-thumb,
+[style*="overflow-y: auto"]::-webkit-scrollbar-thumb {
+  background: var(--ghost-green);
+  border-radius: 4px;
+  border: 2px solid var(--haunted-purple);
+}
+
+.spooky-scrollbar::-webkit-scrollbar-thumb:hover,
+.local-multiplayer-setup::-webkit-scrollbar-thumb:hover,
+.modal-content::-webkit-scrollbar-thumb:hover {
+  background: var(--ghost-green-dim);
+  box-shadow: 0 0 10px var(--ghost-green);
+}
+
+/* Spooky Dropdown/Select Styles */
+select,
+.spooky-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: linear-gradient(180deg, var(--deep-purple) 0%, var(--haunted-purple) 100%);
+  border: 2px solid var(--ghost-green);
+  border-radius: 8px;
+  color: var(--bone-white);
+  padding: 12px 40px 12px 16px;
+  font-family: 'Creepster', cursive;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--spooky-transition);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2300ff41' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 20px;
+  min-width: 200px;
+}
+
+select:hover,
+.spooky-select:hover {
+  border-color: var(--ghost-green);
+  box-shadow: var(--ghost-glow);
+}
+
+select:focus,
+.spooky-select:focus {
+  outline: none;
+  border-color: var(--ghost-green);
+  box-shadow: var(--ghost-glow-intense);
+}
+
+select option,
+.spooky-select option {
+  background: var(--haunted-purple);
+  color: var(--bone-white);
+  padding: 10px;
+}
+
+select option:hover,
+select option:checked,
+.spooky-select option:hover,
+.spooky-select option:checked {
+  background: var(--deep-purple);
+  color: var(--ghost-green);
+}
+
+/* Spooky Input Styles */
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+.spooky-input {
+  background: linear-gradient(180deg, var(--spooky-black) 0%, var(--haunted-purple) 100%);
+  border: 2px solid var(--ghost-green);
+  border-radius: 8px;
+  color: var(--bone-white);
+  padding: 12px 16px;
+  font-size: 1rem;
+  transition: var(--spooky-transition);
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+.spooky-input:focus {
+  outline: none;
+  border-color: var(--ghost-green);
+  box-shadow: var(--ghost-glow);
+}
+
+input[type="text"]::placeholder,
+input[type="number"]::placeholder,
+.spooky-input::placeholder {
+  color: var(--tombstone-gray);
+}
+
+/* Fog Overlay */
+.fog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  background: 
+    radial-gradient(ellipse at 20% 80%, rgba(255,255,255,0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(255,255,255,0.03) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(26,10,46,0.3) 0%, transparent 70%);
+  animation: fogDrift 20s ease-in-out infinite;
+}
+
+@keyframes fogDrift {
+  0%, 100% { transform: translateX(0) translateY(0); }
+  25% { transform: translateX(10px) translateY(-5px); }
+  50% { transform: translateX(-5px) translateY(10px); }
+  75% { transform: translateX(-10px) translateY(-10px); }
+}
+
+/* Spooky Title */
+.spooky-title {
+  font-family: 'Creepster', cursive;
+  font-size: 4rem;
+  color: var(--pumpkin-orange);
+  text-shadow: 
+    0 0 10px var(--pumpkin-orange),
+    0 0 20px var(--pumpkin-orange),
+    0 0 40px rgba(255, 107, 0, 0.5),
+    3px 3px 0 var(--spooky-black);
+  letter-spacing: 0.1em;
+  animation: titlePulse 3s ease-in-out infinite;
+  position: relative;
+  padding: 0 70px; /* Space for emojis */
+}
+
+.spooky-title::before {
+  content: '🎃';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 2.5rem;
+  animation: float 3s ease-in-out infinite;
+}
+
+.spooky-title::after {
+  content: '👻';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 2.5rem;
+  animation: float 3s ease-in-out infinite 0.5s;
+}
+
+@keyframes titlePulse {
+  0%, 100% { 
+    text-shadow: 
+      0 0 10px var(--pumpkin-orange),
+      0 0 20px var(--pumpkin-orange),
+      0 0 40px rgba(255, 107, 0, 0.5),
+      3px 3px 0 var(--spooky-black);
+  }
+  50% { 
+    text-shadow: 
+      0 0 20px var(--pumpkin-orange),
+      0 0 40px var(--pumpkin-orange),
+      0 0 60px rgba(255, 107, 0, 0.7),
+      3px 3px 0 var(--spooky-black);
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(-50%) translateX(0); }
+  50% { transform: translateY(-60%) translateX(5px); }
+}
+
+/* Vignette Effect */
+.vignette {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.6) 100%);
+}
+
+/* Spooky Scrollbar */
+body.spooky-theme::-webkit-scrollbar {
+  width: 10px;
+}
+
+body.spooky-theme::-webkit-scrollbar-track {
+  background: var(--spooky-black);
+}
+
+body.spooky-theme::-webkit-scrollbar-thumb {
+  background: var(--haunted-purple);
+  border: 2px solid var(--ghost-green);
+  border-radius: 5px;
+}
+
+body.spooky-theme::-webkit-scrollbar-thumb:hover {
+  background: var(--deep-purple);
+  box-shadow: var(--ghost-glow);
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .fog-overlay,
+  .spooky-title,
+  .spooky-title::before,
+  .spooky-title::after {
+    animation: none;
+  }
+}

@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Multiplayer Game State Management Tests</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1a1a1a;
+            color: #00ff41;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700;
+            margin-bottom: 30px;
+        }
+        
+        .test-controls {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        button {
+            background: #333;
+            color: #00ff41;
+            border: 2px solid #00ff41;
+            padding: 10px 20px;
+            margin: 0 10px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            background: #00ff41;
+            color: #1a1a1a;
+            box-shadow: 0 0 10px #00ff41;
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .test-output {
+            background: #000;
+            border: 2px solid #333;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            min-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            font-size: 12px;
+        }
+        
+        .test-summary {
+            background: #222;
+            border: 2px solid #555;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .pass { color: #00ff41; }
+        .fail { color: #ff4444; }
+        .warning { color: #ffaa00; }
+        .info { color: #4444ff; }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #333;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff41, #ffd700);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .test-card {
+            background: #222;
+            border: 1px solid #444;
+            border-radius: 5px;
+            padding: 15px;
+        }
+        
+        .test-card h3 {
+            margin-top: 0;
+            color: #ffd700;
+        }
+        
+        .test-status {
+            font-weight: bold;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 Local Multiplayer Game State Management Tests</h1>
+        
+        <div class="test-controls">
+            <button id="runAllTests">Run All Tests</button>
+            <button id="runSingleTest">Run Single Test</button>
+            <button id="clearOutput">Clear Output</button>
+            <button id="exportResults">Export Results</button>
+        </div>
+        
+        <div class="test-summary" id="testSummary">
+            <h3>Test Summary</h3>
+            <div id="summaryContent">Click "Run All Tests" to start testing...</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+        
+        <div class="test-grid" id="testGrid">
+            <!-- Test cards will be populated here -->
+        </div>
+        
+        <div class="test-output" id="testOutput">
+            Waiting for tests to run...
+        </div>
+    </div>
+
+    <!-- Load dependencies -->
+    <script src="../characters.js"></script>
+    <script src="../local-multiplayer-models.js"></script>
+    <script src="../local-multiplayer-game.js"></script>
+    <script src="local-multiplayer-game.test.js"></script>
+
+    <script>
+        class TestRunner {
+            constructor() {
+                this.testSuite = new LocalMultiplayerGameTests();
+                this.currentResults = null;
+                this.setupEventListeners();
+                this.initializeTestGrid();
+            }
+
+            setupEventListeners() {
+                document.getElementById('runAllTests').addEventListener('click', () => this.runAllTests());
+                document.getElementById('runSingleTest').addEventListener('click', () => this.runSingleTest());
+                document.getElementById('clearOutput').addEventListener('click', () => this.clearOutput());
+                document.getElementById('exportResults').addEventListener('click', () => this.exportResults());
+            }
+
+            initializeTestGrid() {
+                const testCategories = [
+                    'Game Initialization',
+                    'Player Management',
+                    'Game State Management',
+                    'Timer and Round Management',
+                    'Score Tracking and Ranking',
+                    'Win Conditions',
+                    'Event System',
+                    'Game State Consistency'
+                ];
+
+                const testGrid = document.getElementById('testGrid');
+                testGrid.innerHTML = '';
+
+                testCategories.forEach(category => {
+                    const card = document.createElement('div');
+                    card.className = 'test-card';
+                    card.innerHTML = `
+                        <h3>${category}</h3>
+                        <div class="test-status" id="status-${category.replace(/\s+/g, '-').toLowerCase()}">
+                            ⏳ Pending
+                        </div>
+                        <div id="details-${category.replace(/\s+/g, '-').toLowerCase()}">
+                            Not run yet
+                        </div>
+                    `;
+                    testGrid.appendChild(card);
+                });
+            }
+
+            async runAllTests() {
+                this.clearOutput();
+                this.log('🚀 Starting Local Multiplayer Game State Management Tests...', 'info');
+                this.log('='.repeat(60), 'info');
+                
+                const runButton = document.getElementById('runAllTests');
+                runButton.disabled = true;
+                runButton.textContent = 'Running Tests...';
+
+                try {
+                    // Redirect console.log to our output
+                    const originalLog = console.log;
+                    console.log = (...args) => {
+                        this.log(args.join(' '));
+                        originalLog.apply(console, args);
+                    };
+
+                    // Run tests
+                    const results = await this.testSuite.runAllTests();
+                    this.currentResults = results;
+
+                    // Restore console.log
+                    console.log = originalLog;
+
+                    // Update UI
+                    this.updateTestGrid(results);
+                    this.updateSummary(results);
+                    this.updateProgress(100);
+
+                    this.log('\n🎯 All tests completed!', 'info');
+                    
+                } catch (error) {
+                    this.log(`❌ Error running tests: ${error.message}`, 'fail');
+                    console.error('Test execution error:', error);
+                } finally {
+                    runButton.disabled = false;
+                    runButton.textContent = 'Run All Tests';
+                }
+            }
+
+            async runSingleTest() {
+                const testName = prompt('Enter test name to run:\n\n' +
+                    '1. testGameInitialization\n' +
+                    '2. testPlayerManagement\n' +
+                    '3. testGameStateManagement\n' +
+                    '4. testTimerAndRoundManagement\n' +
+                    '5. testScoreTrackingAndRanking\n' +
+                    '6. testWinConditions\n' +
+                    '7. testEventSystem\n' +
+                    '8. testGameStateConsistency'
+                );
+
+                if (!testName) return;
+
+                this.clearOutput();
+                this.log(`🔍 Running single test: ${testName}`, 'info');
+
+                try {
+                    if (typeof this.testSuite[testName] === 'function') {
+                        await this.testSuite[testName]();
+                        this.log(`✅ Test ${testName} completed`, 'pass');
+                    } else {
+                        this.log(`❌ Test ${testName} not found`, 'fail');
+                    }
+                } catch (error) {
+                    this.log(`❌ Error running test ${testName}: ${error.message}`, 'fail');
+                }
+            }
+
+            updateTestGrid(results) {
+                results.forEach(result => {
+                    const categoryId = result.name.replace(/\s+/g, '-').toLowerCase();
+                    const statusElement = document.getElementById(`status-${categoryId}`);
+                    const detailsElement = document.getElementById(`details-${categoryId}`);
+
+                    if (statusElement && detailsElement) {
+                        if (result.passed) {
+                            statusElement.innerHTML = '✅ PASSED';
+                            statusElement.className = 'test-status pass';
+                        } else {
+                            statusElement.innerHTML = '❌ FAILED';
+                            statusElement.className = 'test-status fail';
+                        }
+                        
+                        detailsElement.textContent = result.message;
+                    }
+                });
+            }
+
+            updateSummary(results) {
+                const total = results.length;
+                const passed = results.filter(r => r.passed).length;
+                const failed = total - passed;
+                const successRate = total > 0 ? ((passed / total) * 100).toFixed(1) : 0;
+
+                const summaryContent = document.getElementById('summaryContent');
+                summaryContent.innerHTML = `
+                    <div>Total Tests: <span class="info">${total}</span></div>
+                    <div>Passed: <span class="pass">${passed}</span></div>
+                    <div>Failed: <span class="fail">${failed}</span></div>
+                    <div>Success Rate: <span class="${failed === 0 ? 'pass' : 'warning'}">${successRate}%</span></div>
+                `;
+            }
+
+            updateProgress(percentage) {
+                const progressFill = document.getElementById('progressFill');
+                progressFill.style.width = `${percentage}%`;
+            }
+
+            clearOutput() {
+                document.getElementById('testOutput').textContent = '';
+            }
+
+            log(message, type = 'default') {
+                const output = document.getElementById('testOutput');
+                const timestamp = new Date().toLocaleTimeString();
+                
+                let className = '';
+                switch (type) {
+                    case 'pass': className = 'pass'; break;
+                    case 'fail': className = 'fail'; break;
+                    case 'warning': className = 'warning'; break;
+                    case 'info': className = 'info'; break;
+                }
+
+                const logLine = document.createElement('div');
+                logLine.className = className;
+                logLine.textContent = `[${timestamp}] ${message}`;
+                
+                output.appendChild(logLine);
+                output.scrollTop = output.scrollHeight;
+            }
+
+            exportResults() {
+                if (!this.currentResults) {
+                    alert('No test results to export. Run tests first.');
+                    return;
+                }
+
+                const exportData = {
+                    timestamp: new Date().toISOString(),
+                    testSuite: 'Local Multiplayer Game State Management',
+                    summary: {
+                        total: this.currentResults.length,
+                        passed: this.currentResults.filter(r => r.passed).length,
+                        failed: this.currentResults.filter(r => !r.passed).length,
+                        successRate: this.currentResults.length > 0 ? 
+                            ((this.currentResults.filter(r => r.passed).length / this.currentResults.length) * 100).toFixed(1) : 0
+                    },
+                    results: this.currentResults
+                };
+
+                const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `local-multiplayer-game-test-results-${Date.now()}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                this.log('📁 Test results exported successfully', 'info');
+            }
+        }
+
+        // Initialize test runner when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.testRunner = new TestRunner();
+            console.log('Local Multiplayer Game State Management Test Runner initialized');
+        });
+
+        // Handle errors gracefully
+        window.addEventListener('error', (event) => {
+            console.error('Global error:', event.error);
+            if (window.testRunner) {
+                window.testRunner.log(`💥 Global Error: ${event.error.message}`, 'fail');
+            }
+        });
+    </script>
+</body>
+</html>

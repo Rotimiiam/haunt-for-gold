@@ -1,0 +1,32 @@
+{
+  "name": "story-game",
+  "version": "1.0.0",
+  "main": "server.js",
+  "engines": {
+    "node": "18.x"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "Kiro's Creative Storyteller - An interactive pixel art storytelling game",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "connect-session-sequelize": "^7.1.7",
+    "dotenv": "^16.3.1",
+    "express": "^5.1.0",
+    "express-session": "^1.17.3",
+    "passport": "^0.7.0",
+    "passport-github2": "^0.1.12",
+    "passport-google-oauth20": "^2.0.0",
+    "passport-local": "^1.0.0",
+    "pixi.js": "^8.11.0",
+    "sequelize": "^6.37.7",
+    "socket.io": "^4.8.1",
+    "sqlite3": "^5.1.7",
+    "uuid": "^9.0.1"
+  }
+}

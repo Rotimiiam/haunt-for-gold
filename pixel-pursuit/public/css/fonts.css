@@ -1,0 +1,180 @@
+/* Custom Font for Haunt For Gold Title */
+@font-face {
+  font-family: "Barnabey";
+  src: url("../assets/fonts/BARNABEY.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap; /* Improves loading performance */
+}
+
+/* Disable the problematic custom font and use a readable alternative */
+.game-title {
+  /* Use the Barnabey custom font with fallbacks */
+  font-family: "Barnabey", "Impact", "Arial Black", "Helvetica", Arial,
+    sans-serif !important;
+  font-weight: normal !important;
+
+  /* Make it large and readable */
+  font-size: 4.5rem !important;
+  letter-spacing: 0.1em !important;
+
+  /* Use solid gold color for maximum readability */
+  color: #ffd700 !important;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: #ffd700 !important;
+  background-clip: unset !important;
+
+  /* Thinner white outline for better appearance */
+  text-shadow: 1px 1px 0px #ffffff, -1px -1px 0px #ffffff, 1px -1px 0px #ffffff,
+    -1px 1px 0px #ffffff, 0px 3px 6px rgba(0, 0, 0, 0.6) !important;
+
+  /* Thinner additional outline using text-stroke */
+  -webkit-text-stroke: 0.5px #ffffff;
+  text-stroke: 0.5px #ffffff;
+
+  /* Ensure proper display */
+  display: inline-block;
+  line-height: 1.1;
+  margin-bottom: 20px !important;
+
+  /* Add subtle glow */
+  filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
+
+  /* Transform for more impact */
+  text-transform: uppercase;
+}
+
+/* Mobile optimization */
+@media (max-width: 768px) {
+  .game-title {
+    font-size: 3rem !important;
+    letter-spacing: 0.1em !important;
+    text-shadow: 1px 1px 0px #ffffff, -1px -1px 0px #ffffff,
+      1px -1px 0px #ffffff, -1px 1px 0px #ffffff, 0px 2px 4px rgba(0, 0, 0, 0.6) !important;
+    -webkit-text-stroke: 0.5px #ffffff;
+  }
+}
+
+@media (max-width: 480px) {
+  .game-title {
+    font-size: 2.2rem !important;
+    letter-spacing: 0.08em !important;
+  }
+}
+
+/* Alternative: If you want to try the custom font again later, uncomment this */
+/*
+.game-title {
+  font-family: "FantasyCapitals", "Impact", "Arial Black", Arial, sans-serif !important;
+}
+*/
+/* Apply Barnabey font to menu buttons with button.png background */
+.join-btn,
+.cadence-style {
+  font-family: "Barnabey", "Impact", "Arial Black", Arial, sans-serif !important;
+  font-weight: normal !important;
+
+  /* Use button.png as background */
+  background: url("../assets/button.png") no-repeat center center !important;
+  background-size: 100% 100% !important; /* Stretch to fit button */
+
+  /* White text with thinner golden outline */
+  color: #ffffff !important; /* White text */
+  text-shadow: 1px 1px 0px #daa520, -1px -1px 0px #daa520, 1px -1px 0px #daa520,
+    -1px 1px 0px #daa520, 0px 2px 4px rgba(0, 0, 0, 0.3) !important; /* Thinner golden outline + light shadow */
+
+  /* Thinner golden stroke */
+  -webkit-text-stroke: 0.5px #b8860b;
+
+  font-weight: bold !important; /* Make text bolder */
+  font-size: 1.6rem !important; /* Larger text for better visibility */
+
+  /* Button styling */
+  border: none !important; /* Remove border since button.png provides the frame */
+  border-radius: 0 !important; /* Remove border radius to preserve button.png shape */
+  padding: 16px 32px !important;
+  letter-spacing: 0.05em !important;
+
+  /* Ensure proper sizing */
+  min-height: 60px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  /* Hover effects */
+  transition: all 0.2s ease !important;
+
+  /* Hide the dots by covering them with pseudo-elements */
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+/* Cover the left dot */
+.join-btn::before,
+.cadence-style::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 40px;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    rgba(139, 115, 85, 1) 0%,
+    rgba(139, 115, 85, 0.8) 70%,
+    transparent 100%
+  );
+  z-index: 1;
+}
+
+/* Cover the right dot */
+.join-btn::after,
+.cadence-style::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 40px;
+  height: 100%;
+  background: linear-gradient(
+    to left,
+    rgba(139, 115, 85, 1) 0%,
+    rgba(139, 115, 85, 0.8) 70%,
+    transparent 100%
+  );
+  z-index: 1;
+}
+
+/* Ensure text stays above the pseudo-elements */
+.join-btn span,
+.cadence-style span {
+  position: relative;
+  z-index: 2;
+}
+
+.join-btn:hover,
+.cadence-style:hover {
+  /* Subtle hover effects that work with the button image */
+  filter: brightness(1.1) contrast(1.05) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+.join-btn:active,
+.cadence-style:active {
+  /* Pressed state */
+  transform: translateY(1px) !important;
+  filter: brightness(0.95) !important;
+} /* Apply B
+arnabey font to game description */
+.game-description {
+  font-family: "Barnabey", "Arial", sans-serif !important;
+  font-weight: normal !important;
+  font-size: 1.2rem !important;
+  letter-spacing: 0.02em !important;
+
+  /* Add subtle text shadow for readability */
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7) !important;
+  color: #ffffff !important;
+}

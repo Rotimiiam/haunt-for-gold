@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-player Rendering Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #1a1a1a;
+            color: white;
+        }
+        .demo-container {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .controls {
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #666;
+            cursor: not-allowed;
+        }
+        #gameCanvas {
+            border: 2px solid #444;
+            background-color: #000;
+            display: block;
+            margin: 20px auto;
+        }
+        .info-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .player-info {
+            background: #333;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid;
+        }
+        .player-1 { border-left-color: #00ff41; }
+        .player-2 { border-left-color: #ff4444; }
+        .player-3 { border-left-color: #4444ff; }
+        .player-4 { border-left-color: #ffff00; }
+        
+        .status {
+            margin-top: 10px;
+            padding: 10px;
+            background: #444;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <h1>Multi-player Rendering System Demo</h1>
+        <p>This demo showcases the enhanced multi-player rendering capabilities including unique visual indicators, collision feedback, name tags, and score displays.</p>
+        
+        <div class="controls">
+            <button onclick="startDemo()">Start Demo</button>
+            <button onclick="simulateCollision()">Simulate Collision</button>
+            <button onclick="simulateScoring()">Simulate Scoring</button>
+            <button onclick="toggleProximity()">Toggle Proximity</button>
+            <button onclick="resetDemo()">Reset</button>
+        </div>
+        
+        <canvas id="gameCanvas" width="640" height="480"></canvas>
+        
+        <div class="info-panel">
+            <div class="player-info player-1">
+                <h3>Player 1 - Alice</h3>
+                <div>Shape: Circle</div>
+                <div>Color: Green</div>
+                <div>Score: <span id="score1">150</span></div>
+                <div>Status: <span id="status1">Active</span></div>
+            </div>
+            <div class="player-info player-2">
+                <h3>Player 2 - Bob</h3>
+                <div>Shape: Square</div>
+                <div>Color: Red</div>
+                <div>Score: <span id="score2">120</span></div>
+                <div>Status: <span id="status2">Active</span></div>
+            </div>
+            <div class="player-info player-3">
+                <h3>Player 3 - Charlie</h3>
+                <div>Shape: Triangle</div>
+                <div>Color: Blue</div>
+                <div>Score: <span id="score3">95</span></div>
+                <div>Status: <span id="status3">Active</span></div>
+            </div>
+            <div class="player-info player-4">
+                <h3>Player 4 - Diana</h3>
+                <div>Shape: Star</div>
+                <div>Color: Yellow</div>
+                <div>Score: <span id="score4">200</span></div>
+                <div>Status: <span id="status4">Inactive</span></div>
+            </div>
+        </div>
+        
+        <div class="status" id="demoStatus">
+            Click "Start Demo" to begin the multi-player rendering demonstration.
+        </div>
+    </div>
+
+    <!-- Load dependencies -->
+    <script src="character-data.js"></script>
+    <script src="game-renderer.js"></script>
+
+    <script>
+        let renderer;
+        let gameState;
+        let animationId;
+        let proximityMode = false;
+        
+        // Initialize the demo
+        function initDemo() {
+            renderer = new GameRenderer('gameCanvas');
+            
+            // Create initial game state
+            gameState = {
+                mapWidth: 20,
+                mapHeight: 15,
+                players: {
+                    player1: {
+                        id: 'player1',
+                        name: 'Alice',
+                        x: 5,
+                        y: 5,
+                        score: 150,
+                        color: '#00ff41',
+                        character: 'Alex',
+                        direction: 'right',
+                        mood: 'happy',
+                        isActive: true,
+                        isLeader: false,
+                        lastMoveTime: Date.now(),
+                        visualConfig: {
+                            indicator: { 
+                                shape: 'circle', 
+                                borderColor: '#ffffff',
+                                glowEffect: true
+                            },
+                            nameTag: {
+                                visible: true,
+                                position: 'above',
+                                fontSize: 12,
+                                color: '#ffffff'
+                            }
+                        }
+                    },
+                    player2: {
+                        id: 'player2',
+                        name: 'Bob',
+                        x: 10,
+                        y: 8,
+                        score: 120,
+                        color: '#ff4444',
+                        character: 'Bella',
+                        direction: 'left',
+                        mood: 'happy',
+                        isActive: true,
+                        isLeader: false,
+                        visualConfig: {
+                            indicator: { 
+                                shape: 'square', 
+                                borderColor: '#ffffff'
+                            },
+                            nameTag: {
+                                visible: true,
+                                position: 'above',
+                                fontSize: 12,
+                                color: '#ffffff'
+                            }
+                        }
+                    },
+                    player3: {
+                        id: 'player3',
+                        name: 'Charlie',
+                        x: 15,
+                        y: 12,
+                        score: 95,
+                        color: '#4444ff',
+                        character: 'Charlie',
+                        direction: 'up',
+                        mood: 'happy',
+                        isActive: true,
+                        isLeader: false,
+                        visualConfig: {
+                            indicator: { 
+                                shape: 'triangle', 
+                                borderColor: '#ffffff'
+                            },
+                            nameTag: {
+                                visible: true,
+                                position: 'above',
+                                fontSize: 12,
+                                color: '#ffffff'
+                            }
+                        }
+                    },
+                    player4: {
+                        id: 'player4',
+                        name: 'Diana',
+                        x: 3,
+                        y: 10,
+                        score: 200,
+                        color: '#ffff00',
+                        character: 'Daisy',
+                        direction: 'down',
+                        mood: 'happy',
+                        isActive: false,
+                        isLeader: true,
+                        powerUps: ['speed', 'shield'],
+                        hotStreak: 5,
+                        visualConfig: {
+                            indicator: { 
+                                shape: 'star', 
+                                borderColor: '#ffffff'
+                            },
+                            nameTag: {
+                                visible: true,
+                                position: 'above',
+                                fontSize: 12,
+                                color: '#ffffff'
+                            }
+                        }
+                    }
+                },
+                coins: [
+                    { x: 7, y: 7, collected: false },
+                    { x: 12, y: 5, collected: false },
+                    { x: 8, y: 13, collected: false }
+                ],
+                bombs: [
+                    { x: 8, y: 9, exploded: false }
+                ],
+                enemies: [
+                    { x: 14, y: 6 },
+                    { x: 6, y: 13 }
+                ]
+            };
+            
+            updateStatus("Demo initialized. Ready to start.");
+        }
+        
+        function startDemo() {
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+            
+            updateStatus("Demo started. Players are moving around the map.");
+            animate();
+        }
+        
+        function animate() {
+            // Move players around randomly
+            Object.values(gameState.players).forEach(player => {
+                if (player.isActive && Math.random() < 0.1) {
+                    const directions = ['up', 'down', 'left', 'right'];
+                    const newDirection = directions[Math.floor(Math.random() * directions.length)];
+                    
+                    let newX = player.x;
+                    let newY = player.y;
+                    
+                    switch (newDirection) {
+                        case 'up':
+                            newY = Math.max(1, player.y - 1);
+                            break;
+                        case 'down':
+                            newY = Math.min(gameState.mapHeight - 2, player.y + 1);
+                            break;
+                        case 'left':
+                            newX = Math.max(1, player.x - 1);
+                            break;
+                        case 'right':
+                            newX = Math.min(gameState.mapWidth - 2, player.x + 1);
+                            break;
+                    }
+                    
+                    if (newX !== player.x || newY !== player.y) {
+                        player.x = newX;
+                        player.y = newY;
+                        player.direction = newDirection;
+                        player.lastMoveTime = Date.now();
+                    }
+                }
+            });
+            
+            // Render the game
+            renderer.render(gameState);
+            
+            animationId = requestAnimationFrame(animate);
+        }
+        
+        function simulateCollision() {
+            const players = Object.values(gameState.players);
+            const activePlayer = players.find(p => p.isActive);
+            
+            if (activePlayer) {
+                activePlayer.recentlyHit = true;
+                activePlayer.lastHitTime = Date.now();
+                activePlayer.lastDamage = Math.floor(Math.random() * 15) + 5;
+                activePlayer.score = Math.max(0, activePlayer.score - activePlayer.lastDamage);
+                
+                updatePlayerInfo();
+                updateStatus(`${activePlayer.name} took ${activePlayer.lastDamage} damage!`);
+                
+                // Clear collision effect after animation
+                setTimeout(() => {
+                    activePlayer.recentlyHit = false;
+                }, 1500);
+            }
+        }
+        
+        function simulateScoring() {
+            const players = Object.values(gameState.players);
+            const activePlayer = players[Math.floor(Math.random() * players.length)];
+            
+            if (activePlayer) {
+                const scoreGain = Math.floor(Math.random() * 30) + 10;
+                activePlayer.recentScore = scoreGain;
+                activePlayer.lastScoreTime = Date.now();
+                activePlayer.score += scoreGain;
+                
+                // Update leader status
+                const maxScore = Math.max(...players.map(p => p.score));
+                players.forEach(p => {
+                    p.isLeader = p.score === maxScore;
+                });
+                
+                updatePlayerInfo();
+                updateStatus(`${activePlayer.name} scored ${scoreGain} points!`);
+                
+                // Clear score effect after animation
+                setTimeout(() => {
+                    activePlayer.recentScore = null;
+                }, 2000);
+            }
+        }
+        
+        function toggleProximity() {
+            proximityMode = !proximityMode;
+            
+            if (proximityMode) {
+                // Move players close together
+                gameState.players.player1.x = 8;
+                gameState.players.player1.y = 8;
+                gameState.players.player2.x = 8;
+                gameState.players.player2.y = 8;
+                gameState.players.player3.x = 9;
+                gameState.players.player3.y = 8;
+                gameState.players.player4.x = 8;
+                gameState.players.player4.y = 9;
+                
+                updateStatus("Proximity mode enabled. Players are grouped together.");
+            } else {
+                // Spread players apart
+                gameState.players.player1.x = 5;
+                gameState.players.player1.y = 5;
+                gameState.players.player2.x = 10;
+                gameState.players.player2.y = 8;
+                gameState.players.player3.x = 15;
+                gameState.players.player3.y = 12;
+                gameState.players.player4.x = 3;
+                gameState.players.player4.y = 10;
+                
+                updateStatus("Proximity mode disabled. Players are spread apart.");
+            }
+        }
+        
+        function resetDemo() {
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+            
+            initDemo();
+            renderer.render(gameState);
+            updatePlayerInfo();
+        }
+        
+        function updatePlayerInfo() {
+            document.getElementById('score1').textContent = gameState.players.player1.score;
+            document.getElementById('score2').textContent = gameState.players.player2.score;
+            document.getElementById('score3').textContent = gameState.players.player3.score;
+            document.getElementById('score4').textContent = gameState.players.player4.score;
+            
+            document.getElementById('status1').textContent = gameState.players.player1.isActive ? 'Active' : 'Inactive';
+            document.getElementById('status2').textContent = gameState.players.player2.isActive ? 'Active' : 'Inactive';
+            document.getElementById('status3').textContent = gameState.players.player3.isActive ? 'Active' : 'Inactive';
+            document.getElementById('status4').textContent = gameState.players.player4.isActive ? 'Active' : 'Inactive';
+        }
+        
+        function updateStatus(message) {
+            document.getElementById('demoStatus').textContent = message;
+        }
+        
+        // Initialize when page loads
+        window.addEventListener('load', function() {
+            initDemo();
+            renderer.render(gameState);
+            updatePlayerInfo();
+        });
+    </script>
+</body>
+</html>
