@@ -669,6 +669,26 @@ window.multiplayerMode = null;
 window.startMultiplayerMode = function (playerName) {
   console.log("*** STARTING MULTIPLAYER MODE GLOBALLY ***");
   window.isPracticeMode = false;
+  window.practiceMode = false;
+  
+  // Hide home screen immediately
+  const homeScreen = document.getElementById("homeScreen");
+  if (homeScreen) {
+    homeScreen.style.display = "none";
+    homeScreen.style.visibility = "hidden";
+    console.log("Home screen hidden");
+  }
+  
+  // Show waiting screen immediately with !important-like approach
+  const waitingScreen = document.getElementById("waitingScreen");
+  if (waitingScreen) {
+    waitingScreen.style.cssText = "display: flex !important; visibility: visible !important; opacity: 1 !important;";
+    console.log("Waiting screen shown - display:", waitingScreen.style.display);
+    console.log("Waiting screen computed:", window.getComputedStyle(waitingScreen).display);
+  } else {
+    console.error("Waiting screen element not found!");
+  }
+  
   window.multiplayerMode = new MultiplayerMode();
   console.log("*** CREATED MULTIPLAYER MODE INSTANCE ***");
   window.multiplayerMode.connect();
@@ -676,8 +696,18 @@ window.startMultiplayerMode = function (playerName) {
 
   // Wait a moment for connection, then join
   setTimeout(() => {
-    window.multiplayerMode.joinGame(playerName);
-  }, 100);
+    if (window.multiplayerMode && window.multiplayerMode.socket && window.multiplayerMode.socket.connected) {
+      console.log("Socket ready, joining game");
+      window.multiplayerMode.joinGame(playerName);
+    } else {
+      console.error("Socket not ready, retrying in 500ms...");
+      setTimeout(() => {
+        if (window.multiplayerMode) {
+          window.multiplayerMode.joinGame(playerName);
+        }
+      }, 500);
+    }
+  }, 200);
 };
 
 // Global function for joining game (for compatibility)
