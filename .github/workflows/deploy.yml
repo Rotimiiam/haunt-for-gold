@@ -50,12 +50,18 @@ jobs:
           script: |
             cd /var/www/haunt-for-gold
             
-            # Create .env if it doesn't exist
-            if [ ! -f .env ]; then
-              echo "PORT=3000" > .env
-              echo "NODE_ENV=production" >> .env
-              echo "SESSION_SECRET=$(openssl rand -base64 32)" >> .env
-            fi
+            # Create .env file with secrets
+            cat > .env << EOF
+            PORT=${{ secrets.PORT }}
+            NODE_ENV=production
+            SESSION_SECRET=${{ secrets.SESSION_SECRET }}
+            MONGODB_URI=${{ secrets.MONGODB_URI }}
+            GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+            GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
+            MAX_PLAYERS=2
+            WINNING_SCORE=500
+            DIFFICULTY_THRESHOLD=200
+            EOF
             
             # Install PM2 if not installed
             if ! command -v pm2 &> /dev/null; then
