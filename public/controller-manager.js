@@ -31,16 +31,12 @@ class ControllerManager {
     // Modern browsers support gamepadconnected/gamepaddisconnected events
     if ('ongamepadconnected' in window) {
       window.addEventListener('gamepadconnected', (event) => {
-        console.log('Gamepad connected:', event.gamepad);
         this.handleControllerConnect(event.gamepad);
       });
 
       window.addEventListener('gamepaddisconnected', (event) => {
-        console.log('Gamepad disconnected:', event.gamepad);
         this.handleControllerDisconnect(event.gamepad);
       });
-    } else {
-      console.warn('Gamepad events not supported, using polling method');
     }
   }
 
@@ -145,9 +141,6 @@ class ControllerManager {
 
     // Notify listeners
     this.notifyConnectionListeners(controllerInfo);
-
-    console.log(`Controller connected: ${gamepad.id} (Index: ${gamepad.index})`);
-    console.log('Controller capabilities:', controllerInfo.capabilities);
   }
 
   /**
@@ -169,8 +162,6 @@ class ControllerManager {
       
       // Notify listeners
       this.notifyDisconnectionListeners(controllerInfo);
-      
-      console.log(`Controller disconnected: ${gamepad.id} (Index: ${gamepad.index})`);
     }
   }
 
@@ -368,8 +359,6 @@ class ControllerManager {
 
     // Create new assignment
     this.playerAssignments.set(controllerIndex, playerId);
-    
-    console.log(`Controller ${controllerIndex} assigned to player ${playerId}`);
     return true;
   }
 
@@ -379,11 +368,6 @@ class ControllerManager {
   unassignController(controllerIndex) {
     const wasAssigned = this.playerAssignments.has(controllerIndex);
     this.playerAssignments.delete(controllerIndex);
-    
-    if (wasAssigned) {
-      console.log(`Controller ${controllerIndex} unassigned`);
-    }
-    
     return wasAssigned;
   }
 
@@ -599,8 +583,6 @@ class ControllerManager {
     this.playerAssignments.clear();
     this.connectionListeners = [];
     this.disconnectionListeners = [];
-    
-    console.log("ControllerManager destroyed");
   }
 }
 

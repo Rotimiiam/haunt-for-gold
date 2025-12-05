@@ -53,8 +53,6 @@ class InputMapper {
     
     const mappings = this.buttonMappings.get(controllerId);
     mappings[button] = action;
-    
-    console.log(`Mapped ${button} to ${action} for controller ${controllerId}`);
   }
 
   /**
@@ -67,8 +65,6 @@ class InputMapper {
     
     const mappings = this.axisMappings.get(controllerId);
     mappings[axis] = action;
-    
-    console.log(`Mapped ${axis} to ${action} for controller ${controllerId}`);
   }
 
   /**
@@ -110,7 +106,6 @@ class InputMapper {
   resetToDefaults(controllerId) {
     this.buttonMappings.set(controllerId, { ...this.defaultButtonMapping });
     this.axisMappings.set(controllerId, { ...this.defaultAxisMapping });
-    console.log(`Reset controller ${controllerId} to default mappings`);
   }
 
   /**
@@ -234,7 +229,6 @@ class InputMapper {
    */
   setDeadzone(value) {
     this.deadzone = Math.max(0, Math.min(1, value));
-    console.log(`Deadzone set to ${this.deadzone}`);
   }
 
   /**
@@ -250,9 +244,6 @@ class InputMapper {
   setInputPriority(method) {
     if (['controller', 'keyboard', 'auto'].includes(method)) {
       this.inputPriority = method;
-      console.log(`Input priority set to ${method}`);
-    } else {
-      console.warn(`Invalid input priority: ${method}`);
     }
   }
 
@@ -363,7 +354,6 @@ class InputMapper {
       this.deadzone = data.deadzone;
     }
     
-    console.log(`Imported mappings for controller ${data.controllerId}`);
     return true;
   }
 
@@ -373,7 +363,6 @@ class InputMapper {
   clearAllMappings() {
     this.buttonMappings.clear();
     this.axisMappings.clear();
-    console.log('Cleared all controller mappings');
   }
 
   /**

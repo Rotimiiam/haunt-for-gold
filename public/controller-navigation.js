@@ -321,6 +321,11 @@ class ControllerNavigationSystem {
     }
 
     handleController(gp, index) {
+        // Don't process navigation if on-screen keyboard is active
+        if (window.onScreenKeyboardActive) {
+            return;
+        }
+        
         if (!this.lastButtonStates[index]) {
             this.lastButtonStates[index] = [];
         }

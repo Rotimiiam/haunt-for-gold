@@ -35,16 +35,32 @@
 
 /* Base Spooky Body */
 body.spooky-theme {
-  background: var(--spooky-black);
-  background-image: url('/assets/spooky-background.svg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
+  background: #0d0d0d url('/assets/spooky-background.svg') center center / cover no-repeat fixed;
   color: var(--bone-white);
   font-family: 'Segoe UI', sans-serif;
   position: relative;
   overflow: hidden;
+  min-height: 100vh;
+}
+
+/* Ensure background shows behind everything */
+body.spooky-theme::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #0d0d0d url('/assets/spooky-background.svg') center center / cover no-repeat fixed;
+  z-index: -1;
+}
+
+/* Canvas styling to allow background to show through */
+#gameCanvas {
+  background: transparent !important;
+  border-radius: 8px;
+  box-shadow: 0 0 30px rgba(0, 255, 65, 0.3), 
+              inset 0 0 50px rgba(0, 0, 0, 0.5);
 }
 
 /* Hide all scrollbars completely */

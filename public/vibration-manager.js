@@ -290,7 +290,6 @@ class VibrationManager {
    */
   createPattern(name, pattern) {
     this.patterns[name] = pattern;
-    console.log(`Created vibration pattern: ${name}`);
   }
 
   /**
@@ -314,7 +313,6 @@ class VibrationManager {
   disable() {
     this.vibrationEnabled = false;
     this.stopAllVibrations();
-    console.log('Vibration disabled');
   }
 
   /**
@@ -327,7 +325,6 @@ class VibrationManager {
       this.stopAllVibrations();
     }
     
-    console.log(`Vibration ${this.vibrationEnabled ? 'enabled' : 'disabled'}`);
     return this.vibrationEnabled;
   }
 
@@ -362,11 +359,8 @@ class VibrationManager {
    */
   testVibration(controllerIndex, duration = 500) {
     if (!this.supportsVibration(controllerIndex)) {
-      console.log(`Controller ${controllerIndex} does not support vibration`);
       return false;
     }
-    
-    console.log(`Testing vibration for controller ${controllerIndex}`);
     
     // Test pattern - increasing intensity
     this.vibrateSequence(controllerIndex, [

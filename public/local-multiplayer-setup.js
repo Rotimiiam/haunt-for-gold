@@ -23,14 +23,12 @@ class LocalMultiplayerSetup {
 
   setupControllerDetection() {
     // Listen for gamepad connections
-    window.addEventListener('gamepadconnected', (e) => {
-      console.log(`Controller connected: ${e.gamepad.id}`);
+    window.addEventListener('gamepadconnected', () => {
       this.updateConnectedControllers();
       this.updateLocalMultiplayerButton();
     });
 
-    window.addEventListener('gamepaddisconnected', (e) => {
-      console.log(`Controller disconnected: ${e.gamepad.id}`);
+    window.addEventListener('gamepaddisconnected', () => {
       this.updateConnectedControllers();
       this.updateLocalMultiplayerButton();
     });
@@ -43,7 +41,6 @@ class LocalMultiplayerSetup {
   updateConnectedControllers() {
     const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
     this.connectedControllers = Array.from(gamepads).filter(gp => gp !== null);
-    console.log(`Connected controllers: ${this.connectedControllers.length}`);
   }
 
   updateLocalMultiplayerButton() {
@@ -213,9 +210,31 @@ class LocalMultiplayerSetup {
         <input type="text" id="localPlayer${i}Name" class="spectral-input" 
                placeholder="Player ${i}" value="${defaultName}" maxlength="15"
                style="flex: 1; border-color: ${color};">
+        <button class="keyboard-btn spooky-btn" data-player="${i}" 
+                style="padding: 8px 12px; font-size: 0.9rem; min-width: auto;">
+          ⌨️
+        </button>
       `;
       container.appendChild(inputDiv);
     }
+    
+    // Add keyboard button listeners
+    this.setupKeyboardButtons();
+  }
+  
+  setupKeyboardButtons() {
+    document.querySelectorAll('.keyboard-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const playerNum = e.target.dataset.player;
+        const input = document.getElementById(`localPlayer${playerNum}Name`);
+        
+        if (input && window.onScreenKeyboard) {
+          window.onScreenKeyboard.show(input, (value) => {
+            input.value = value;
+          });
+        }
+      });
+    });
   }
 
   getPlayerNames() {
@@ -251,7 +270,6 @@ class LocalMultiplayerSetup {
   }
 
   initializeGame(playerNames, duration, winningScore) {
-    console.log('Starting local multiplayer game:', { playerNames, duration, winningScore });
 
     // Create game settings
     const settings = {
@@ -380,6 +398,12 @@ class LocalMultiplayerSetup {
 
     // Gamepad polling loop
     const pollGamepads = () => {
+      // Don't process game input if on-screen keyboard is active
+      if (window.onScreenKeyboardActive) {
+        window.localGamepadPoll = requestAnimationFrame(pollGamepads);
+        return;
+      }
+      
       if (gameState.gameEnded || gameState.isPaused) {
         window.localGamepadPoll = requestAnimationFrame(pollGamepads);
         return;
@@ -469,7 +493,7 @@ class LocalMultiplayerSetup {
         strongMagnitude: strongMagnitude,
       });
     } catch (e) {
-      console.log("Vibration not supported:", e);
+      // Vibration not supported
     }
   }
 
@@ -594,6 +618,11 @@ class LocalMultiplayerSetup {
     // Render loop
     const render = () => {
       if (gameState.gameEnded) return;
+
+      // Initialize renderer if not available
+      if (!window.gameRenderer && typeof GameRenderer !== 'undefined') {
+        window.gameRenderer = new GameRenderer('gameCanvas');
+      }
 
       if (window.gameRenderer) {
         window.gameRenderer.render(gameState);

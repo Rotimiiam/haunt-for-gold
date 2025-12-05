@@ -25,12 +25,10 @@ class ControllerIntegration {
    */
   async init() {
     if (this.initialized) {
-      console.log('Controller integration already initialized');
       return;
     }
     
     try {
-      console.log('Initializing controller integration...');
       
       // Initialize core components
       this.controllerManager = new ControllerManager();
@@ -64,11 +62,9 @@ class ControllerIntegration {
       window.controllerSettingsUI = this.settingsUI;
       
       this.initialized = true;
-      // Controller integration initialized
       
       return true;
     } catch (error) {
-      console.error('Error initializing controller integration:', error);
       return false;
     }
   }
@@ -79,7 +75,6 @@ class ControllerIntegration {
   setupEventListeners() {
     // Listen for controller connections
     this.controllerManager.onControllerConnect((controller) => {
-      console.log('Controller connected:', controller.id);
       
       // Load configuration for this controller
       const config = this.configManager.getOrCreateConfiguration(controller.gamepad);
@@ -115,7 +110,6 @@ class ControllerIntegration {
     
     // Listen for controller disconnections
     this.controllerManager.onControllerDisconnect((controller) => {
-      console.log('Controller disconnected:', controller.id);
       
       // Show notification
       this.uiAdapter.showDisconnectedNotification(controller.index);
@@ -225,7 +219,6 @@ class ControllerIntegration {
    */
   setGameMode(mode) {
     this.gameMode = mode;
-    console.log(`Game mode set to: ${mode}`);
   }
 
   /**
@@ -248,7 +241,6 @@ class ControllerIntegration {
    * Pause game
    */
   pauseGame() {
-    console.log('Pausing game due to controller disconnect');
     
     // Trigger pause based on game mode
     if (window.localGameState) {
@@ -270,11 +262,8 @@ class ControllerIntegration {
    */
   integratePracticeMode() {
     if (!window.practiceMode) {
-      console.warn('Practice mode not found');
       return;
     }
-    
-    console.log('Integrating controller with practice mode');
     
     // Override practice mode input handling
     const originalHandleInput = window.practiceMode.handleInput;
@@ -301,11 +290,8 @@ class ControllerIntegration {
    */
   integrateLocalMultiplayer() {
     if (!window.localMultiplayerGame) {
-      console.warn('Local multiplayer game not found');
       return;
     }
-    
-    console.log('Integrating controller with local multiplayer');
     
     // Local multiplayer already uses controllers through ControllerManager
     // Just ensure proper assignment
@@ -320,7 +306,6 @@ class ControllerIntegration {
    * Integrate with online multiplayer
    */
   integrateOnlineMultiplayer() {
-    console.log('Integrating controller with online multiplayer');
     
     // Online multiplayer can use controller for single player
     const controllers = this.controllerManager.getAvailableControllers();
@@ -377,8 +362,6 @@ class ControllerIntegration {
       case 'error':
         this.vibrationManager.vibrateOnError(controllerIndex);
         break;
-      default:
-        console.warn(`Unknown game event: ${event}`);
     }
   }
 
@@ -387,7 +370,6 @@ class ControllerIntegration {
    */
   showSettings(controllerIndex = 0) {
     if (!this.settingsUI) {
-      console.error('Settings UI not initialized');
       return;
     }
     
@@ -421,7 +403,6 @@ class ControllerIntegration {
     }
     
     this.initialized = false;
-    console.log('Controller integration destroyed');
   }
 }
 

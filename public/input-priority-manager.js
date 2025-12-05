@@ -123,7 +123,6 @@ class InputPriorityManager {
     if (this.activeInputMethod === 'keyboard') return;
     
     this.activeInputMethod = 'keyboard';
-    console.log('Switched to keyboard input');
     
     // Notify listeners
     this.notifyKeyboardListeners();
@@ -139,7 +138,6 @@ class InputPriorityManager {
     if (this.activeInputMethod === 'controller') return;
     
     this.activeInputMethod = 'controller';
-    console.log('Switched to controller input');
     
     // Notify listeners
     this.notifyControllerListeners();
@@ -184,7 +182,6 @@ class InputPriorityManager {
     
     // If both inputs are recent, controller takes priority
     if (keyboardRecent && controllerRecent) {
-      console.log('Simultaneous input detected - using controller');
       return controllerAction;
     }
     
@@ -333,7 +330,6 @@ class InputPriorityManager {
    */
   setSwitchThreshold(ms) {
     this.switchThreshold = Math.max(0, ms);
-    console.log(`Switch threshold set to ${this.switchThreshold}ms`);
   }
 
   /**

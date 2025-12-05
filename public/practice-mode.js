@@ -26,13 +26,10 @@ class PracticeMode {
     this.witch = null;
     if (typeof WitchEnemy !== 'undefined') {
       this.witch = new WitchEnemy(this.gameState.mapWidth, this.gameState.mapHeight);
-      console.log('Witch enemy initialized for practice mode');
     }
   }
 
   start() {
-    console.log("Starting practice mode");
-
     // Stop any existing game loops
     window.gameStarted = false;
 
@@ -205,6 +202,12 @@ class PracticeMode {
     const R2_TRIGGER_THRESHOLD = 0.5;
 
     const pollGamepad = () => {
+      // Don't process game input if on-screen keyboard is active
+      if (window.onScreenKeyboardActive) {
+        this.gamepadPollId = requestAnimationFrame(pollGamepad);
+        return;
+      }
+      
       if (!this.gameStarted) {
         this.gamepadPollId = requestAnimationFrame(pollGamepad);
         return;
@@ -266,8 +269,7 @@ class PracticeMode {
         strongMagnitude: strongMagnitude,
       });
     } catch (e) {
-      // Vibration not supported or failed
-      console.log("Vibration not supported:", e);
+      // Vibration not supported
     }
   }
 
@@ -594,13 +596,11 @@ class PracticeMode {
   }
 
   startGame() {
-    console.log("Starting practice game");
     this.gameStarted = true;
 
     // Ensure GameRenderer is initialized
     if (!window.gameRenderer && typeof GameRenderer !== 'undefined') {
       window.gameRenderer = new GameRenderer('gameCanvas');
-      console.log("GameRenderer initialized for practice mode");
     }
 
     // Hide home screen
@@ -713,8 +713,6 @@ class PracticeMode {
             window.gameRenderer.render(this.gameState);
           } else if (typeof draw === "function") {
             draw();
-          } else {
-            console.error("No renderer available");
           }
         }
 
@@ -740,7 +738,6 @@ class PracticeMode {
     );
 
     if (uncollectedCoins.length === 0) {
-      console.log("All regular coins collected, respawning...");
       // Respawn all coins (including new bombs)
       this.generateCoins();
     }
@@ -770,7 +767,6 @@ window.practiceMode = null;
 
 // Global function to start practice mode
 window.startPracticeMode = function () {
-  console.log("Starting practice mode globally");
   window.isPracticeMode = true;
   window.practiceMode = new PracticeMode();
   window.practiceMode.start();

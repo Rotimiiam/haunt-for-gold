@@ -85,11 +85,11 @@ class ControllerUIAdapter {
     container.id = 'controllerStatusContainer';
     container.style.cssText = `
       position: fixed;
-      top: 60px;
-      right: 10px;
+      bottom: 20px;
+      left: 20px;
       z-index: 9999;
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
       gap: 10px;
     `;
     
@@ -139,8 +139,6 @@ class ControllerUIAdapter {
     
     // Add styles if not already added
     this.addStyles();
-    
-    console.log(`Showing controller icon for controller ${controllerIndex}`);
   }
 
   /**
@@ -154,8 +152,6 @@ class ControllerUIAdapter {
         icon.remove();
         this.controllerIcons.delete(controllerIndex);
       }, 300);
-      
-      console.log(`Hiding controller icon for controller ${controllerIndex}`);
     }
   }
 
@@ -248,8 +244,6 @@ class ControllerUIAdapter {
         prompt.textContent = icon;
       }
     });
-    
-    console.log(`Updated button prompts for ${inputMethod}`);
   }
 
   /**

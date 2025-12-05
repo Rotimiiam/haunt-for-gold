@@ -11,14 +11,11 @@
       return;
     }
 
-    console.log('Initializing game audio...');
-
     // Start background music on home screen
     const startHomeMusic = () => {
       const homeScreen = document.getElementById('homeScreen');
       if (homeScreen && window.getComputedStyle(homeScreen).display !== 'none') {
         window.soundManager.playBackgroundMusic('halloween-music', true);
-        console.log('Home screen music started');
       }
     };
 
@@ -43,7 +40,6 @@
       window.startGame = function(...args) {
         // Switch to in-game music
         window.soundManager.playBackgroundMusic('haunted-house', true);
-        console.log('In-game music started');
         return originalStartGame.apply(this, args);
       };
     }
@@ -105,7 +101,6 @@
     });
 
     document.body.appendChild(button);
-    console.log('Music toggle button added');
   }
 
   // Initialize when DOM is ready

@@ -178,26 +178,26 @@ function loadTextures() {
 
 // Initialize background music
 function initBackgroundMusic() {
-  backgroundMusic = new Audio('assets/sounds/the-race-is-on-racing-soundtrack-videogame-instrumental-378331.mp3');
+  // Use the haunted house track for spooky atmosphere
+  backgroundMusic = new Audio('/sounds/Haunted House.mpga');
   backgroundMusic.loop = true;
-  backgroundMusic.volume = 0.3; // Reduced volume (30%)
+  backgroundMusic.volume = 0.3;
 
-  // Handle audio loading errors gracefully
-  backgroundMusic.addEventListener('error', (e) => {
-    console.log('Background music failed to load:', e);
-    musicEnabled = false;
-  });
-
-  backgroundMusic.addEventListener('canplaythrough', () => {
-    console.log('Background music loaded successfully');
+  backgroundMusic.addEventListener('error', () => {
+    // Fallback to halloween music if haunted house fails
+    backgroundMusic = new Audio('/sounds/halloween-background-music-405067.mp3');
+    backgroundMusic.loop = true;
+    backgroundMusic.volume = 0.3;
+    backgroundMusic.addEventListener('error', () => {
+      musicEnabled = false;
+    });
   });
 }
 
 // Play background music
 function playBackgroundMusic() {
   if (backgroundMusic && musicEnabled) {
-    backgroundMusic.play().catch(error => {
-      console.log('Could not play background music:', error);
+    backgroundMusic.play().catch(() => {
       // Modern browsers require user interaction before playing audio
     });
   }
@@ -224,28 +224,23 @@ function toggleMusic() {
 
 // Initialize game
 window.addEventListener("load", () => {
-  console.log("=== WINDOW LOAD EVENT FIRED ===");
-  
   // Block mobile devices first
   blockMobileDevices();
 
   // Set up canvas
   canvas = document.getElementById("gameCanvas");
-  console.log("Canvas element:", canvas);
   
   if (!canvas) {
     console.error("CANVAS NOT FOUND!");
     return;
   }
   
-  ctx = canvas.getContext("2d");
+  ctx = canvas.getContext("2d", { alpha: true });
   ctx.imageSmoothingEnabled = false;
 
   // Set canvas dimensions
   canvas.width = 640;  // 20 tiles * 32px
   canvas.height = 480; // 15 tiles * 32px
-
-  console.log("Canvas initialized:", canvas.width, "x", canvas.height);
 
   // Load game assets
   loadTextures();
@@ -253,21 +248,15 @@ window.addEventListener("load", () => {
   initBackgroundMusic();
 
   // Set up UI event listeners
-  console.log("About to call setupUIEvents...");
   setupUIEvents();
-  console.log("setupUIEvents completed");
 });
 
 // Set up UI event listeners
 function setupUIEvents() {
-  console.log("Setting up UI events...");
-  
   // Multiplayer button
   const multiplayerBtn = document.getElementById("multiplayerBtn");
-  console.log("Multiplayer button found:", multiplayerBtn);
   if (multiplayerBtn) {
     multiplayerBtn.addEventListener("click", () => {
-      console.log("MULTIPLAYER BUTTON CLICKED!");
       window.isPracticeMode = false;
       window.playerName = window.simpleAuth?.getName() || "Player";
       startGameDirectly();
@@ -276,10 +265,8 @@ function setupUIEvents() {
 
   // Practice mode button
   const practiceBtn = document.getElementById("practiceBtn");
-  console.log("Practice button found:", practiceBtn);
   if (practiceBtn) {
     practiceBtn.addEventListener("click", () => {
-      console.log("PRACTICE BUTTON CLICKED!");
       window.isPracticeMode = true;
       window.playerName = window.simpleAuth?.getName() || "Player";
       startGameDirectly();
@@ -314,6 +301,26 @@ function setupUIEvents() {
       button.classList.remove("muted");
     }
   });
+
+  // Cancel waiting button
+  const cancelWaitingBtn = document.getElementById("cancelWaitingBtn");
+  if (cancelWaitingBtn) {
+    cancelWaitingBtn.addEventListener("click", () => {
+      // Disconnect from multiplayer
+      if (window.multiplayerMode && window.multiplayerMode.socket) {
+        window.multiplayerMode.socket.disconnect();
+      }
+      
+      // Hide waiting screen
+      document.getElementById("waitingScreen").style.display = "none";
+      
+      // Show home screen
+      document.getElementById("homeScreen").style.display = "flex";
+      
+      // Stop background music
+      stopBackgroundMusic();
+    });
+  }
 }
 
 // Show name dialog
@@ -420,15 +427,12 @@ function gameLoop() {
       draw();
     }
     requestAnimationFrame(gameLoop);
-  } else {
-    console.log("Game loop stopped - gameStarted:", gameStarted, "practiceMode:", window.practiceMode, "isPracticeMode:", window.isPracticeMode);
   }
 }
 
 // Draw the game
 function draw() {
   if (!gameStarted) {
-    console.log("Draw skipped - gameStarted:", gameStarted);
     return;
   }
 
@@ -436,7 +440,6 @@ function draw() {
   const currentGameState = window.gameState || gameState;
 
   if (!currentGameState) {
-    console.log("No game state available for drawing");
     return;
   }
 
@@ -446,11 +449,9 @@ function draw() {
   } else {
     // Initialize renderer if not available
     if (typeof GameRenderer !== 'undefined' && document.getElementById('gameCanvas')) {
-      console.log('Initializing GameRenderer from draw()');
       window.gameRenderer = new GameRenderer('gameCanvas');
       window.gameRenderer.render(currentGameState);
     } else {
-      console.log('Using legacy draw - GameRenderer not available');
       legacyDraw();
     }
   }
@@ -765,20 +766,16 @@ function showExplosion(x, y) {
 
 // Restart game
 function restartGame() {
-  console.log("Restarting game - practiceMode:", window.isPracticeMode);
-
   const winnerScreen = document.getElementById("winnerScreen");
   winnerScreen.style.display = "none";
 
   if (window.isPracticeMode) {
-    console.log("Restarting practice mode");
     if (window.practiceMode && window.practiceMode.restart) {
       window.practiceMode.restart();
     } else {
       window.startPracticeMode();
     }
   } else {
-    console.log("Restarting multiplayer mode");
     if (window.multiplayerMode && window.multiplayerMode.restart) {
       window.multiplayerMode.restart();
     } else {
@@ -853,4 +850,4 @@ function exitFullscreenMode() {
   }
 }
 
-console.log("Game core ready");
+// Game core ready

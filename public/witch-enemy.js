@@ -12,13 +12,13 @@ class WitchEnemy {
     this.active = false;
     this.x = 0;
     this.y = 0;
-    this.speed = 0.15; // Faster than regular enemies
+    this.speed = 0.08; // Slower, more menacing chase
     this.targetPlayer = null;
     
     // Appearance timing
-    this.minAppearanceInterval = 30000; // 30 seconds minimum
-    this.maxAppearanceInterval = 60000; // 60 seconds maximum
-    this.appearanceDuration = 20000; // Stays for 20 seconds
+    this.minAppearanceInterval = 10000; // 10 seconds minimum
+    this.maxAppearanceInterval = 20000; // 20 seconds maximum
+    this.appearanceDuration = 15000; // Stays for 15 seconds
     this.nextAppearanceTime = Date.now() + this.getRandomInterval();
     this.disappearTime = 0;
     
@@ -31,7 +31,6 @@ class WitchEnemy {
     this.animationFrame = 0;
     this.animationSpeed = 0.1;
     
-    console.log("WitchEnemy initialized");
   }
 
   /**
@@ -98,7 +97,6 @@ class WitchEnemy {
       });
     }
     
-    console.log('Witch appeared at', this.x, this.y);
     return true;
   }
 
@@ -111,9 +109,6 @@ class WitchEnemy {
     this.active = false;
     this.targetPlayer = null;
     this.nextAppearanceTime = Date.now() + this.getRandomInterval();
-    
-    console.log('Witch disappeared, next appearance in', 
-                Math.round((this.nextAppearanceTime - Date.now()) / 1000), 'seconds');
     return true;
   }
 
@@ -204,12 +199,20 @@ class WitchEnemy {
   }
 
   /**
+   * Catch player (called when collision detected)
+   */
+  catchPlayer(player) {
+    if (!this.active) return;
+    
+    // Witch caught the player - disappear after catching
+    this.disappear();
+  }
+
+  /**
    * Handle collision with player
    */
   onCollision(player, controllerIndex = null) {
     if (!this.active) return;
-    
-    console.log('Witch caught player:', player.name || player.id);
     
     // Trigger strong vibration
     if (controllerIndex !== null && window.controllerIntegration) {

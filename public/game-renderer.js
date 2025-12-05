@@ -5,7 +5,7 @@
 class GameRenderer {
   constructor(canvasId) {
     this.canvas = document.getElementById(canvasId);
-    this.ctx = this.canvas.getContext("2d");
+    this.ctx = this.canvas.getContext("2d", { alpha: true });
     this.ctx.imageSmoothingEnabled = false;
 
     // Set canvas dimensions
@@ -42,13 +42,15 @@ class GameRenderer {
       bomb: new Image(),
       snake: new Image(),
       snakeRed: new Image(),
+      witch: new Image(),
       loaded: {
         grass: false,
         brick: false,
         coin: false,
         bomb: false,
         snake: false,
-        snakeRed: false
+        snakeRed: false,
+        witch: false
       }
     };
 
@@ -75,6 +77,7 @@ class GameRenderer {
     this.textures.bomb.onload = () => { this.textures.loaded.bomb = true; };
     this.textures.snake.onload = () => { this.textures.loaded.snake = true; };
     this.textures.snakeRed.onload = () => { this.textures.loaded.snakeRed = true; };
+    this.textures.witch.onload = () => { this.textures.loaded.witch = true; };
 
     this.textures.grass.src = "assets/grass.png";
     this.textures.brick.src = "assets/brick.png";
@@ -82,6 +85,7 @@ class GameRenderer {
     this.textures.bomb.src = "assets/bomb.png";
     this.textures.snake.src = "assets/snake-r.png";
     this.textures.snakeRed.src = "assets/snake-re.png";
+    this.textures.witch.src = "assets/witch-typical-halloween-character-svgrepo-com.svg";
   }
 
   // Preload SVG images
@@ -201,18 +205,18 @@ class GameRenderer {
 
   // Draw background - Spooky Haunted Theme
   drawBackground(gameState) {
-    // Dark gradient background
+    // Semi-transparent dark gradient to show page background through
     const gradient = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height);
-    gradient.addColorStop(0, '#0d0d0d');
-    gradient.addColorStop(0.5, '#1a0a2e');
-    gradient.addColorStop(1, '#16213e');
+    gradient.addColorStop(0, 'rgba(13, 13, 13, 0.7)');
+    gradient.addColorStop(0.5, 'rgba(26, 10, 46, 0.8)');
+    gradient.addColorStop(1, 'rgba(22, 33, 62, 0.7)');
     this.ctx.fillStyle = gradient;
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-    // Draw haunted ground texture or fallback
+    // Draw haunted ground texture with transparency
     if (this.textures.grass && this.textures.loaded.grass) {
-      // Apply dark tint to grass
-      this.ctx.globalAlpha = 0.4;
+      // Apply dark tint to grass with more transparency
+      this.ctx.globalAlpha = 0.3;
       this.drawPixelRect(0, 0, this.canvas.width, this.canvas.height, this.textures.grass);
       this.ctx.globalAlpha = 1.0;
     }
@@ -1278,39 +1282,58 @@ class GameRenderer {
     
     const x = witch.x * this.TILE_SIZE;
     const y = witch.y * this.TILE_SIZE;
+    const witchSize = this.TILE_SIZE * 1.5; // Make witch larger
     
     // Draw witch glow
     const glowGradient = this.ctx.createRadialGradient(
       x + this.TILE_SIZE/2, y + this.TILE_SIZE/2, 0,
-      x + this.TILE_SIZE/2, y + this.TILE_SIZE/2, this.TILE_SIZE * 1.5
+      x + this.TILE_SIZE/2, y + this.TILE_SIZE/2, witchSize * 1.2
     );
     glowGradient.addColorStop(0, 'rgba(138, 43, 226, 0.6)');
     glowGradient.addColorStop(1, 'rgba(138, 43, 226, 0)');
     this.ctx.fillStyle = glowGradient;
     this.ctx.beginPath();
-    this.ctx.arc(x + this.TILE_SIZE/2, y + this.TILE_SIZE/2, this.TILE_SIZE * 1.5, 0, Math.PI * 2);
+    this.ctx.arc(x + this.TILE_SIZE/2, y + this.TILE_SIZE/2, witchSize * 1.2, 0, Math.PI * 2);
     this.ctx.fill();
     
-    // Draw witch body
-    this.ctx.fillStyle = witch.color || '#8B008B';
-    this.ctx.beginPath();
-    this.ctx.arc(x + this.TILE_SIZE/2, y + this.TILE_SIZE/2, this.TILE_SIZE * 0.6, 0, Math.PI * 2);
-    this.ctx.fill();
-    
-    // Draw witch hat
-    this.ctx.fillStyle = '#000000';
-    this.ctx.beginPath();
-    this.ctx.moveTo(x + this.TILE_SIZE * 0.2, y + this.TILE_SIZE * 0.3);
-    this.ctx.lineTo(x + this.TILE_SIZE * 0.5, y);
-    this.ctx.lineTo(x + this.TILE_SIZE * 0.8, y + this.TILE_SIZE * 0.3);
-    this.ctx.closePath();
-    this.ctx.fill();
+    // Draw witch SVG if loaded, otherwise fallback
+    if (this.textures.witch && this.textures.loaded.witch) {
+      // Center the witch image
+      const witchX = x - (witchSize - this.TILE_SIZE) / 2;
+      const witchY = y - (witchSize - this.TILE_SIZE) / 2;
+      
+      // Add floating animation
+      const floatOffset = Math.sin(Date.now() / 300) * 3;
+      
+      this.ctx.save();
+      this.ctx.globalAlpha = 0.95;
+      this.ctx.drawImage(this.textures.witch, witchX, witchY + floatOffset, witchSize, witchSize);
+      this.ctx.restore();
+    } else {
+      // Fallback: Draw witch body
+      this.ctx.fillStyle = witch.color || '#8B008B';
+      this.ctx.beginPath();
+      this.ctx.arc(x + this.TILE_SIZE/2, y + this.TILE_SIZE/2, this.TILE_SIZE * 0.6, 0, Math.PI * 2);
+      this.ctx.fill();
+      
+      // Draw witch hat
+      this.ctx.fillStyle = '#000000';
+      this.ctx.beginPath();
+      this.ctx.moveTo(x + this.TILE_SIZE * 0.2, y + this.TILE_SIZE * 0.3);
+      this.ctx.lineTo(x + this.TILE_SIZE * 0.5, y);
+      this.ctx.lineTo(x + this.TILE_SIZE * 0.8, y + this.TILE_SIZE * 0.3);
+      this.ctx.closePath();
+      this.ctx.fill();
+    }
     
     // Draw warning indicator
     this.ctx.fillStyle = '#FF0000';
-    this.ctx.font = 'bold 16px Arial';
+    this.ctx.font = 'bold 20px Arial';
     this.ctx.textAlign = 'center';
-    this.ctx.fillText('!', x + this.TILE_SIZE/2, y - 5);
+    this.ctx.strokeStyle = '#FFFFFF';
+    this.ctx.lineWidth = 3;
+    this.ctx.strokeText('⚠', x + this.TILE_SIZE/2, y - 10);
+    this.ctx.fillText('⚠', x + this.TILE_SIZE/2, y - 10);
   }
 }
 

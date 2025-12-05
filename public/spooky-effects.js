@@ -21,7 +21,6 @@ class SpookyEffects {
    */
   init() {
     if (this.reducedMotion) {
-      console.log('Reduced motion enabled - skipping particle effects');
       return;
     }
 

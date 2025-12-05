@@ -1,5 +1,4 @@
 // Player Statistics Tracking System
-console.log("Player statistics tracking system loaded");
 
 /**
  * PlayerStatistics class - Tracks detailed statistics for individual players
@@ -61,8 +60,6 @@ class PlayerStatistics {
     this.lastPosition = { x: 0, y: 0 };
     this.isInLead = false;
     this.lastScoreUpdate = Date.now();
-    
-    console.log(`Player statistics initialized for ${playerName} (${playerId})`);
   }
 
   /**
@@ -338,8 +335,6 @@ class PlayerStatistics {
     
     this.milestones.push(milestone);
     this.recordEvent('milestone_achieved', milestone, timestamp);
-    
-    console.log(`Milestone achieved by ${this.playerName}: ${description}`);
     return true;
   }
 
@@ -367,8 +362,6 @@ class PlayerStatistics {
     
     this.achievements.push(achievement);
     this.recordEvent('achievement_unlocked', achievement, timestamp);
-    
-    console.log(`Achievement unlocked by ${this.playerName}: ${title}`);
     return true;
   }
 
@@ -473,8 +466,6 @@ class PlayerStatistics {
     this.lastPosition = { x: 0, y: 0 };
     this.isInLead = false;
     this.lastScoreUpdate = Date.now();
-    
-    console.log(`Statistics reset for ${this.playerName}`);
   }
 
   /**
@@ -507,5 +498,3 @@ if (typeof window !== 'undefined') {
 } else if (typeof global !== 'undefined') {
   global.PlayerStatistics = PlayerStatistics;
 }
-
-console.log("Player statistics tracking system loaded successfully");

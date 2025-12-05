@@ -24,9 +24,8 @@ class SimpleAuth {
         const data = JSON.parse(savedData);
         this.playerName = data.name;
         this.playerId = data.id;
-        console.log(`Welcome back, ${this.playerName}!`);
       } catch (e) {
-        console.log('No valid saved player data found');
+        // No valid saved player data found
       }
     }
   }
@@ -120,8 +119,6 @@ class SimpleAuth {
     // Register with server
     await this.registerName(name);
     
-    console.log(`Player name saved: ${this.playerName}`);
-    
     return this.playerName;
   }
 
@@ -132,7 +129,6 @@ class SimpleAuth {
     this.playerName = null;
     this.playerId = null;
     this.deleteCookie();
-    console.log('Player data cleared');
   }
 
   /**

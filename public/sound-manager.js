@@ -60,8 +60,6 @@ class SoundManager {
     const audio = new Audio(path);
     audio.preload = 'auto';
     this.sounds[name] = audio;
-    
-    console.log(`Preloaded sound: ${name}`);
   }
 
   /**
@@ -109,7 +107,7 @@ class SoundManager {
     if (playPromise !== undefined) {
       playPromise
         .then(() => {
-          console.log(`Playing background music: ${trackName}`);
+          // Music started
         })
         .catch(error => {
           console.warn('Background music autoplay prevented:', error);
@@ -143,7 +141,6 @@ class SoundManager {
     if (this.backgroundMusic) {
       this.backgroundMusic.pause();
       this.backgroundMusic.currentTime = 0;
-      console.log('Background music stopped');
     }
   }
 
@@ -153,7 +150,6 @@ class SoundManager {
   pauseBackgroundMusic() {
     if (this.backgroundMusic) {
       this.backgroundMusic.pause();
-      console.log('Background music paused');
     }
   }
 
@@ -162,8 +158,7 @@ class SoundManager {
    */
   resumeBackgroundMusic() {
     if (this.backgroundMusic && this.musicEnabled) {
-      this.backgroundMusic.play().catch(e => console.warn('Resume failed:', e));
-      console.log('Background music resumed');
+      this.backgroundMusic.play().catch(() => {});
     }
   }
 
@@ -308,7 +303,6 @@ class SoundManager {
       sound.src = '';
     });
     this.sounds = {};
-    console.log('SoundManager destroyed');
   }
 }
 
