@@ -312,7 +312,9 @@ class MultiplayerMode {
 
     // Keyboard controls
     document.addEventListener("keydown", (e) => {
-      if (!this.gameStarted) return;
+      if (!this.gameStarted) {
+        return;
+      }
 
       switch (e.key) {
         case "ArrowUp":
@@ -352,6 +354,57 @@ class MultiplayerMode {
         this.isBoosting = false;
       }
     });
+
+    // Controller/Gamepad support
+    this.setupGamepadControls();
+  }
+
+  setupGamepadControls() {
+    const AXIS_THRESHOLD = 0.5;
+    
+    const pollGamepads = () => {
+      if (!this.gameStarted) {
+        this.gamepadPollId = requestAnimationFrame(pollGamepads);
+        return;
+      }
+
+      const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+      
+      for (const gamepad of gamepads) {
+        if (!gamepad) continue;
+
+        // Check for boost (R2 trigger - button 7)
+        if (gamepad.buttons[7]?.pressed || gamepad.buttons[7]?.value > 0.5) {
+          this.isBoosting = true;
+        } else {
+          this.isBoosting = false;
+        }
+
+        // Check D-pad (buttons 12-15)
+        if (gamepad.buttons[12]?.pressed) this.move("up");
+        if (gamepad.buttons[13]?.pressed) this.move("down");
+        if (gamepad.buttons[14]?.pressed) this.move("left");
+        if (gamepad.buttons[15]?.pressed) this.move("right");
+
+        // Check left analog stick
+        if (gamepad.axes.length >= 2) {
+          const axisX = gamepad.axes[0];
+          const axisY = gamepad.axes[1];
+
+          if (axisY < -AXIS_THRESHOLD) this.move("up");
+          if (axisY > AXIS_THRESHOLD) this.move("down");
+          if (axisX < -AXIS_THRESHOLD) this.move("left");
+          if (axisX > AXIS_THRESHOLD) this.move("right");
+        }
+
+        // Only use first connected controller
+        break;
+      }
+
+      this.gamepadPollId = requestAnimationFrame(pollGamepads);
+    };
+
+    this.gamepadPollId = requestAnimationFrame(pollGamepads);
   }
 
   move(direction) {
@@ -364,7 +417,10 @@ class MultiplayerMode {
     this.lastMoveTime = currentTime;
 
     if (this.socket && this.socket.connected && this.gameStarted) {
+      console.log("Sending move:", direction);
       this.socket.emit("move", direction);
+    } else {
+      console.log("Cannot move - socket:", !!this.socket, "connected:", this.socket?.connected, "gameStarted:", this.gameStarted);
     }
   }
 
@@ -569,6 +625,7 @@ class MultiplayerMode {
     }
     this.gameStarted = false;
     this.waitingForOpponent = false;
+    this.pendingPlayerName = null;
     
     // Stop render loop
     if (this.renderFrameId) {
@@ -576,8 +633,39 @@ class MultiplayerMode {
       this.renderFrameId = null;
     }
     
+    // Stop gamepad polling
+    if (this.gamepadPollId) {
+      cancelAnimationFrame(this.gamepadPollId);
+      this.gamepadPollId = null;
+    }
+    
     // Stop witch vibration
-    this.stopWitchVibration();
+    if (typeof this.stopWitchVibration === 'function') {
+      this.stopWitchVibration();
+    }
+    
+    // Hide game elements
+    const canvas = document.getElementById('gameCanvas');
+    const scoreboard = document.getElementById('scoreboard');
+    const gameContainer = document.querySelector('.game-container');
+    const waitingScreen = document.getElementById('waitingScreen');
+    
+    if (canvas) canvas.style.display = 'none';
+    if (scoreboard) scoreboard.style.display = 'none';
+    if (gameContainer) gameContainer.style.display = 'none';
+    if (waitingScreen) waitingScreen.style.display = 'none';
+    
+    // Show home screen
+    const homeScreen = document.getElementById('homeScreen');
+    if (homeScreen) {
+      homeScreen.style.display = 'flex';
+      homeScreen.style.visibility = 'visible';
+    }
+    
+    // Exit fullscreen
+    if (typeof exitFullscreenMode === 'function') {
+      exitFullscreenMode();
+    }
     
     console.log("Multiplayer disconnected - render loop stopped");
   }
