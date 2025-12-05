@@ -311,21 +311,39 @@ function setupUIEvents() {
   // Cancel waiting button
   const cancelWaitingBtn = document.getElementById("cancelWaitingBtn");
   if (cancelWaitingBtn) {
+    console.log("Cancel waiting button found, adding click handler");
     cancelWaitingBtn.addEventListener("click", () => {
+      console.log("Cancel waiting button clicked");
+      
       // Disconnect from multiplayer
       if (window.multiplayerMode && window.multiplayerMode.socket) {
         window.multiplayerMode.socket.disconnect();
+        window.multiplayerMode = null;
       }
       
       // Hide waiting screen
-      document.getElementById("waitingScreen").style.display = "none";
+      const waitingScreen = document.getElementById("waitingScreen");
+      if (waitingScreen) {
+        waitingScreen.style.display = "none";
+        waitingScreen.style.cssText = "display: none !important;";
+      }
       
       // Show home screen
-      document.getElementById("homeScreen").style.display = "flex";
+      const homeScreen = document.getElementById("homeScreen");
+      if (homeScreen) {
+        homeScreen.style.display = "flex";
+        homeScreen.style.visibility = "visible";
+      }
       
       // Stop background music
-      stopBackgroundMusic();
+      if (typeof stopBackgroundMusic === 'function') {
+        stopBackgroundMusic();
+      }
+      
+      console.log("Returned to home screen");
     });
+  } else {
+    console.error("Cancel waiting button NOT found!");
   }
 }
 
