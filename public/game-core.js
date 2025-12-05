@@ -446,9 +446,11 @@ function draw() {
   } else {
     // Initialize renderer if not available
     if (typeof GameRenderer !== 'undefined' && document.getElementById('gameCanvas')) {
+      console.log('Initializing GameRenderer from draw()');
       window.gameRenderer = new GameRenderer('gameCanvas');
       window.gameRenderer.render(currentGameState);
     } else {
+      console.log('Using legacy draw - GameRenderer not available');
       legacyDraw();
     }
   }
