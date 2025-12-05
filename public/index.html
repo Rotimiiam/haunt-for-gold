@@ -2002,9 +2002,11 @@
   <!-- Game Lifecycle Manager - prevents multiple games from running -->
   <script src="game-lifecycle-manager.js"></script>
   <script src="game-renderer.js"></script>
-  <script src="game-core.js"></script>
+  <!-- Game modes must load before game-core.js -->
   <script src="practice-mode.js"></script>
   <script src="multiplayer-mode.js"></script>
+  <!-- Game core loads after game modes are defined -->
+  <script src="game-core.js"></script>
   <script src="spooky-effects.js"></script>
   <!-- Local Multiplayer -->
   <script src="local-multiplayer-models.js"></script>

@@ -256,11 +256,17 @@ function setupUIEvents() {
   // Multiplayer button
   const multiplayerBtn = document.getElementById("multiplayerBtn");
   if (multiplayerBtn) {
+    console.log("Multiplayer button found, adding click handler");
     multiplayerBtn.addEventListener("click", () => {
+      console.log("*** MULTIPLAYER BUTTON CLICKED ***");
       window.isPracticeMode = false;
       window.playerName = window.simpleAuth?.getName() || "Player";
+      console.log("Player name:", window.playerName);
+      console.log("Calling startGameDirectly...");
       startGameDirectly();
     });
+  } else {
+    console.error("Multiplayer button NOT found!");
   }
 
   // Practice mode button
@@ -357,22 +363,50 @@ function submitName() {
 
 // Start game directly without name dialog
 function startGameDirectly() {
+  console.log("*** startGameDirectly called ***");
+  console.log("isPracticeMode:", window.isPracticeMode);
+  
   // Hide home screen
-  document.getElementById("homeScreen").style.display = "none";
+  const homeScreen = document.getElementById("homeScreen");
+  if (homeScreen) {
+    homeScreen.style.display = "none";
+    console.log("Home screen hidden");
+  } else {
+    console.error("Home screen not found!");
+  }
 
   // Start background music
   playBackgroundMusic();
 
   // Show music toggle button
-  document.getElementById("musicToggle").style.display = "flex";
+  const musicToggle = document.getElementById("musicToggle");
+  if (musicToggle) {
+    musicToggle.style.display = "flex";
+  }
 
   // Start appropriate game mode
   if (window.isPracticeMode) {
+    console.log("Starting practice mode...");
     // Start practice mode
-    window.startPracticeMode();
+    if (typeof window.startPracticeMode === 'function') {
+      window.startPracticeMode();
+    } else {
+      console.error("startPracticeMode function not found!");
+    }
   } else {
+    console.log("Starting multiplayer mode...");
     // Start multiplayer mode
-    window.startMultiplayerMode(window.playerName);
+    if (typeof window.startMultiplayerMode === 'function') {
+      window.startMultiplayerMode(window.playerName);
+    } else {
+      console.error("startMultiplayerMode function not found!");
+      // Fallback - show waiting screen directly
+      const waitingScreen = document.getElementById("waitingScreen");
+      if (waitingScreen) {
+        waitingScreen.style.cssText = "display: flex !important;";
+        console.log("Fallback: Showing waiting screen directly");
+      }
+    }
   }
 }
 
