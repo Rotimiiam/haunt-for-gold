@@ -405,16 +405,28 @@ class MultiplayerMode {
     // Show game elements
     const canvas = document.getElementById("gameCanvas");
     const scoreboard = document.getElementById("scoreboard");
+    const infoDiv = document.querySelector(".info");
 
     console.log("Canvas element:", canvas);
     console.log("Scoreboard element:", scoreboard);
 
-    canvas.style.display = "block";
-    document.querySelector(".info").style.display = "none";
-    scoreboard.style.display = "block";
+    if (canvas) {
+      canvas.style.display = "block";
+      console.log("Canvas display after setting:", canvas.style.display);
+      console.log("Canvas dimensions:", canvas.width, "x", canvas.height);
+    } else {
+      console.error("Canvas element not found!");
+    }
 
-    console.log("Canvas display after setting:", canvas.style.display);
-    console.log("Canvas dimensions:", canvas.width, "x", canvas.height);
+    if (infoDiv) {
+      infoDiv.style.display = "none";
+    }
+    
+    if (scoreboard) {
+      scoreboard.style.display = "block";
+    } else {
+      console.error("Scoreboard element not found!");
+    }
 
     // Show controls only on mobile (but mobile is blocked anyway)
     if (isMobile()) {
