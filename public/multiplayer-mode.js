@@ -79,6 +79,13 @@ class MultiplayerMode {
       // Test socket connection
       console.log("Socket connected:", this.socket.connected);
       console.log("Socket transport:", this.socket.io.engine.transport.name);
+      
+      // Auto-join game when connected (if we have a pending player name)
+      if (this.pendingPlayerName && !this.waitingForOpponent && !this.gameStarted) {
+        console.log("Auto-joining game with pending name:", this.pendingPlayerName);
+        this.joinGame(this.pendingPlayerName);
+        this.pendingPlayerName = null;
+      }
     });
 
     // Waiting for opponent
@@ -690,24 +697,25 @@ window.startMultiplayerMode = function (playerName) {
   }
   
   window.multiplayerMode = new MultiplayerMode();
+  // Store the player name for when socket connects
+  window.multiplayerMode.pendingPlayerName = playerName;
   console.log("*** CREATED MULTIPLAYER MODE INSTANCE ***");
   window.multiplayerMode.connect();
   console.log("*** MULTIPLAYER MODE CONNECT CALLED ***");
 
-  // Wait a moment for connection, then join
+  // The joinGame will be called automatically when socket connects (see setupSocketEvents)
+  // But also try immediately in case socket is already connected
   setTimeout(() => {
     if (window.multiplayerMode && window.multiplayerMode.socket && window.multiplayerMode.socket.connected) {
-      console.log("Socket ready, joining game");
-      window.multiplayerMode.joinGame(playerName);
+      if (window.multiplayerMode.pendingPlayerName) {
+        console.log("Socket already connected, joining game immediately");
+        window.multiplayerMode.joinGame(window.multiplayerMode.pendingPlayerName);
+        window.multiplayerMode.pendingPlayerName = null;
+      }
     } else {
-      console.error("Socket not ready, retrying in 500ms...");
-      setTimeout(() => {
-        if (window.multiplayerMode) {
-          window.multiplayerMode.joinGame(playerName);
-        }
-      }, 500);
+      console.log("Socket not connected yet, will auto-join when connected");
     }
-  }, 200);
+  }, 100);
 };
 
 // Global function for joining game (for compatibility)
