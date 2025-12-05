@@ -705,11 +705,16 @@ class PracticeMode {
             gameStarted = this.gameStarted;
           }
 
-          // Draw the game
-          if (typeof draw === "function") {
+          // Draw the game using GameRenderer
+          if (window.gameRenderer && typeof window.gameRenderer.render === 'function') {
+            window.gameRenderer.render(this.gameState);
+          } else if (typeof GameRenderer !== 'undefined') {
+            window.gameRenderer = new GameRenderer('gameCanvas');
+            window.gameRenderer.render(this.gameState);
+          } else if (typeof draw === "function") {
             draw();
           } else {
-            console.error("Draw function not found");
+            console.error("No renderer available");
           }
         }
 
