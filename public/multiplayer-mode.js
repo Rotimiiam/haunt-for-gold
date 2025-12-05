@@ -271,11 +271,20 @@ class MultiplayerMode {
       console.log("Rematch starting!");
       showNotification("Rematch!", "Get ready for round 2!");
       
+      // Reset game state
+      this.gameStarted = false;
+      
       // Hide winner screen
       const winnerScreen = document.getElementById('winnerScreen');
       if (winnerScreen) {
         winnerScreen.style.display = 'none';
       }
+      
+      // Show game canvas and scoreboard
+      const canvas = document.getElementById('gameCanvas');
+      const scoreboard = document.getElementById('scoreboard');
+      if (canvas) canvas.style.display = 'block';
+      if (scoreboard) scoreboard.style.display = 'block';
     });
 
     // Opponent left
@@ -439,7 +448,7 @@ class MultiplayerMode {
         timerElement = document.createElement('div');
         timerElement.id = 'onlineGameTimer';
         timerElement.className = 'cursed-timer';
-        timerElement.style.cssText = 'text-align: center; margin-bottom: 15px; font-size: 1.5rem; color: #ffd700;';
+        timerElement.style.cssText = 'text-align: center; margin-bottom: 15px; font-size: 1.5rem; color: #ffd700; position: relative;';
         // Insert at the top of scoreboard after the title
         const title = scoreboard.querySelector('h3');
         if (title && title.nextSibling) {
@@ -461,8 +470,10 @@ class MultiplayerMode {
         timerElement.style.animation = 'pulse 0.5s infinite';
       } else if (timeRemaining <= 30) {
         timerElement.style.color = '#ff6b00';
+        timerElement.style.animation = 'none';
       } else {
         timerElement.style.color = '#ffd700';
+        timerElement.style.animation = 'none';
       }
     }
   }

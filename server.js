@@ -212,6 +212,8 @@ app.get('/health', (req, res) => {
 });
 
 // Game rooms management
+// This Map supports multiple concurrent matches - each room is independent
+// Keys are room IDs, values are room objects with their own players, coins, enemies, etc.
 const gameRooms = new Map();
 let nextRoomId = 1;
 
@@ -397,6 +399,9 @@ function generateEnemies(room) {
 }
 
 // Find or create available room
+// NOTE: This function is not currently used because we use first-come-first-serve matchmaking
+// which creates a new room for each pair of players. However, it's kept here for potential
+// future use if we want to implement room-based matchmaking instead.
 function findAvailableRoom() {
   // Look for a room with space
   for (let [roomId, room] of gameRooms) {
@@ -698,10 +703,17 @@ io.on("connection", (socket) => {
       if (allWantRematch && allPlayers.length === 2) {
         console.log(`Both players want rematch in room ${playerRoom.id}, restarting game`);
 
+        // Stop existing timer if any
+        if (playerRoom.gameTimer) {
+          clearInterval(playerRoom.gameTimer);
+          playerRoom.gameTimer = null;
+        }
+
         // Reset the room
         playerRoom.gameStarted = false;
         playerRoom.difficultyLevel = 1;
         playerRoom.totalPointsCollected = 0;
+        playerRoom.timeRemaining = playerRoom.gameDuration;
         playerRoom.coins = generateCoins(playerRoom);
         playerRoom.bombs = generateBombs(playerRoom);
         playerRoom.enemies = generateEnemies(playerRoom);
@@ -723,6 +735,9 @@ io.on("connection", (socket) => {
 
         playerRoom.gameStarted = true;
 
+        // Start new timer
+        startGameTimer(playerRoom);
+
         // Send game ready to both players
         Object.keys(playerRoom.players).forEach(playerId => {
           io.to(playerId).emit("rematchStarting");
@@ -735,7 +750,9 @@ io.on("connection", (socket) => {
             mapHeight: playerRoom.mapHeight,
             difficultyLevel: playerRoom.difficultyLevel,
             winningScore: playerRoom.winningScore,
-            roomId: playerRoom.id
+            roomId: playerRoom.id,
+            gameDuration: playerRoom.gameDuration,
+            timeRemaining: playerRoom.timeRemaining
           });
         });
       }

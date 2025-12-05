@@ -644,7 +644,20 @@ function updateScoreboard() {
   // Sort players by score
   players.sort((a, b) => (b.score || 0) - (a.score || 0));
 
+  // Preserve timer element if it exists
+  const existingTimer = document.getElementById('onlineGameTimer');
+  let timerHTML = '';
+  if (existingTimer) {
+    timerHTML = existingTimer.outerHTML;
+  }
+
   let html = "<h3>Scoreboard</h3>";
+  
+  // Add timer back if it existed
+  if (timerHTML) {
+    html += timerHTML;
+  }
+  
   players.forEach((player, index) => {
     const isMe = player.id === currentGameState.myId;
     const rank = index + 1;
@@ -677,13 +690,24 @@ function showWinnerScreen(data, showRematch = false) {
   const homeBtn = document.getElementById("homeBtn");
 
   // Determine if current player won
-  const isWinner = data.winnerId === gameState.myId;
-  const currentPlayer = gameState.players[gameState.myId];
+  const currentGameState = window.gameState || gameState;
+  const isWinner = data.winnerId === currentGameState.myId;
 
   // Handle different win scenarios
   if (data.reason === 'opponent_left') {
     winnerTitle.textContent = "🏆 Victory! 🏆";
     winnerMessage.textContent = "Your opponent fled the battlefield!";
+  } else if (data.reason === 'time_up' || data.reason === 'tie') {
+    if (data.reason === 'tie') {
+      winnerTitle.textContent = "👻 It's a Tie! 👻";
+      winnerMessage.textContent = `Both players scored ${data.winnerScore} points!`;
+    } else if (isWinner) {
+      winnerTitle.textContent = "🏆 TIME'S UP - YOU WIN! 🏆";
+      winnerMessage.textContent = `You won with ${data.winnerScore} points!`;
+    } else {
+      winnerTitle.textContent = "💀 TIME'S UP - DEFEATED 💀";
+      winnerMessage.textContent = `${data.winnerName} won with ${data.winnerScore} points!`;
+    }
   } else if (isWinner) {
     winnerTitle.textContent = "🏆 VICTORY! 🏆";
     winnerMessage.textContent = `Congratulations! You reached ${data.winnerScore} points!`;
@@ -699,11 +723,12 @@ function showWinnerScreen(data, showRematch = false) {
   countdownTimer.style.display = "none";
 
   // Setup buttons based on game mode
-  if (showRematch && window.multiplayerMode && !window.practiceMode) {
+  if (showRematch && window.multiplayerMode && !window.practiceMode && !window.isPracticeMode) {
     // Online multiplayer - show rematch option
     playAgainBtn.textContent = "👻 Request Rematch";
+    playAgainBtn.disabled = false;
     playAgainBtn.onclick = () => {
-      playAgainBtn.textContent = "⏳ Waiting...";
+      playAgainBtn.textContent = "⏳ Waiting for opponent...";
       playAgainBtn.disabled = true;
       window.multiplayerMode.requestRematch();
     };
