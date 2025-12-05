@@ -444,7 +444,6 @@ function draw() {
   if (window.gameRenderer) {
     window.gameRenderer.render(currentGameState);
   } else {
-    console.log("Game renderer not available, falling back to legacy draw");
     legacyDraw();
   }
 }
@@ -456,12 +455,20 @@ function legacyDraw() {
   const currentGameState = window.gameState || gameState;
   if (!currentGameState) return;
 
-  console.log("Drawing game frame (legacy)");
-
-  // Clear canvas and draw grass background
-  ctx.fillStyle = COLORS.BACKGROUND;
+  // Draw spooky gradient background
+  const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  gradient.addColorStop(0, '#0d0d0d');
+  gradient.addColorStop(0.5, '#1a0a2e');
+  gradient.addColorStop(1, '#16213e');
+  ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  drawPixelRect(0, 0, canvas.width, canvas.height, textures.grass);
+  
+  // Draw grass with dark tint overlay
+  if (textures.grass && textures.grass.complete) {
+    ctx.globalAlpha = 0.4;
+    drawPixelRect(0, 0, canvas.width, canvas.height, textures.grass);
+    ctx.globalAlpha = 1.0;
+  }
 
   // Draw grid
   ctx.strokeStyle = "rgba(34, 34, 34, 0.3)";
@@ -535,8 +542,6 @@ function drawPlayers() {
   const currentGameState = window.gameState || gameState;
   if (!currentGameState) return;
 
-  console.log("Drawing players, count:", Object.keys(currentGameState.players).length);
-  console.log("Players data:", currentGameState.players);
   Object.values(currentGameState.players).forEach((player) => {
     const x = player.x * TILE_SIZE;
     const y = player.y * TILE_SIZE;

@@ -597,6 +597,12 @@ class PracticeMode {
     console.log("Starting practice game");
     this.gameStarted = true;
 
+    // Ensure GameRenderer is initialized
+    if (!window.gameRenderer && typeof GameRenderer !== 'undefined') {
+      window.gameRenderer = new GameRenderer('gameCanvas');
+      console.log("GameRenderer initialized for practice mode");
+    }
+
     // Hide home screen
     const homeScreen = document.getElementById("homeScreen");
     if (homeScreen) {
