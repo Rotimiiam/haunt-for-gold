@@ -25,7 +25,7 @@ jobs:
       - name: Create deployment package
         run: |
           mkdir -p deploy
-          rsync -av --exclude='node_modules' --exclude='.git' --exclude='*.sqlite' --exclude='.env' --exclude='test-*.js' --exclude='sync_config.jsonc' --exclude='pixel-pursuit' . deploy/
+          rsync -av --exclude='node_modules' --exclude='.git' --exclude='*.sqlite' --exclude='.env' --exclude='test-*.js' --exclude='sync_config.jsonc' --exclude='pixel-pursuit' --exclude='deploy' . deploy/
           cd deploy && npm ci --production
 
       - name: Deploy to server

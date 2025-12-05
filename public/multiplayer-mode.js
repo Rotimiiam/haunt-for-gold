@@ -9,6 +9,7 @@ class MultiplayerMode {
       coins: [],
       bombs: [],
       enemies: [],
+      witch: null,
       myId: null,
       mapWidth: 20,
       mapHeight: 15,
@@ -22,6 +23,7 @@ class MultiplayerMode {
     this.MOVE_COOLDOWN = 150;
     this.BOOST_COOLDOWN = 75; // Faster movement when boosting
     this.isBoosting = false;
+    this.witch = null;
   }
 
   connect() {
@@ -365,8 +367,13 @@ class MultiplayerMode {
 
     // Ensure GameRenderer is initialized before rendering
     if (!window.gameRenderer && typeof GameRenderer !== 'undefined') {
-      console.log("Initializing GameRenderer for multiplayer mode");
-      window.gameRenderer = new GameRenderer('gameCanvas');
+      const canvas = document.getElementById('gameCanvas');
+      if (canvas) {
+        console.log("Initializing GameRenderer for multiplayer mode");
+        window.gameRenderer = new GameRenderer('gameCanvas');
+      } else {
+        console.error("Cannot initialize GameRenderer - canvas element not found");
+      }
     }
 
     // Set game start time
@@ -402,7 +409,7 @@ class MultiplayerMode {
       gameContainer.style.display = "flex";
     }
 
-    // Show game elements
+    // Show game elements - ensure canvas is visible
     const canvas = document.getElementById("gameCanvas");
     const scoreboard = document.getElementById("scoreboard");
     const infoDiv = document.querySelector(".info");
@@ -412,8 +419,12 @@ class MultiplayerMode {
 
     if (canvas) {
       canvas.style.display = "block";
+      canvas.style.visibility = "visible";
       console.log("Canvas display after setting:", canvas.style.display);
       console.log("Canvas dimensions:", canvas.width, "x", canvas.height);
+      
+      // Force a reflow to ensure canvas is rendered
+      canvas.offsetHeight;
     } else {
       console.error("Canvas element not found!");
     }
@@ -426,6 +437,12 @@ class MultiplayerMode {
       scoreboard.style.display = "block";
     } else {
       console.error("Scoreboard element not found!");
+    }
+
+    // Initialize witch enemy for online multiplayer
+    if (typeof WitchEnemy !== 'undefined' && !this.witch) {
+      this.witch = new WitchEnemy(this.gameState.mapWidth, this.gameState.mapHeight);
+      console.log('🧙‍♀️ Witch enemy initialized for online multiplayer');
     }
 
     // Show controls only on mobile (but mobile is blocked anyway)
@@ -461,13 +478,25 @@ class MultiplayerMode {
     const renderLoop = () => {
       if (!this.gameStarted) return;
 
+      // Update witch if active (client-side prediction)
+      if (this.witch && this.gameState) {
+        const players = Object.values(this.gameState.players);
+        this.witch.update(players);
+        
+        // Add witch state to game state for rendering
+        this.gameState.witch = this.witch.getState();
+      }
+
       if (window.gameRenderer && this.gameState) {
         window.gameRenderer.render(this.gameState);
       } else {
         // Try to initialize renderer if missing
         if (!window.gameRenderer && typeof GameRenderer !== 'undefined') {
-          console.log("Re-initializing GameRenderer in render loop");
-          window.gameRenderer = new GameRenderer('gameCanvas');
+          const canvas = document.getElementById('gameCanvas');
+          if (canvas) {
+            console.log("Re-initializing GameRenderer in render loop");
+            window.gameRenderer = new GameRenderer('gameCanvas');
+          }
         }
       }
 

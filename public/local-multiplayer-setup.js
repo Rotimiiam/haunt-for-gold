@@ -283,13 +283,23 @@ class LocalMultiplayerSetup {
       maxPlayers: 4
     };
 
-    // Show game canvas
+    // Show game canvas - ensure it's visible
     const canvas = document.getElementById('gameCanvas');
     const scoreboard = document.getElementById('scoreboard');
+    const gameContainer = document.querySelector('.game-container');
+    
+    if (gameContainer) {
+      gameContainer.style.display = 'flex';
+    }
     
     if (canvas) {
       canvas.style.display = 'block';
+      canvas.style.visibility = 'visible';
+      console.log('Canvas shown for local multiplayer:', canvas.width, 'x', canvas.height);
+    } else {
+      console.error('Canvas element not found!');
     }
+    
     if (scoreboard) {
       scoreboard.style.display = 'block';
     }
@@ -312,6 +322,7 @@ class LocalMultiplayerSetup {
       coins: [],
       bombs: [],
       enemies: [],
+      witch: null,
       winningScore: settings.targetScore,
       difficultyLevel: 1,
       gameStarted: true,
@@ -320,6 +331,12 @@ class LocalMultiplayerSetup {
       isLocalMultiplayer: true,
       timeRemaining: settings.gameDuration
     };
+
+    // Initialize witch enemy
+    if (typeof WitchEnemy !== 'undefined') {
+      this.witch = new WitchEnemy(settings.mapWidth, settings.mapHeight);
+      console.log('🧙‍♀️ Witch enemy initialized for local multiplayer');
+    }
 
     // Starting positions for players
     const startPositions = [
@@ -613,6 +630,34 @@ class LocalMultiplayerSetup {
           this.checkLocalCollisions(playerId, gameState);
         });
       });
+
+      // Update witch
+      if (this.witch) {
+        const players = Object.values(gameState.players);
+        this.witch.update(players);
+        
+        // Check witch collision with all players
+        players.forEach((player, index) => {
+          if (this.witch.checkCollision(player)) {
+            this.witch.catchPlayer(player);
+            player.score = Math.max(0, player.score - 30);
+            
+            // Vibrate the player's controller
+            const gamepadIndex = index;
+            this.vibrateController(gamepadIndex, 500, 1.0, 1.0);
+            
+            // Show notification
+            if (window.spookyEffects) {
+              window.spookyEffects.screenShake();
+            }
+            
+            this.updateLocalScoreboard(gameState);
+          }
+        });
+        
+        // Add witch to game state for rendering
+        gameState.witch = this.witch.getState();
+      }
     };
 
     // Render loop
@@ -621,11 +666,19 @@ class LocalMultiplayerSetup {
 
       // Initialize renderer if not available
       if (!window.gameRenderer && typeof GameRenderer !== 'undefined') {
-        window.gameRenderer = new GameRenderer('gameCanvas');
+        const canvas = document.getElementById('gameCanvas');
+        if (canvas) {
+          window.gameRenderer = new GameRenderer('gameCanvas');
+          console.log('GameRenderer initialized for local multiplayer');
+        } else {
+          console.error('Cannot initialize renderer - canvas not found');
+        }
       }
 
       if (window.gameRenderer) {
         window.gameRenderer.render(gameState);
+      } else {
+        console.warn('GameRenderer not available for rendering');
       }
 
       window.localRenderFrame = requestAnimationFrame(render);
