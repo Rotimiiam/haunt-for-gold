@@ -123,7 +123,7 @@ class ConfigurationManager {
       }
     };
     
-    console.log("ConfigurationManager initialized");
+    // ConfigurationManager initialized
   }
 
   /**

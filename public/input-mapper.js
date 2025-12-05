@@ -40,7 +40,7 @@ class InputMapper {
       axis3: 'lookY'          // Right stick Y
     };
     
-    console.log("InputMapper initialized");
+    // InputMapper initialized
   }
 
   /**

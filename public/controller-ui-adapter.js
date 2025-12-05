@@ -51,7 +51,7 @@ class ControllerUIAdapter {
     };
     
     this.init();
-    console.log("ControllerUIAdapter initialized");
+    // ControllerUIAdapter initialized
   }
 
   /**

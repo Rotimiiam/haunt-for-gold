@@ -18,7 +18,7 @@ class InputPriorityManager {
     this.controllerListeners = [];
     
     this.init();
-    console.log("InputPriorityManager initialized");
+    // InputPriorityManager initialized
   }
 
   /**

@@ -21,7 +21,7 @@ class ControllerManager {
     // Initialize gamepad event listeners
     this.initializeGamepadEvents();
     
-    console.log("ControllerManager initialized");
+    // ControllerManager initialized
   }
 
   /**
@@ -62,7 +62,7 @@ class ControllerManager {
       this.updateControllerStates();
     }, 100); // Check every 100ms
     
-    console.log("Controller monitoring started");
+    // Controller monitoring started
   }
 
   /**

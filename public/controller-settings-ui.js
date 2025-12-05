@@ -34,7 +34,7 @@ class ControllerSettingsUI {
       dpadRight: 'D-Pad Right'
     };
     
-    console.log("ControllerSettingsUI initialized");
+    // ControllerSettingsUI initialized
   }
 
   /**

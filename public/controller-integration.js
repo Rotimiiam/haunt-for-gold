@@ -17,7 +17,7 @@ class ControllerIntegration {
     this.initialized = false;
     this.gameMode = null;
     
-    console.log("ControllerIntegration created");
+    // ControllerIntegration created
   }
 
   /**
@@ -64,7 +64,7 @@ class ControllerIntegration {
       window.controllerSettingsUI = this.settingsUI;
       
       this.initialized = true;
-      console.log('Controller integration initialized successfully');
+      // Controller integration initialized
       
       return true;
     } catch (error) {

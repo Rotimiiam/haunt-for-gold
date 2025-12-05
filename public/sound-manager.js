@@ -17,7 +17,7 @@ class SoundManager {
     // Load settings from localStorage
     this.loadSettings();
     
-    console.log("SoundManager initialized");
+    // SoundManager initialized
   }
 
   /**
@@ -77,7 +77,7 @@ class SoundManager {
     this.preloadSound('witch-cackle', '/sounds/witch-cackle.mp4a');
     this.preloadSound('explosion', '/sounds/zapsplat_explosion_short_airy_large_002_92191.mp3');
     
-    console.log('All sounds preloaded');
+    // All sounds preloaded
   }
 
   /**

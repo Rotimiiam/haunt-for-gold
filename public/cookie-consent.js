@@ -12,7 +12,7 @@ class CookieConsent {
   init() {
     // Check if consent already given
     if (this.hasConsent()) {
-      console.log('Cookie consent already given');
+      // Cookie consent already given
       return;
     }
 

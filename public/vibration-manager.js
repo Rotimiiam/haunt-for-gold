@@ -54,7 +54,7 @@ class VibrationManager {
       }
     };
     
-    console.log("VibrationManager initialized");
+    // VibrationManager initialized
   }
 
   /**
@@ -305,7 +305,7 @@ class VibrationManager {
    */
   enable() {
     this.vibrationEnabled = true;
-    console.log('Vibration enabled');
+    // Vibration enabled
   }
 
   /**
