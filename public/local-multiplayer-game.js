@@ -1,5 +1,5 @@
 // Local Multiplayer Game State Management
-console.log("Local multiplayer game state management script loaded");
+// Local multiplayer game state management script loaded
 
 /**
  * LocalMultiplayerGame class - Manages complete game state for local multiplayer
@@ -897,4 +897,4 @@ if (typeof window !== 'undefined') {
   global.LocalMultiplayerGame = LocalMultiplayerGame;
 }
 
-console.log("Local multiplayer game state management loaded successfully");
+// Local multiplayer game state management loaded

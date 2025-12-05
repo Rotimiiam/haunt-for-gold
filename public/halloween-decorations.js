@@ -170,4 +170,4 @@ document.addEventListener('DOMContentLoaded', () => {
   window.halloweenDecorations = new HalloweenDecorations();
 });
 
-console.log('Halloween decorations loaded');
+// Halloween decorations loaded

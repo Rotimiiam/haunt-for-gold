@@ -1,5 +1,5 @@
 // Practice Mode - Single Player Game Logic
-console.log("Practice mode script loaded");
+// Practice mode script loaded
 
 class PracticeMode {
   constructor() {

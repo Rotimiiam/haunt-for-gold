@@ -3,7 +3,7 @@
  * Provides gamepad support for menus and gameplay
  */
 
-console.log('Controller navigation system loaded');
+// Controller navigation system loaded
 
 class ControllerNavigationSystem {
     constructor() {

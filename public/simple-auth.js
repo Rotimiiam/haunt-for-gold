@@ -335,4 +335,4 @@ document.addEventListener('DOMContentLoaded', () => {
   window.playerName = window.simpleAuth.getName() || 'Ghost';
 });
 
-console.log('Simple auth system loaded');
+// Simple auth system loaded

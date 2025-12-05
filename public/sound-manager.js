@@ -1,5 +1,5 @@
 // Sound Manager - Handles all game audio
-console.log("Sound manager script loaded");
+// Sound manager script loaded
 
 /**
  * SoundManager class - Manages background music and sound effects
@@ -327,4 +327,4 @@ if (typeof window !== 'undefined') {
   }
 }
 
-console.log("Sound manager loaded successfully");
+// Sound manager loaded

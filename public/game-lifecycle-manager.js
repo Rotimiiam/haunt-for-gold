@@ -41,5 +41,5 @@
     }
   };
 
-  console.log('Game lifecycle manager loaded');
+  // Game lifecycle manager loaded
 })();

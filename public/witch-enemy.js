@@ -1,5 +1,5 @@
 // Witch Enemy - Special enemy that pops in and chases players
-console.log("Witch enemy script loaded");
+// Witch enemy script loaded
 
 /**
  * WitchEnemy class - Special boss-like enemy
@@ -328,4 +328,4 @@ if (typeof window !== 'undefined') {
   window.WitchEnemy = WitchEnemy;
 }
 
-console.log("Witch enemy loaded successfully");
+// Witch enemy loaded

@@ -1,5 +1,5 @@
 // Local Multiplayer Data Models and Configuration
-console.log("Local multiplayer models script loaded");
+// Local multiplayer models script loaded
 
 /**
  * LocalPlayer class - Represents a player in local multiplayer mode
@@ -592,4 +592,4 @@ if (typeof window !== 'undefined') {
   global.validateControlScheme = validateControlScheme;
 }
 
-console.log("Local multiplayer models loaded successfully");
+// Local multiplayer models loaded

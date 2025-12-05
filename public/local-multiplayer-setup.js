@@ -723,4 +723,4 @@ document.addEventListener('DOMContentLoaded', () => {
   window.localMultiplayerSetup = new LocalMultiplayerSetup();
 });
 
-console.log('Local multiplayer setup loaded');
+// Local multiplayer setup loaded
