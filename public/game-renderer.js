@@ -1269,19 +1269,6 @@ class GameRenderer {
       }
     }, 200);
   }
-}
-
-// Global renderer instance
-window.gameRenderer = null;
-
-// Initialize renderer when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-  if (document.getElementById('gameCanvas')) {
-    window.gameRenderer = new GameRenderer('gameCanvas');
-  }
-});
-
-console.log("Game renderer ready");
 
   /**
    * Draw witch enemy
@@ -1326,3 +1313,13 @@ console.log("Game renderer ready");
     this.ctx.fillText('!', x + this.TILE_SIZE/2, y - 5);
   }
 }
+
+// Global renderer instance
+window.gameRenderer = null;
+
+// Initialize renderer when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+  if (document.getElementById('gameCanvas')) {
+    window.gameRenderer = new GameRenderer('gameCanvas');
+  }
+});

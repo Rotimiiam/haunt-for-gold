@@ -241,8 +241,6 @@ class ControllerNavigationSystem {
             this.currentFocusIndex = 0;
         }
 
-        console.log(`Focusable elements updated: ${this.focusableElements.length} elements in ${activeContainer.id || 'body'}`);
-        
         // Auto-focus first element if we have elements
         if (this.focusableElements.length > 0 && this.isActive) {
             this.focusElement();
@@ -712,8 +710,6 @@ class ControllerNavigationSystem {
             
             // Vibrate controller for feedback
             this.vibrateOnNavigate();
-            
-            console.log('Focused:', element.textContent || element.id);
         }
     }
 
