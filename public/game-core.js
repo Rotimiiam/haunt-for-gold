@@ -441,10 +441,16 @@ function draw() {
   }
 
   // Use the new renderer if available
-  if (window.gameRenderer) {
+  if (window.gameRenderer && typeof window.gameRenderer.render === 'function') {
     window.gameRenderer.render(currentGameState);
   } else {
-    legacyDraw();
+    // Initialize renderer if not available
+    if (typeof GameRenderer !== 'undefined' && document.getElementById('gameCanvas')) {
+      window.gameRenderer = new GameRenderer('gameCanvas');
+      window.gameRenderer.render(currentGameState);
+    } else {
+      legacyDraw();
+    }
   }
 }
 
