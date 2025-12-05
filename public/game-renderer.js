@@ -1,6 +1,6 @@
 // Game Renderer - Handles all canvas drawing and map rendering
 // Haunt For Gold - Spooky Halloween Theme
-console.log("Game renderer script loaded");
+// Game renderer script loaded
 
 class GameRenderer {
   constructor(canvasId) {
@@ -64,7 +64,7 @@ class GameRenderer {
     this.loadTextures();
     this.preloadSVGImages();
 
-    console.log("Game renderer initialized");
+    // Game renderer initialized
   }
 
   // Load textures

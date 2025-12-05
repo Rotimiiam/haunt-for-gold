@@ -1,5 +1,5 @@
 // Input Priority Manager - Handles seamless switching between input methods
-console.log("Input priority manager script loaded");
+// Input priority manager script loaded
 
 /**
  * InputPriorityManager class - Manages input priority and seamless switching
@@ -357,4 +357,4 @@ if (typeof window !== 'undefined') {
   window.InputPriorityManager = InputPriorityManager;
 }
 
-console.log("Input priority manager loaded successfully");
+// Input priority manager loaded

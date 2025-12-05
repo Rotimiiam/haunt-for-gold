@@ -1,5 +1,5 @@
 // Vibration Manager - Handles controller haptic feedback
-console.log("Vibration manager script loaded");
+// Vibration manager script loaded
 
 /**
  * VibrationManager class - Manages controller vibration/haptic feedback
@@ -408,4 +408,4 @@ if (typeof window !== 'undefined') {
   window.VibrationManager = VibrationManager;
 }
 
-console.log("Vibration manager loaded successfully");
+// Vibration manager loaded

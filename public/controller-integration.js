@@ -1,5 +1,5 @@
 // Controller Integration - Integrates controller support with game modes
-console.log("Controller integration script loaded");
+// Controller integration script loaded
 
 /**
  * ControllerIntegration class - Integrates all controller components with game
@@ -437,4 +437,4 @@ if (document.readyState === 'loading') {
   window.controllerIntegration.init();
 }
 
-console.log("Controller integration loaded successfully");
+// Controller integration loaded

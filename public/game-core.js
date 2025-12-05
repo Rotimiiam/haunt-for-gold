@@ -1,5 +1,5 @@
 // Core Game Functions - Shared between Practice and Multiplayer
-console.log("Game core script loaded");
+// Game core script loaded
 
 // Early mobile detection and blocking
 if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {

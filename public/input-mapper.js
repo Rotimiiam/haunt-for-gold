@@ -1,5 +1,5 @@
 // Input Mapper - Maps controller inputs to game actions
-console.log("Input mapper script loaded");
+// Input mapper script loaded
 
 /**
  * InputMapper class - Handles button and axis mapping for controllers
@@ -397,4 +397,4 @@ if (typeof window !== 'undefined') {
   global.InputMapper = InputMapper;
 }
 
-console.log("Input mapper loaded successfully");
+// Input mapper loaded

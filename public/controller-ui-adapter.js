@@ -1,5 +1,5 @@
 // Controller UI Adapter - Updates UI based on controller state
-console.log("Controller UI adapter script loaded");
+// Controller UI adapter script loaded
 
 /**
  * ControllerUIAdapter class - Adapts UI for controller input
@@ -545,4 +545,4 @@ if (typeof window !== 'undefined') {
   window.ControllerUIAdapter = ControllerUIAdapter;
 }
 
-console.log("Controller UI adapter loaded successfully");
+// Controller UI adapter loaded

@@ -1,7 +1,7 @@
 /**
  * Debug script to help identify issues with the login and register buttons
  */
-console.log('Debug script loaded');
+// Debug script loaded
 
 document.addEventListener('DOMContentLoaded', () => {
   console.log('DOM fully loaded');

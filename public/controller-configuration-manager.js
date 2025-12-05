@@ -1,5 +1,5 @@
 // Controller Configuration Manager - Handles saving/loading controller settings
-console.log("Controller configuration manager script loaded");
+// Controller configuration manager script loaded
 
 /**
  * ConfigurationManager class - Manages controller configurations and persistence
@@ -536,4 +536,4 @@ if (typeof window !== 'undefined') {
   global.ConfigurationManager = ConfigurationManager;
 }
 
-console.log("Controller configuration manager loaded successfully");
+// Controller configuration manager loaded

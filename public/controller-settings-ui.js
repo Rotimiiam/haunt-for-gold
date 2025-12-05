@@ -1,5 +1,5 @@
 // Controller Settings UI - Button remapping interface
-console.log("Controller settings UI script loaded");
+// Controller settings UI script loaded
 
 /**
  * ControllerSettingsUI class - Provides UI for button remapping and testing
@@ -759,4 +759,4 @@ if (typeof window !== 'undefined') {
   window.ControllerSettingsUI = ControllerSettingsUI;
 }
 
-console.log("Controller settings UI loaded successfully");
+// Controller settings UI loaded

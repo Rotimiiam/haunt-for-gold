@@ -1,5 +1,5 @@
 // Game Audio Initialization
-console.log("Game audio init script loaded");
+// Game audio init script loaded
 
 (function() {
   'use strict';
@@ -117,4 +117,4 @@ console.log("Game audio init script loaded");
 
 })();
 
-console.log("Game audio init loaded successfully");
+// Game audio init loaded

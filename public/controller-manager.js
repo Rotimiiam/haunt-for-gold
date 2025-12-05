@@ -1,5 +1,5 @@
 // Controller Detection and Management System
-console.log("Controller manager script loaded");
+// Controller manager script loaded
 
 /**
  * ControllerManager class - Handles gamepad detection and management using Gamepad API
@@ -611,4 +611,4 @@ if (typeof window !== 'undefined') {
   global.ControllerManager = ControllerManager;
 }
 
-console.log("Controller manager loaded successfully");
+// Controller manager loaded
