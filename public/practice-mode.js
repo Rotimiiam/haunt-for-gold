@@ -21,6 +21,13 @@ class PracticeMode {
     this.isBoosting = false;
     this.gamepadPollId = null;
     this.activeGamepad = null;
+    
+    // Initialize witch enemy
+    this.witch = null;
+    if (typeof WitchEnemy !== 'undefined') {
+      this.witch = new WitchEnemy(this.gameState.mapWidth, this.gameState.mapHeight);
+      console.log('Witch enemy initialized for practice mode');
+    }
   }
 
   start() {
@@ -663,6 +670,24 @@ class PracticeMode {
                          document.getElementById('pauseOverlay')?.style.display === 'flex';
         
         if (!isPaused) {
+          // Update witch
+          if (this.witch) {
+            const players = Object.values(this.gameState.players);
+            this.witch.update(players);
+            
+            // Check witch collision with human player
+            const humanPlayer = this.gameState.players[this.gameState.myId];
+            if (humanPlayer && this.witch.checkCollision(humanPlayer)) {
+              this.witch.catchPlayer(humanPlayer);
+              humanPlayer.score = Math.max(0, humanPlayer.score - 30);
+              showNotification("Caught by Witch!", "-30 points");
+              this.vibrateController(500, 1.0, 1.0);
+            }
+            
+            // Add witch to game state for rendering
+            this.gameState.witch = this.witch.getState();
+          }
+          
           // Update global state for core functions
           window.gameState = this.gameState;
           window.gameStarted = this.gameStarted;

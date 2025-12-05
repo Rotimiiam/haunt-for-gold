@@ -35,10 +35,11 @@
 
 /* Base Spooky Body */
 body.spooky-theme {
-  background: linear-gradient(180deg, 
-    var(--spooky-black) 0%, 
-    var(--haunted-purple) 50%, 
-    var(--midnight-blue) 100%);
+  background: var(--spooky-black);
+  background-image: url('/assets/spooky-background.svg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   background-attachment: fixed;
   color: var(--bone-white);
   font-family: 'Segoe UI', sans-serif;

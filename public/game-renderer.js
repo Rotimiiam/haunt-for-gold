@@ -124,6 +124,11 @@ class GameRenderer {
     this.drawCoins(gameState);
     this.drawBombs(gameState);
     this.drawEnemies(gameState);
+    
+    // Draw witch if active
+    if (gameState.witch && gameState.witch.active) {
+      this.drawWitch(gameState.witch);
+    }
 
     // Use enhanced multi-player rendering
     if (Object.keys(gameState.players).length > 1) {
@@ -1277,3 +1282,47 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 console.log("Game renderer ready");
+
+  /**
+   * Draw witch enemy
+   */
+  drawWitch(witch) {
+    if (!witch || !witch.active) return;
+    
+    const x = witch.x * this.TILE_SIZE;
+    const y = witch.y * this.TILE_SIZE;
+    
+    // Draw witch glow
+    const glowGradient = this.ctx.createRadialGradient(
+      x + this.TILE_SIZE/2, y + this.TILE_SIZE/2, 0,
+      x + this.TILE_SIZE/2, y + this.TILE_SIZE/2, this.TILE_SIZE * 1.5
+    );
+    glowGradient.addColorStop(0, 'rgba(138, 43, 226, 0.6)');
+    glowGradient.addColorStop(1, 'rgba(138, 43, 226, 0)');
+    this.ctx.fillStyle = glowGradient;
+    this.ctx.beginPath();
+    this.ctx.arc(x + this.TILE_SIZE/2, y + this.TILE_SIZE/2, this.TILE_SIZE * 1.5, 0, Math.PI * 2);
+    this.ctx.fill();
+    
+    // Draw witch body
+    this.ctx.fillStyle = witch.color || '#8B008B';
+    this.ctx.beginPath();
+    this.ctx.arc(x + this.TILE_SIZE/2, y + this.TILE_SIZE/2, this.TILE_SIZE * 0.6, 0, Math.PI * 2);
+    this.ctx.fill();
+    
+    // Draw witch hat
+    this.ctx.fillStyle = '#000000';
+    this.ctx.beginPath();
+    this.ctx.moveTo(x + this.TILE_SIZE * 0.2, y + this.TILE_SIZE * 0.3);
+    this.ctx.lineTo(x + this.TILE_SIZE * 0.5, y);
+    this.ctx.lineTo(x + this.TILE_SIZE * 0.8, y + this.TILE_SIZE * 0.3);
+    this.ctx.closePath();
+    this.ctx.fill();
+    
+    // Draw warning indicator
+    this.ctx.fillStyle = '#FF0000';
+    this.ctx.font = 'bold 16px Arial';
+    this.ctx.textAlign = 'center';
+    this.ctx.fillText('!', x + this.TILE_SIZE/2, y - 5);
+  }
+}
