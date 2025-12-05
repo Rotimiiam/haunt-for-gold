@@ -322,7 +322,7 @@ class ControllerNavigationSystem {
 
     handleController(gp, index) {
         // Don't process navigation if on-screen keyboard is active
-        if (window.onScreenKeyboardActive) {
+        if (window.onScreenKeyboardActive === true) {
             return;
         }
         

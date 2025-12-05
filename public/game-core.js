@@ -415,19 +415,12 @@ function preventFullscreenExit(e) {
   }
 }
 
-// Game loop (only used by multiplayer mode now)
+// Game loop (DEPRECATED - each mode now has its own render loop)
+// This function is kept for backwards compatibility but should not be called
 function gameLoop() {
-  if (gameStarted && !window.practiceMode && !window.isPracticeMode) {
-    // Check if game is paused
-    const isPaused = window.localGameState?.isPaused || 
-                     window.practiceMode?.isPaused ||
-                     document.getElementById('pauseOverlay')?.style.display === 'flex';
-    
-    if (!isPaused) {
-      draw();
-    }
-    requestAnimationFrame(gameLoop);
-  }
+  // No longer used - multiplayer mode, practice mode, and local multiplayer
+  // all have their own dedicated render loops
+  console.warn('gameLoop() called but is deprecated - each mode has its own render loop');
 }
 
 // Draw the game

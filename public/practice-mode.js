@@ -203,7 +203,7 @@ class PracticeMode {
 
     const pollGamepad = () => {
       // Don't process game input if on-screen keyboard is active
-      if (window.onScreenKeyboardActive) {
+      if (window.onScreenKeyboardActive === true) {
         this.gamepadPollId = requestAnimationFrame(pollGamepad);
         return;
       }
@@ -663,9 +663,9 @@ class PracticeMode {
     updatePlayerCount();
     updateScoreboard();
 
-    // Draw the game
-    if (this.gameStarted) {
-      draw();
+    // Draw the game using renderer directly (don't call draw() to avoid double rendering)
+    if (this.gameStarted && window.gameRenderer) {
+      window.gameRenderer.render(this.gameState);
     }
   }
 
@@ -711,8 +711,6 @@ class PracticeMode {
           } else if (typeof GameRenderer !== 'undefined') {
             window.gameRenderer = new GameRenderer('gameCanvas');
             window.gameRenderer.render(this.gameState);
-          } else if (typeof draw === "function") {
-            draw();
           }
         }
 

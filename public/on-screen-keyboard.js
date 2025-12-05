@@ -320,5 +320,8 @@ class OnScreenKeyboard {
   }
 }
 
+// Initialize the flag as false
+window.onScreenKeyboardActive = false;
+
 // Create global instance
 window.onScreenKeyboard = new OnScreenKeyboard();

@@ -553,6 +553,7 @@ io.on("connection", (socket) => {
           mood: "happy",
           lastMoodChange: Date.now(),
           score: 0,
+          isActive: true,
         };
 
         // Set playerRoom for each socket
@@ -632,6 +633,7 @@ io.on("connection", (socket) => {
           p.y = startPositions[index].y;
           p.wantsRematch = false;
           p.mood = "happy";
+          p.isActive = true;
         });
 
         playerRoom.gameStarted = true;

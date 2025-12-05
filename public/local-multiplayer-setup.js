@@ -399,7 +399,7 @@ class LocalMultiplayerSetup {
     // Gamepad polling loop
     const pollGamepads = () => {
       // Don't process game input if on-screen keyboard is active
-      if (window.onScreenKeyboardActive) {
+      if (window.onScreenKeyboardActive === true) {
         window.localGamepadPoll = requestAnimationFrame(pollGamepads);
         return;
       }
