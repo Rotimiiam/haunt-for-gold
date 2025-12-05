@@ -481,14 +481,26 @@ setInterval(() => {
 // Matchmaking queue for online multiplayer (first-come-first-serve)
 const matchmakingQueue = [];
 
+// Log queue status periodically
+setInterval(() => {
+  if (matchmakingQueue.length > 0) {
+    console.log(`[Matchmaking] Queue status: ${matchmakingQueue.length} players waiting`);
+    matchmakingQueue.forEach((p, i) => {
+      console.log(`  ${i + 1}. ${p.playerName} (${p.socketId}) - waiting ${Math.round((Date.now() - p.joinedAt) / 1000)}s`);
+    });
+  }
+}, 10000); // Log every 10 seconds if queue has players
+
 // Socket handling
 io.on("connection", (socket) => {
   console.log("Player connected:", socket.id);
+  console.log(`[Connection] Total connected clients: ${io.engine.clientsCount}`);
   let playerRoom = null;
 
   // Handle join game request - First Come First Serve matchmaking
   socket.on("joinGame", (playerName) => {
-    console.log(`Player ${socket.id} attempting to join with name: ${playerName}`);
+    console.log(`[JoinGame] Player ${socket.id} attempting to join with name: ${playerName}`);
+    console.log(`[JoinGame] Current queue size: ${matchmakingQueue.length}`);
 
     // Check if player is already in a room or queue
     if (playerRoom) {
@@ -510,7 +522,9 @@ io.on("connection", (socket) => {
       joinedAt: Date.now()
     };
     matchmakingQueue.push(queueEntry);
-    console.log(`Player ${socket.id} added to matchmaking queue. Queue size: ${matchmakingQueue.length}`);
+    console.log(`[JoinGame] Player ${socket.id} (${playerName}) added to matchmaking queue`);
+    console.log(`[JoinGame] Queue size after add: ${matchmakingQueue.length}`);
+    console.log(`[JoinGame] Queue contents:`, matchmakingQueue.map(p => `${p.playerName}(${p.socketId})`));
 
     // If only one player in queue, wait for opponent
     if (matchmakingQueue.length === 1) {
