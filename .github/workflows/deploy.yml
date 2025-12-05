@@ -1,0 +1,74 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Create deployment package
+        run: |
+          mkdir -p deploy
+          rsync -av --exclude='node_modules' --exclude='.git' --exclude='*.sqlite' --exclude='.env' --exclude='test-*.js' --exclude='sync_config.jsonc' --exclude='pixel-pursuit' . deploy/
+          cd deploy && npm ci --production
+
+      - name: Deploy to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "deploy/*"
+          target: "/var/www/haunt-for-gold"
+          strip_components: 1
+          rm: true
+
+      - name: Restart application
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd /var/www/haunt-for-gold
+            
+            # Create .env if it doesn't exist
+            if [ ! -f .env ]; then
+              echo "PORT=3000" > .env
+              echo "NODE_ENV=production" >> .env
+              echo "SESSION_SECRET=$(openssl rand -base64 32)" >> .env
+            fi
+            
+            # Install PM2 if not installed
+            if ! command -v pm2 &> /dev/null; then
+              npm install -g pm2
+            fi
+            
+            # Stop existing process
+            pm2 stop haunt-for-gold || true
+            pm2 delete haunt-for-gold || true
+            
+            # Start application
+            pm2 start server.js --name haunt-for-gold
+            pm2 save
+            
+            # Setup PM2 to start on boot
+            pm2 startup systemd -u root --hp /root || true
