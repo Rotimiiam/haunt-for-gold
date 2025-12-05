@@ -780,6 +780,8 @@ function restartGame() {
 
 // Return to home screen
 function returnToHome() {
+  console.log("Returning to home - cleaning up all game resources");
+  
   const winnerScreen = document.getElementById("winnerScreen");
   winnerScreen.style.display = "none";
 
@@ -801,16 +803,61 @@ function returnToHome() {
   // Exit fullscreen mode
   exitFullscreenMode();
 
-  // Reset game state only when actually returning to home
+  // Reset game state flags
   gameStarted = false;
   window.gameStarted = false;
   window.isPracticeMode = false;
+  window.practiceMode = false;
+  window.isLocalMultiplayer = false;
 
-  // Only reset gameState if we're actually returning to home
+  // Stop ALL game loops and timers
+  // Practice mode cleanup
+  if (window.practiceGameLoop) {
+    cancelAnimationFrame(window.practiceGameLoop);
+    window.practiceGameLoop = null;
+  }
+  if (window.practiceEnemyInterval) {
+    clearInterval(window.practiceEnemyInterval);
+    window.practiceEnemyInterval = null;
+  }
+  
+  // Local multiplayer cleanup
+  if (window.localRenderFrame) {
+    cancelAnimationFrame(window.localRenderFrame);
+    window.localRenderFrame = null;
+  }
+  if (window.localEnemyInterval) {
+    clearInterval(window.localEnemyInterval);
+    window.localEnemyInterval = null;
+  }
+  if (window.localTimerInterval) {
+    clearInterval(window.localTimerInterval);
+    window.localTimerInterval = null;
+  }
+  if (window.localGamepadPoll) {
+    cancelAnimationFrame(window.localGamepadPoll);
+    window.localGamepadPoll = null;
+  }
+  
+  // Online multiplayer cleanup
+  if (window.multiplayerMode) {
+    if (window.multiplayerMode.renderFrameId) {
+      cancelAnimationFrame(window.multiplayerMode.renderFrameId);
+      window.multiplayerMode.renderFrameId = null;
+    }
+    if (window.multiplayerMode.disconnect) {
+      window.multiplayerMode.disconnect();
+    }
+    // Reset multiplayer mode
+    window.multiplayerMode.gameStarted = false;
+  }
+
+  // Reset game state
   gameState = {
     players: {},
     coins: [],
     enemies: [],
+    witch: null,
     myId: null,
     mapWidth: 20,
     mapHeight: 15,
@@ -819,11 +866,10 @@ function returnToHome() {
   };
   window.gameState = gameState;
   gameStateInitialized = false;
-
-  // Disconnect multiplayer if active
-  if (window.multiplayerMode && window.multiplayerMode.disconnect) {
-    window.multiplayerMode.disconnect();
-  }
+  
+  // Clear local game state
+  window.localGameState = null;
+  window.localGameSettings = null;
 
   // Stop background music
   stopBackgroundMusic();
@@ -831,6 +877,8 @@ function returnToHome() {
   // Show home screen with proper flex layout
   const homeScreen = document.getElementById("homeScreen");
   homeScreen.style.display = "flex";
+  
+  console.log("Home screen shown - all game resources cleaned up");
 }
 
 // Exit fullscreen mode helper

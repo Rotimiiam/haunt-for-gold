@@ -790,11 +790,42 @@ class LocalMultiplayerSetup {
 
     if (homeBtn) {
       homeBtn.onclick = () => {
+        console.log("Local multiplayer - returning to home");
+        
+        // Stop all game loops
+        if (window.localEnemyInterval) {
+          clearInterval(window.localEnemyInterval);
+          window.localEnemyInterval = null;
+        }
+        if (window.localTimerInterval) {
+          clearInterval(window.localTimerInterval);
+          window.localTimerInterval = null;
+        }
+        if (window.localRenderFrame) {
+          cancelAnimationFrame(window.localRenderFrame);
+          window.localRenderFrame = null;
+        }
+        if (window.localGamepadPoll) {
+          cancelAnimationFrame(window.localGamepadPoll);
+          window.localGamepadPoll = null;
+        }
+        
+        // Reset game state
+        window.localGameState = null;
+        window.localGameSettings = null;
+        window.isLocalMultiplayer = false;
+        
+        // Hide game screens
         winnerScreen.style.display = 'none';
-        document.getElementById('homeScreen').style.display = 'flex';
         document.getElementById('gameCanvas').style.display = 'none';
         document.getElementById('scoreboard').style.display = 'none';
+        
+        // Show home screen
+        document.getElementById('homeScreen').style.display = 'flex';
+        
         exitFullscreenMode();
+        
+        console.log("Local multiplayer cleanup complete");
       };
     }
   }

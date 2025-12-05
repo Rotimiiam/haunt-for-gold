@@ -407,6 +407,11 @@ class MultiplayerMode {
     const gameContainer = document.querySelector(".game-container");
     if (gameContainer) {
       gameContainer.style.display = "flex";
+      gameContainer.style.visibility = "visible";
+      gameContainer.style.opacity = "1";
+      console.log("Game container shown:", gameContainer.style.display);
+    } else {
+      console.error("Game container not found!");
     }
 
     // Show game elements - ensure canvas is visible
@@ -418,13 +423,30 @@ class MultiplayerMode {
     console.log("Scoreboard element:", scoreboard);
 
     if (canvas) {
+      // Aggressively ensure canvas is visible
       canvas.style.display = "block";
       canvas.style.visibility = "visible";
+      canvas.style.opacity = "1";
+      canvas.style.position = "relative";
+      canvas.style.zIndex = "10";
+      
       console.log("Canvas display after setting:", canvas.style.display);
+      console.log("Canvas visibility:", canvas.style.visibility);
       console.log("Canvas dimensions:", canvas.width, "x", canvas.height);
+      console.log("Canvas computed style:", window.getComputedStyle(canvas).display);
       
       // Force a reflow to ensure canvas is rendered
       canvas.offsetHeight;
+      
+      // Double-check after a short delay
+      setTimeout(() => {
+        if (canvas.style.display !== "block") {
+          console.warn("Canvas display was reset, forcing again");
+          canvas.style.display = "block";
+          canvas.style.visibility = "visible";
+        }
+        console.log("Canvas final check - display:", canvas.style.display, "visibility:", canvas.style.visibility);
+      }, 100);
     } else {
       console.error("Canvas element not found!");
     }
@@ -475,8 +497,19 @@ class MultiplayerMode {
   startRenderLoop() {
     console.log("Starting multiplayer render loop");
     
+    // Ensure canvas is visible before starting render loop
+    const canvas = document.getElementById('gameCanvas');
+    if (canvas) {
+      canvas.style.display = "block";
+      canvas.style.visibility = "visible";
+      console.log("Canvas visibility ensured in render loop start");
+    }
+    
     const renderLoop = () => {
-      if (!this.gameStarted) return;
+      if (!this.gameStarted) {
+        console.log("Render loop stopped - game not started");
+        return;
+      }
 
       // Update witch if active (client-side prediction)
       if (this.witch && this.gameState) {
@@ -488,15 +521,30 @@ class MultiplayerMode {
       }
 
       if (window.gameRenderer && this.gameState) {
-        window.gameRenderer.render(this.gameState);
+        try {
+          window.gameRenderer.render(this.gameState);
+        } catch (error) {
+          console.error("Error rendering game state:", error);
+        }
       } else {
         // Try to initialize renderer if missing
         if (!window.gameRenderer && typeof GameRenderer !== 'undefined') {
           const canvas = document.getElementById('gameCanvas');
           if (canvas) {
             console.log("Re-initializing GameRenderer in render loop");
-            window.gameRenderer = new GameRenderer('gameCanvas');
+            try {
+              window.gameRenderer = new GameRenderer('gameCanvas');
+              console.log("GameRenderer successfully initialized");
+            } catch (error) {
+              console.error("Error initializing GameRenderer:", error);
+            }
+          } else {
+            console.error("Canvas not found in render loop");
           }
+        } else if (!window.gameRenderer) {
+          console.error("GameRenderer class not available");
+        } else if (!this.gameState) {
+          console.error("Game state not available");
         }
       }
 
