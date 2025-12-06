@@ -517,17 +517,23 @@ function setupMenuKeyboardNavigation() {
   };
 
   // Handle keyboard navigation on home screen
-  document.addEventListener("keydown", (e) => {
+  const menuKeyHandler = (e) => {
     // Only handle navigation when on home screen
     const homeScreen = document.getElementById("homeScreen");
     if (!homeScreen || homeScreen.style.display === "none") return;
     if (gameStarted) return;
+
+    // Check if any input field is focused
+    if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) {
+      return;
+    }
 
     switch (e.key) {
       case "ArrowUp":
       case "w":
       case "W":
         e.preventDefault();
+        e.stopPropagation();
         currentFocusIndex = (currentFocusIndex - 1 + menuButtons.length) % menuButtons.length;
         setFocus(currentFocusIndex);
         break;
@@ -536,6 +542,7 @@ function setupMenuKeyboardNavigation() {
       case "s":
       case "S":
         e.preventDefault();
+        e.stopPropagation();
         currentFocusIndex = (currentFocusIndex + 1) % menuButtons.length;
         setFocus(currentFocusIndex);
         break;
@@ -543,10 +550,13 @@ function setupMenuKeyboardNavigation() {
       case "Enter":
       case " ":
         e.preventDefault();
+        e.stopPropagation();
         menuButtons[currentFocusIndex]?.click();
         break;
     }
-  });
+  };
+  
+  document.addEventListener("keydown", menuKeyHandler, true);
 
   // Also handle gamepad navigation for menu
   let lastMenuGamepadCheck = 0;
@@ -1280,6 +1290,8 @@ function pauseGame() {
   const pauseScreen = document.getElementById("pauseScreen");
   if (pauseScreen) {
     pauseScreen.style.display = "flex";
+    pauseScreen.style.visibility = "visible";
+    pauseScreen.style.opacity = "1";
   }
 
   // Pause background music
@@ -1299,6 +1311,8 @@ function pauseGame() {
   if (window.localMultiplayerGame && window.localMultiplayerGame.pauseGame) {
     window.localMultiplayerGame.pauseGame();
   }
+  
+  console.log("Game paused - pause screen shown");
 }
 
 function resumeGame() {
