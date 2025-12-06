@@ -418,7 +418,7 @@ class PracticeMode {
   startAI() {
     // AI movement interval
     setInterval(() => {
-      if (!this.gameStarted) return;
+      if (!this.gameStarted || window.gamePaused) return;
 
       const ai = this.gameState.players["ai"];
       if (!ai) return;
@@ -445,7 +445,7 @@ class PracticeMode {
 
     // Enemy movement interval
     setInterval(() => {
-      if (!this.gameStarted) return;
+      if (!this.gameStarted || window.gamePaused) return;
 
       this.moveEnemies();
 
@@ -700,11 +700,8 @@ class PracticeMode {
   startGameLoop() {
     const gameLoop = () => {
       if (this.gameStarted) {
-        // Check if game is paused
-        const isPaused = this.isPaused || 
-                         document.getElementById('pauseOverlay')?.style.display === 'flex';
-        
-        if (!isPaused) {
+        // Check if game is paused using global pause state
+        if (!window.gamePaused) {
           // Update witch
           if (this.witch) {
             const players = Object.values(this.gameState.players);

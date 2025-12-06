@@ -695,8 +695,8 @@ class MultiplayerMode {
         return;
       }
 
-      // Update witch if active (client-side prediction)
-      if (this.witch && this.gameState) {
+      // Update witch if active and not paused (client-side prediction)
+      if (!window.gamePaused && this.witch && this.gameState) {
         const players = Object.values(this.gameState.players);
         this.witch.update(players);
         
