@@ -88,55 +88,127 @@ function blockMobileDevices() {
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        height: 100vh;
-        background: linear-gradient(135deg, #1e3c72, #2a5298);
+        min-height: 100vh;
+        background: linear-gradient(135deg, #0d0d0d, #1a0a2e, #16213e);
         color: white;
-        font-family: Arial, sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         text-align: center;
         padding: 20px;
         box-sizing: border-box;
+        position: relative;
+        overflow: hidden;
       ">
+        <!-- Spooky background effect -->
         <div style="
-          background: rgba(0, 0, 0, 0.3);
-          padding: 40px;
-          border-radius: 15px;
-          max-width: 400px;
+          position: absolute;
+          top: 0;
+          left: 0;
           width: 100%;
+          height: 100%;
+          background: radial-gradient(circle at 50% 50%, rgba(0, 255, 65, 0.05) 0%, transparent 50%);
+          pointer-events: none;
+        "></div>
+        
+        <div style="
+          background: linear-gradient(135deg, rgba(26, 10, 46, 0.9), rgba(22, 33, 62, 0.9));
+          padding: 40px 30px;
+          border-radius: 20px;
+          max-width: 450px;
+          width: 100%;
+          border: 3px solid #00ff41;
+          box-shadow: 0 0 30px rgba(0, 255, 65, 0.3), inset 0 0 30px rgba(0, 0, 0, 0.5);
+          position: relative;
+          z-index: 1;
         ">
-          <h1 style="
-            color: #ffd700;
-            font-size: 2.5rem;
+          <!-- Skull emoji with glow -->
+          <div style="
+            font-size: 4rem;
             margin-bottom: 20px;
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
+            animation: float 3s ease-in-out infinite;
+          ">💀</div>
+          
+          <h1 style="
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 15px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-          ">🖥️ Desktop Only</h1>
+            letter-spacing: 0.05em;
+          ">Haunt For Gold</h1>
+          
+          <div style="
+            color: #00ff41;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            text-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+          ">🖥️ Desktop Only</div>
           
           <p style="
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             line-height: 1.6;
             margin-bottom: 20px;
+            color: #e0e0e0;
           ">
-            Gold Grab is designed for desktop computers only.
+            This haunted multiplayer experience is designed for desktop computers with keyboard or controller support.
           </p>
           
           <p style="
-            font-size: 1rem;
+            font-size: 0.95rem;
             opacity: 0.8;
             margin-bottom: 30px;
+            color: #cccccc;
           ">
-            Please visit this site on a desktop or laptop computer to play the game.
+            Please visit on a desktop or laptop to join the hunt for gold! 👻
           </p>
           
           <div style="
-            background: rgba(255, 215, 0, 0.1);
-            border: 1px solid #ffd700;
-            border-radius: 8px;
-            padding: 15px;
+            background: rgba(0, 255, 65, 0.1);
+            border: 2px solid #00ff41;
+            border-radius: 12px;
+            padding: 20px;
             font-size: 0.9rem;
+            text-align: left;
+            color: #e0e0e0;
           ">
-            <strong>Why desktop only?</strong><br>
-            This game requires keyboard controls and precise mouse interactions for the best gaming experience.
+            <div style="
+              color: #ffd700;
+              font-weight: 700;
+              margin-bottom: 10px;
+              font-size: 1rem;
+            ">⚡ Why Desktop Only?</div>
+            <ul style="
+              margin: 0;
+              padding-left: 20px;
+              line-height: 1.8;
+            ">
+              <li>Fast-paced real-time multiplayer action</li>
+              <li>Precise keyboard/controller controls required</li>
+              <li>Optimized for larger screens</li>
+              <li>Best gaming experience guaranteed</li>
+            </ul>
+          </div>
+          
+          <div style="
+            margin-top: 25px;
+            font-size: 0.85rem;
+            color: #888888;
+            font-style: italic;
+          ">
+            🎮 Supports keyboard, mouse, and game controllers
           </div>
         </div>
+        
+        <style>
+          @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+          }
+        </style>
       </div>
     `;
 
