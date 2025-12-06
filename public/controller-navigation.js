@@ -460,78 +460,18 @@ class ControllerNavigationSystem {
     }
 
     showPauseMenu() {
-        console.log('showPauseMenu called');
-        // Create pause overlay if it doesn't exist
-        let pauseOverlay = document.getElementById('pauseOverlay');
-        if (!pauseOverlay) {
-            console.log('Creating new pause overlay');
-            pauseOverlay = document.createElement('div');
-            pauseOverlay.id = 'pauseOverlay';
-            pauseOverlay.innerHTML = `
-                <div class="pause-content haunted-panel" style="
-                    background: rgba(26, 10, 46, 0.98);
-                    border: 3px solid var(--ghost-green, #00ff41);
-                    border-radius: 15px;
-                    padding: 40px;
-                    text-align: center;
-                    box-shadow: 0 0 30px rgba(0, 255, 65, 0.5);
-                    min-width: 400px;
-                ">
-                    <h2 class="spooky-title" style="font-size: 2.5rem; color: var(--ghost-green, #00ff41); margin-bottom: 20px;">⏸️ PAUSED ⏸️</h2>
-                    <p style="color: var(--bone-white, #f0f0f0); margin: 20px 0; font-size: 1.2rem;">Press START to resume</p>
-                    <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 30px;">
-                        <button id="resumeBtn" class="spooky-btn orange" style="padding: 15px 30px; font-size: 1.1rem;">👻 Resume</button>
-                        <button id="quitBtn" class="spooky-btn" style="padding: 15px 30px; font-size: 1.1rem;">💀 Quit to Menu</button>
-                    </div>
-                </div>
-            `;
-            pauseOverlay.style.cssText = `
-                position: fixed !important;
-                top: 0 !important;
-                left: 0 !important;
-                width: 100% !important;
-                height: 100% !important;
-                background: rgba(0, 0, 0, 0.9) !important;
-                display: flex !important;
-                justify-content: center !important;
-                align-items: center !important;
-                z-index: 99999 !important;
-                pointer-events: auto !important;
-            `;
-            document.body.appendChild(pauseOverlay);
-            console.log('Pause overlay appended to body');
-
-            // Add button handlers
-            document.getElementById('resumeBtn').addEventListener('click', () => {
-                console.log('Resume button clicked');
-                this.hidePauseMenu();
-                if (window.localGameState) window.localGameState.isPaused = false;
-                if (window.practiceMode) window.practiceMode.isPaused = false;
-            });
-            document.getElementById('quitBtn').addEventListener('click', () => {
-                console.log('Quit button clicked');
-                this.hidePauseMenu();
-                if (typeof returnToHome === 'function') {
-                    returnToHome();
-                } else {
-                    // Fallback - reload page
-                    window.location.reload();
-                }
-            });
+        console.log('showPauseMenu called - using global pauseScreen');
+        // Use the global pause screen instead of creating a duplicate
+        if (typeof window.pauseGame === 'function') {
+            window.pauseGame();
         }
-        pauseOverlay.style.display = 'flex';
-        console.log('Pause overlay display set to flex');
-        this.updateFocusableElements();
     }
 
     hidePauseMenu() {
-        console.log('hidePauseMenu called');
-        const pauseOverlay = document.getElementById('pauseOverlay');
-        if (pauseOverlay) {
-            pauseOverlay.style.display = 'none';
-            console.log('Pause overlay hidden');
-        } else {
-            console.log('Pause overlay not found');
+        console.log('hidePauseMenu called - using global resumeGame');
+        // Use the global resume function
+        if (typeof window.resumeGame === 'function') {
+            window.resumeGame();
         }
     }
 

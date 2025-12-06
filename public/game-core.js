@@ -476,6 +476,9 @@ function setupUIEvents() {
     });
   }
 
+  // Arrow key navigation for pause screen
+  setupPauseScreenNavigation();
+
   // Global pause key handler (ESC)
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && gameStarted && !document.getElementById("winnerScreen").style.display.includes("flex")) {
@@ -607,7 +610,82 @@ function setupMenuKeyboardNavigation() {
 
   // Set initial focus
   setFocus(0);
+}
 
+// Setup arrow key navigation for pause screen
+function setupPauseScreenNavigation() {
+  const pauseButtons = [
+    document.getElementById("resumeBtn"),
+    document.getElementById("pauseHomeBtn")
+  ].filter(btn => btn !== null);
+
+  if (pauseButtons.length === 0) return;
+
+  let currentPauseFocusIndex = 0;
+
+  const setPauseFocus = (index) => {
+    pauseButtons.forEach((btn, i) => {
+      if (i === index) {
+        btn.style.outline = '3px solid #00ff41';
+        btn.style.outlineOffset = '4px';
+      } else {
+        btn.style.outline = '';
+        btn.style.outlineOffset = '';
+      }
+    });
+    currentPauseFocusIndex = index;
+  };
+
+  // Handle keyboard navigation in pause screen
+  document.addEventListener("keydown", (e) => {
+    const pauseScreen = document.getElementById("pauseScreen");
+    if (!pauseScreen || pauseScreen.style.display === "none") return;
+    if (!gamePaused) return;
+
+    switch (e.key) {
+      case "ArrowUp":
+      case "w":
+      case "W":
+        e.preventDefault();
+        e.stopPropagation();
+        currentPauseFocusIndex = (currentPauseFocusIndex - 1 + pauseButtons.length) % pauseButtons.length;
+        setPauseFocus(currentPauseFocusIndex);
+        break;
+      
+      case "ArrowDown":
+      case "s":
+      case "S":
+        e.preventDefault();
+        e.stopPropagation();
+        currentPauseFocusIndex = (currentPauseFocusIndex + 1) % pauseButtons.length;
+        setPauseFocus(currentPauseFocusIndex);
+        break;
+      
+      case "Enter":
+      case " ":
+        e.preventDefault();
+        e.stopPropagation();
+        pauseButtons[currentPauseFocusIndex]?.click();
+        break;
+    }
+  }, true);
+
+  // Set initial focus when pause screen is shown
+  const observer = new MutationObserver(() => {
+    const pauseScreen = document.getElementById("pauseScreen");
+    if (pauseScreen && pauseScreen.style.display === "flex") {
+      setPauseFocus(0);
+    }
+  });
+
+  const pauseScreen = document.getElementById("pauseScreen");
+  if (pauseScreen) {
+    observer.observe(pauseScreen, { attributes: true, attributeFilter: ['style'] });
+  }
+}
+
+// Setup UI event listeners continued
+function setupUIEventsContinued() {
   // Cancel waiting button
   const cancelWaitingBtn = document.getElementById("cancelWaitingBtn");
   if (cancelWaitingBtn) {
