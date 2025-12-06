@@ -12,7 +12,7 @@ class WitchEnemy {
     this.active = false;
     this.x = 0;
     this.y = 0;
-    this.speed = 0.08; // Slower, more menacing chase
+    this.speed = 0.25; // Faster chase speed
     this.targetPlayer = null;
     
     // Appearance timing

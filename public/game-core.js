@@ -1380,8 +1380,9 @@ function pauseGame() {
   if (window.multiplayerMode && window.multiplayerMode.pause) {
     window.multiplayerMode.pause();
   }
-  if (window.localMultiplayerGame && window.localMultiplayerGame.pauseGame) {
-    window.localMultiplayerGame.pauseGame();
+  // Local multiplayer uses localGameState.isPaused
+  if (window.localGameState) {
+    window.localGameState.isPaused = true;
   }
   
   console.log("Game paused - pause screen shown");
@@ -1414,8 +1415,9 @@ function resumeGame() {
   if (window.multiplayerMode && window.multiplayerMode.resume) {
     window.multiplayerMode.resume();
   }
-  if (window.localMultiplayerGame && window.localMultiplayerGame.resumeGame) {
-    window.localMultiplayerGame.resumeGame();
+  // Local multiplayer uses localGameState.isPaused
+  if (window.localGameState) {
+    window.localGameState.isPaused = false;
   }
 }
 

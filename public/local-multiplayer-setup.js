@@ -391,6 +391,12 @@ class LocalMultiplayerSetup {
     window.localGameState = gameState;
     window.localGameSettings = settings;
     window.isLocalMultiplayer = true;
+    
+    // Set global gameStarted flag for ESC key pause to work
+    window.gameStarted = true;
+    if (typeof gameStarted !== 'undefined') {
+      gameStarted = true;
+    }
 
     // Start the game loop
     this.startLocalGameLoop(gameState, settings);
@@ -412,6 +418,7 @@ class LocalMultiplayerSetup {
     const BOOST_COOLDOWN = 75; // Faster movement when boosting (R2 held)
     const AXIS_THRESHOLD = 0.5; // Joystick threshold
     const R2_TRIGGER_THRESHOLD = 0.5; // Trigger threshold for boost
+    let lastPauseButtonState = false; // Track pause button state for edge detection
 
     // Gamepad polling loop
     const pollGamepads = () => {
@@ -420,14 +427,41 @@ class LocalMultiplayerSetup {
         window.localGamepadPoll = requestAnimationFrame(pollGamepads);
         return;
       }
+
+      const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+      const currentTime = Date.now();
       
+      // Check for pause button on any controller (Start button - button 9)
+      let pausePressed = false;
+      for (const gamepad of gamepads) {
+        if (gamepad && gamepad.buttons[9]?.pressed) {
+          pausePressed = true;
+          break;
+        }
+      }
+      
+      // Toggle pause on rising edge (button just pressed)
+      if (pausePressed && !lastPauseButtonState) {
+        gameState.isPaused = !gameState.isPaused;
+        if (gameState.isPaused) {
+          // Show pause screen
+          if (typeof window.pauseGame === 'function') {
+            window.pauseGame();
+          }
+        } else {
+          // Hide pause screen
+          if (typeof window.resumeGame === 'function') {
+            window.resumeGame();
+          }
+        }
+      }
+      lastPauseButtonState = pausePressed;
+      
+      // Skip movement processing if paused or game ended
       if (gameState.gameEnded || gameState.isPaused) {
         window.localGamepadPoll = requestAnimationFrame(pollGamepads);
         return;
       }
-
-      const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
-      const currentTime = Date.now();
 
       // Check each connected gamepad
       gamepads.forEach((gamepad, index) => {
