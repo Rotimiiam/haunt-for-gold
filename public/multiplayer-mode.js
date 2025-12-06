@@ -202,15 +202,10 @@ class MultiplayerMode {
       console.log("🧙‍♀️ Witch spawned!", data);
       showNotification("🧙‍♀️ The Witch!", "She's hunting you! (-30 pts)");
       
-      // Play cackle sound
-      if (!this.witchCackleSound) {
-        this.witchCackleSound = new Audio('sounds/witch-cackle.mp4a');
-        this.witchCackleSound.volume = 0.5;
+      // Play cackle sound using sound manager
+      if (window.soundManager) {
+        window.soundManager.playWitchCackle();
       }
-      try {
-        this.witchCackleSound.currentTime = 0;
-        this.witchCackleSound.play().catch(() => {});
-      } catch (e) {}
       
       // Start haunting vibration pattern
       this.startWitchVibration();

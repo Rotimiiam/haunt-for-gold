@@ -197,6 +197,13 @@ function initBackgroundMusic() {
 
 // Play background music
 function playBackgroundMusic() {
+  // Use sound manager if available
+  if (window.soundManager) {
+    window.soundManager.playBackgroundMusic('haunted-house');
+    return;
+  }
+  
+  // Fallback to old method
   if (backgroundMusic && musicEnabled) {
     backgroundMusic.play().catch(() => {
       // Modern browsers require user interaction before playing audio
@@ -206,6 +213,13 @@ function playBackgroundMusic() {
 
 // Stop background music
 function stopBackgroundMusic() {
+  // Use sound manager if available
+  if (window.soundManager) {
+    window.soundManager.stopBackgroundMusic();
+    return;
+  }
+  
+  // Fallback to old method
   if (backgroundMusic) {
     backgroundMusic.pause();
     backgroundMusic.currentTime = 0;
@@ -214,6 +228,14 @@ function stopBackgroundMusic() {
 
 // Toggle music on/off
 function toggleMusic() {
+  // Use sound manager if available
+  if (window.soundManager) {
+    const enabled = window.soundManager.toggleMusic();
+    musicEnabled = enabled;
+    return enabled;
+  }
+  
+  // Fallback to old method
   if (backgroundMusic) {
     if (backgroundMusic.paused) {
       playBackgroundMusic();
@@ -298,9 +320,13 @@ function setupUIEvents() {
 
   // Music toggle button
   document.getElementById("musicToggle").addEventListener("click", () => {
-    toggleMusic();
+    const enabled = toggleMusic();
     const button = document.getElementById("musicToggle");
-    if (backgroundMusic && backgroundMusic.paused) {
+    
+    // Check sound manager first, then fallback
+    const isMuted = window.soundManager ? !window.soundManager.musicEnabled : (backgroundMusic && backgroundMusic.paused);
+    
+    if (isMuted) {
       button.textContent = "🔇";
       button.classList.add("muted");
     } else {
@@ -333,6 +359,120 @@ function setupUIEvents() {
       togglePause();
     }
   });
+
+  // Keyboard navigation for menu buttons
+  setupMenuKeyboardNavigation();
+}
+
+// Setup keyboard navigation for menu
+function setupMenuKeyboardNavigation() {
+  const menuButtons = [
+    document.getElementById("multiplayerBtn"),
+    document.getElementById("localMultiplayerBtn"),
+    document.getElementById("practiceBtn")
+  ].filter(btn => btn !== null);
+
+  if (menuButtons.length === 0) return;
+
+  let currentFocusIndex = 0;
+
+  // Set initial focus
+  const setFocus = (index) => {
+    menuButtons.forEach((btn, i) => {
+      if (i === index) {
+        btn.classList.add('keyboard-focused');
+        btn.style.outline = '3px solid #00ff41';
+        btn.style.outlineOffset = '4px';
+      } else {
+        btn.classList.remove('keyboard-focused');
+        btn.style.outline = '';
+        btn.style.outlineOffset = '';
+      }
+    });
+    currentFocusIndex = index;
+  };
+
+  // Handle keyboard navigation on home screen
+  document.addEventListener("keydown", (e) => {
+    // Only handle navigation when on home screen
+    const homeScreen = document.getElementById("homeScreen");
+    if (!homeScreen || homeScreen.style.display === "none") return;
+    if (gameStarted) return;
+
+    switch (e.key) {
+      case "ArrowUp":
+      case "w":
+      case "W":
+        e.preventDefault();
+        currentFocusIndex = (currentFocusIndex - 1 + menuButtons.length) % menuButtons.length;
+        setFocus(currentFocusIndex);
+        break;
+      
+      case "ArrowDown":
+      case "s":
+      case "S":
+        e.preventDefault();
+        currentFocusIndex = (currentFocusIndex + 1) % menuButtons.length;
+        setFocus(currentFocusIndex);
+        break;
+      
+      case "Enter":
+      case " ":
+        e.preventDefault();
+        menuButtons[currentFocusIndex]?.click();
+        break;
+    }
+  });
+
+  // Also handle gamepad navigation for menu
+  let lastMenuGamepadCheck = 0;
+  const menuGamepadPoll = () => {
+    const homeScreen = document.getElementById("homeScreen");
+    if (!homeScreen || homeScreen.style.display === "none" || gameStarted) {
+      requestAnimationFrame(menuGamepadPoll);
+      return;
+    }
+
+    const now = Date.now();
+    if (now - lastMenuGamepadCheck < 200) {
+      requestAnimationFrame(menuGamepadPoll);
+      return;
+    }
+
+    const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+    const gamepad = gamepads[0] || gamepads[1] || gamepads[2] || gamepads[3];
+
+    if (gamepad) {
+      const AXIS_THRESHOLD = 0.5;
+      
+      // D-pad up or left stick up
+      if (gamepad.buttons[12]?.pressed || gamepad.axes[1] < -AXIS_THRESHOLD) {
+        currentFocusIndex = (currentFocusIndex - 1 + menuButtons.length) % menuButtons.length;
+        setFocus(currentFocusIndex);
+        lastMenuGamepadCheck = now;
+      }
+      
+      // D-pad down or left stick down
+      if (gamepad.buttons[13]?.pressed || gamepad.axes[1] > AXIS_THRESHOLD) {
+        currentFocusIndex = (currentFocusIndex + 1) % menuButtons.length;
+        setFocus(currentFocusIndex);
+        lastMenuGamepadCheck = now;
+      }
+      
+      // A button (button 0) to select
+      if (gamepad.buttons[0]?.pressed) {
+        menuButtons[currentFocusIndex]?.click();
+        lastMenuGamepadCheck = now;
+      }
+    }
+
+    requestAnimationFrame(menuGamepadPoll);
+  };
+
+  requestAnimationFrame(menuGamepadPoll);
+
+  // Set initial focus
+  setFocus(0);
 
   // Cancel waiting button
   const cancelWaitingBtn = document.getElementById("cancelWaitingBtn");
@@ -1019,7 +1159,9 @@ function pauseGame() {
   }
 
   // Pause background music
-  if (backgroundMusic && !backgroundMusic.paused) {
+  if (window.soundManager) {
+    window.soundManager.pauseBackgroundMusic();
+  } else if (backgroundMusic && !backgroundMusic.paused) {
     backgroundMusic.pause();
   }
 
@@ -1049,7 +1191,9 @@ function resumeGame() {
   }
 
   // Resume background music
-  if (backgroundMusic && musicEnabled) {
+  if (window.soundManager) {
+    window.soundManager.resumeBackgroundMusic();
+  } else if (backgroundMusic && musicEnabled) {
     backgroundMusic.play().catch(() => {});
   }
 
