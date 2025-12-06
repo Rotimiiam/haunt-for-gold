@@ -665,8 +665,14 @@ class LocalMultiplayerSetup {
         });
       });
 
-      // Update witch
-      if (this.witch) {
+    };
+
+    // Render loop
+    const render = () => {
+      if (gameState.gameEnded) return;
+      
+      // Update witch in render loop for consistent speed (60fps)
+      if (!gameState.isPaused && this.witch) {
         const players = Object.values(gameState.players);
         this.witch.update(players);
         
@@ -692,11 +698,6 @@ class LocalMultiplayerSetup {
         // Add witch to game state for rendering
         gameState.witch = this.witch.getState();
       }
-    };
-
-    // Render loop
-    const render = () => {
-      if (gameState.gameEnded) return;
 
       // Initialize renderer if not available
       if (!window.gameRenderer && typeof GameRenderer !== 'undefined') {
