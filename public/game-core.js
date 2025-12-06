@@ -82,136 +82,193 @@ function isMobile() {
 // Block mobile devices
 function blockMobileDevices() {
   if (isMobile()) {
-    document.body.innerHTML = `
-      <div style="
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        background: linear-gradient(135deg, #0d0d0d, #1a0a2e, #16213e);
-        color: white;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        text-align: center;
-        padding: 20px;
-        box-sizing: border-box;
-        position: relative;
-        overflow: hidden;
-      ">
-        <!-- Spooky background effect -->
-        <div style="
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: radial-gradient(circle at 50% 50%, rgba(0, 255, 65, 0.05) 0%, transparent 50%);
-          pointer-events: none;
-        "></div>
-        
-        <div style="
-          background: linear-gradient(135deg, rgba(26, 10, 46, 0.9), rgba(22, 33, 62, 0.9));
-          padding: 40px 30px;
-          border-radius: 20px;
-          max-width: 450px;
-          width: 100%;
-          border: 3px solid #00ff41;
-          box-shadow: 0 0 30px rgba(0, 255, 65, 0.3), inset 0 0 30px rgba(0, 0, 0, 0.5);
-          position: relative;
-          z-index: 1;
-        ">
-          <!-- Skull emoji with glow -->
-          <div style="
-            font-size: 4rem;
-            margin-bottom: 20px;
+    // Stop all scripts and prevent any popups
+    document.documentElement.innerHTML = '';
+    
+    document.documentElement.innerHTML = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <title>Haunt For Gold - Desktop Only</title>
+        <style>
+          * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+          }
+          
+          html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: fixed;
+          }
+          
+          body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #0d0d0d, #1a0a2e, #16213e);
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            text-align: center;
+            padding: 20px;
+            position: relative;
+          }
+          
+          .bg-effect {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(0, 255, 65, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+          }
+          
+          .content {
+            background: linear-gradient(135deg, rgba(26, 10, 46, 0.9), rgba(22, 33, 62, 0.9));
+            padding: 30px 20px;
+            border-radius: 20px;
+            max-width: 90%;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 3px solid #00ff41;
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.3), inset 0 0 30px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 1;
+          }
+          
+          .skull {
+            font-size: 3rem;
+            margin-bottom: 15px;
             filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
             animation: float 3s ease-in-out infinite;
-          ">💀</div>
+          }
           
-          <h1 style="
-            background: linear-gradient(135deg, #ffd700, #ffed4e);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin-bottom: 15px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-            letter-spacing: 0.05em;
-          ">Haunt For Gold</h1>
-          
-          <div style="
-            color: #00ff41;
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 25px;
-            text-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
-          ">🖥️ Desktop Only</div>
-          
-          <p style="
-            font-size: 1.1rem;
-            line-height: 1.6;
-            margin-bottom: 20px;
-            color: #e0e0e0;
-          ">
-            This haunted multiplayer experience is designed for desktop computers with keyboard or controller support.
-          </p>
-          
-          <p style="
-            font-size: 0.95rem;
-            opacity: 0.8;
-            margin-bottom: 30px;
-            color: #cccccc;
-          ">
-            Please visit on a desktop or laptop to join the hunt for gold! 👻
-          </p>
-          
-          <div style="
-            background: rgba(0, 255, 65, 0.1);
-            border: 2px solid #00ff41;
-            border-radius: 12px;
-            padding: 20px;
-            font-size: 0.9rem;
-            text-align: left;
-            color: #e0e0e0;
-          ">
-            <div style="
-              color: #ffd700;
-              font-weight: 700;
-              margin-bottom: 10px;
-              font-size: 1rem;
-            ">⚡ Why Desktop Only?</div>
-            <ul style="
-              margin: 0;
-              padding-left: 20px;
-              line-height: 1.8;
-            ">
-              <li>Fast-paced real-time multiplayer action</li>
-              <li>Precise keyboard/controller controls required</li>
-              <li>Optimized for larger screens</li>
-              <li>Best gaming experience guaranteed</li>
-            </ul>
-          </div>
-          
-          <div style="
-            margin-top: 25px;
-            font-size: 0.85rem;
-            color: #888888;
-            font-style: italic;
-          ">
-            🎮 Supports keyboard, mouse, and game controllers
-          </div>
-        </div>
-        
-        <style>
           @keyframes float {
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-10px); }
           }
+          
+          h1 {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            letter-spacing: 0.05em;
+          }
+          
+          .subtitle {
+            color: #00ff41;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+          }
+          
+          .description {
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 15px;
+            color: #e0e0e0;
+          }
+          
+          .note {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 20px;
+            color: #cccccc;
+          }
+          
+          .info-box {
+            background: rgba(0, 255, 65, 0.1);
+            border: 2px solid #00ff41;
+            border-radius: 12px;
+            padding: 15px;
+            font-size: 0.85rem;
+            text-align: left;
+            color: #e0e0e0;
+            margin-bottom: 15px;
+          }
+          
+          .info-title {
+            color: #ffd700;
+            font-weight: 700;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+          }
+          
+          ul {
+            margin: 0;
+            padding-left: 20px;
+            line-height: 1.6;
+          }
+          
+          .footer {
+            margin-top: 15px;
+            font-size: 0.8rem;
+            color: #888888;
+            font-style: italic;
+          }
+          
+          @media (max-width: 400px) {
+            .content {
+              padding: 25px 15px;
+            }
+            h1 {
+              font-size: 1.75rem;
+            }
+            .skull {
+              font-size: 2.5rem;
+            }
+          }
         </style>
-      </div>
+      </head>
+      <body>
+        <div class="bg-effect"></div>
+        
+        <div class="content">
+          <div class="skull">💀</div>
+          
+          <h1>Haunt For Gold</h1>
+          
+          <div class="subtitle">🖥️ Desktop Only</div>
+          
+          <p class="description">
+            This haunted multiplayer experience is designed for desktop computers with keyboard or controller support.
+          </p>
+          
+          <p class="note">
+            Please visit on a desktop or laptop to join the hunt for gold! 👻
+          </p>
+          
+          <div class="info-box">
+            <div class="info-title">⚡ Why Desktop Only?</div>
+            <ul>
+              <li>Fast-paced real-time multiplayer</li>
+              <li>Keyboard/controller controls required</li>
+              <li>Optimized for larger screens</li>
+              <li>Best gaming experience</li>
+            </ul>
+          </div>
+          
+          <div class="footer">
+            🎮 Supports keyboard, mouse, and game controllers
+          </div>
+        </div>
+      </body>
+      </html>
     `;
 
+    // Stop all script execution
     throw new Error("Mobile device detected - site blocked");
   }
 }
