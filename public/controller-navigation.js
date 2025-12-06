@@ -136,9 +136,9 @@ class ControllerNavigationSystem {
     // Get the currently active container for focusable elements
     getActiveContainer() {
         // Check overlays/modals first (highest priority)
-        const pauseOverlay = document.getElementById('pauseOverlay');
-        if (pauseOverlay && this.isElementDisplayed(pauseOverlay)) {
-            return pauseOverlay;
+        const pauseScreen = document.getElementById('pauseScreen');
+        if (pauseScreen && this.isElementDisplayed(pauseScreen)) {
+            return pauseScreen;
         }
 
         const cookieOverlay = document.getElementById('cookieConsentOverlay');
@@ -307,17 +307,19 @@ class ControllerNavigationSystem {
         const homeScreen = document.getElementById('homeScreen');
         const localSetup = document.getElementById('localMultiplayerSetup');
         const winnerScreen = document.getElementById('winnerScreen');
-        const pauseOverlay = document.getElementById('pauseOverlay');
+        const pauseScreen = document.getElementById('pauseScreen');
+        const waitingScreen = document.getElementById('waitingScreen');
         
         // Game is active if canvas is visible and we're not in a menu/setup screen
         const canvasVisible = this.isElementDisplayed(canvas);
         const homeVisible = this.isElementDisplayed(homeScreen);
         const setupVisible = this.isElementDisplayed(localSetup);
         const winnerVisible = this.isElementDisplayed(winnerScreen);
-        const pauseVisible = this.isElementDisplayed(pauseOverlay);
+        const pauseVisible = this.isElementDisplayed(pauseScreen);
+        const waitingVisible = this.isElementDisplayed(waitingScreen);
         
         // Not active if any menu/overlay is showing
-        return canvasVisible && !homeVisible && !setupVisible && !winnerVisible && !pauseVisible;
+        return canvasVisible && !homeVisible && !setupVisible && !winnerVisible && !pauseVisible && !waitingVisible;
     }
 
     handleController(gp, index) {
@@ -365,8 +367,9 @@ class ControllerNavigationSystem {
         // Only handle menu navigation when NOT in active gameplay
         // (except for winner screen which needs button input)
         if (!gameActive) {
-            // A button - Confirm/Select (menus only)
+            // A button - Confirm/Select (menus only) - button 0 is X on PlayStation / A on Xbox
             if (this.isButtonPressed(gp, buttons.A, index)) {
+                console.log('Controller A/X button pressed - calling handleConfirm');
                 this.handleConfirm();
             }
 
@@ -479,7 +482,8 @@ class ControllerNavigationSystem {
         if (!gp.buttons[buttonIndex]) return false;
 
         const isPressed = gp.buttons[buttonIndex].pressed;
-        const wasPressed = this.lastButtonStates[controllerIndex][buttonIndex];
+        // Handle case where lastButtonStates hasn't been initialized for this button yet
+        const wasPressed = this.lastButtonStates[controllerIndex]?.[buttonIndex] || false;
 
         // Return true only on button down (not held)
         return isPressed && !wasPressed;
@@ -487,11 +491,15 @@ class ControllerNavigationSystem {
 
     handleConfirm() {
         this.updateFocusableElements();
+        
+        console.log('handleConfirm called - focusable elements:', this.focusableElements.length, 'current index:', this.currentFocusIndex);
 
         // Click the focused element
         if (this.focusableElements.length > 0) {
             const element = this.focusableElements[this.currentFocusIndex];
             if (element) {
+                console.log('Clicking element:', element.id || element.className || element.textContent?.substring(0, 20));
+                
                 // Vibrate on select
                 this.vibrateOnSelect();
                 

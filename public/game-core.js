@@ -561,52 +561,8 @@ function setupMenuKeyboardNavigation() {
   
   document.addEventListener("keydown", menuKeyHandler, true);
 
-  // Also handle gamepad navigation for menu
-  let lastMenuGamepadCheck = 0;
-  const menuGamepadPoll = () => {
-    const homeScreen = document.getElementById("homeScreen");
-    if (!homeScreen || homeScreen.style.display === "none" || gameStarted) {
-      requestAnimationFrame(menuGamepadPoll);
-      return;
-    }
-
-    const now = Date.now();
-    if (now - lastMenuGamepadCheck < 200) {
-      requestAnimationFrame(menuGamepadPoll);
-      return;
-    }
-
-    const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
-    const gamepad = gamepads[0] || gamepads[1] || gamepads[2] || gamepads[3];
-
-    if (gamepad) {
-      const AXIS_THRESHOLD = 0.5;
-      
-      // D-pad up or left stick up
-      if (gamepad.buttons[12]?.pressed || gamepad.axes[1] < -AXIS_THRESHOLD) {
-        currentFocusIndex = (currentFocusIndex - 1 + menuButtons.length) % menuButtons.length;
-        setFocus(currentFocusIndex);
-        lastMenuGamepadCheck = now;
-      }
-      
-      // D-pad down or left stick down
-      if (gamepad.buttons[13]?.pressed || gamepad.axes[1] > AXIS_THRESHOLD) {
-        currentFocusIndex = (currentFocusIndex + 1) % menuButtons.length;
-        setFocus(currentFocusIndex);
-        lastMenuGamepadCheck = now;
-      }
-      
-      // A button (button 0) to select
-      if (gamepad.buttons[0]?.pressed) {
-        menuButtons[currentFocusIndex]?.click();
-        lastMenuGamepadCheck = now;
-      }
-    }
-
-    requestAnimationFrame(menuGamepadPoll);
-  };
-
-  requestAnimationFrame(menuGamepadPoll);
+  // NOTE: Gamepad navigation for menu is handled by ControllerNavigationSystem in controller-navigation.js
+  // We don't duplicate it here to avoid conflicts
 
   // Set initial focus
   setFocus(0);
@@ -1245,9 +1201,19 @@ function returnToHome() {
   document.querySelector(".controls").style.display = "none";
   document.querySelector(".info").style.display = "none";
   document.getElementById("scoreboard").style.display = "none";
-  document.getElementById("waitingScreen").style.display = "none";
   document.getElementById("nameDialog").style.display = "none";
   document.getElementById("musicToggle").style.display = "none";
+  
+  // Force hide waiting screen and pause screen with multiple approaches
+  const waitingScreen = document.getElementById("waitingScreen");
+  if (waitingScreen) {
+    waitingScreen.style.cssText = "display: none !important; visibility: hidden !important;";
+    waitingScreen.setAttribute('style', 'display: none !important; visibility: hidden !important;');
+  }
+  const pauseScreen = document.getElementById("pauseScreen");
+  if (pauseScreen) {
+    pauseScreen.style.display = "none";
+  }
 
   // Hide game container
   const gameContainer = document.querySelector(".game-container");
@@ -1258,18 +1224,49 @@ function returnToHome() {
   // Exit fullscreen mode
   exitFullscreenMode();
 
-  // Reset game state flags
+  // Stop ALL game loops and timers BEFORE resetting flags
+  // Practice mode cleanup - check for the PracticeMode instance
+  if (window.practiceMode && typeof window.practiceMode === 'object' && typeof window.practiceMode.stop === 'function') {
+    console.log("Stopping practice mode instance");
+    window.practiceMode.stop();
+  }
+  
+  // Online multiplayer cleanup - do this BEFORE resetting flags
+  if (window.multiplayerMode && typeof window.multiplayerMode === 'object') {
+    console.log("Cleaning up multiplayer mode");
+    if (window.multiplayerMode.renderFrameId) {
+      cancelAnimationFrame(window.multiplayerMode.renderFrameId);
+      window.multiplayerMode.renderFrameId = null;
+    }
+    if (window.multiplayerMode.gamepadPollId) {
+      cancelAnimationFrame(window.multiplayerMode.gamepadPollId);
+      window.multiplayerMode.gamepadPollId = null;
+    }
+    if (typeof window.multiplayerMode.disconnect === 'function') {
+      window.multiplayerMode.disconnect();
+    }
+  }
+  
+  // Local multiplayer cleanup
+  if (window.localMultiplayerGame && typeof window.localMultiplayerGame.destroy === 'function') {
+    console.log("Destroying local multiplayer game");
+    window.localMultiplayerGame.destroy();
+  }
+
+  // Reset game state flags AFTER cleanup
   gameStarted = false;
   window.gameStarted = false;
   window.isPracticeMode = false;
-  window.practiceMode = false;
   window.isLocalMultiplayer = false;
-
-  // Stop ALL game loops and timers
-  // Practice mode cleanup
-  if (window.practiceMode && window.practiceMode.stop) {
-    window.practiceMode.stop();
-  }
+  gamePaused = false;
+  window.gamePaused = false;
+  
+  // Clear all game mode instances
+  window.practiceMode = null;
+  window.multiplayerMode = null;
+  window.localMultiplayerGame = null;
+  
+  // Clear any remaining animation frames and intervals
   if (window.practiceGameLoop) {
     cancelAnimationFrame(window.practiceGameLoop);
     window.practiceGameLoop = null;
@@ -1277,11 +1274,6 @@ function returnToHome() {
   if (window.practiceEnemyInterval) {
     clearInterval(window.practiceEnemyInterval);
     window.practiceEnemyInterval = null;
-  }
-  
-  // Local multiplayer cleanup
-  if (window.localMultiplayerGame && window.localMultiplayerGame.destroy) {
-    window.localMultiplayerGame.destroy();
   }
   if (window.localRenderFrame) {
     cancelAnimationFrame(window.localRenderFrame);
@@ -1298,19 +1290,6 @@ function returnToHome() {
   if (window.localGamepadPoll) {
     cancelAnimationFrame(window.localGamepadPoll);
     window.localGamepadPoll = null;
-  }
-  
-  // Online multiplayer cleanup
-  if (window.multiplayerMode) {
-    if (window.multiplayerMode.renderFrameId) {
-      cancelAnimationFrame(window.multiplayerMode.renderFrameId);
-      window.multiplayerMode.renderFrameId = null;
-    }
-    if (window.multiplayerMode.disconnect) {
-      window.multiplayerMode.disconnect();
-    }
-    // Reset multiplayer mode
-    window.multiplayerMode.gameStarted = false;
   }
 
   // Reset game state
@@ -1338,6 +1317,15 @@ function returnToHome() {
   // Show home screen with proper flex layout
   const homeScreen = document.getElementById("homeScreen");
   homeScreen.style.display = "flex";
+  homeScreen.style.visibility = "visible";
+  
+  // Re-hide waiting screen after a short delay (in case something re-shows it)
+  setTimeout(() => {
+    const ws = document.getElementById("waitingScreen");
+    if (ws) {
+      ws.style.cssText = "display: none !important; visibility: hidden !important;";
+    }
+  }, 50);
   
   console.log("Home screen shown - all game resources cleaned up");
 }

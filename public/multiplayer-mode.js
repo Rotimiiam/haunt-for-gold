@@ -563,7 +563,8 @@ class MultiplayerMode {
     }
 
     // Ensure we're not in practice mode
-    window.practiceMode = false;
+    // Note: Don't set window.practiceMode = false here as it may be a PracticeMode instance
+    // Just set the flag
     window.isPracticeMode = false;
 
     // Update global game state references
@@ -895,7 +896,8 @@ window.multiplayerMode = null;
 window.startMultiplayerMode = function (playerName) {
   console.log("*** STARTING MULTIPLAYER MODE GLOBALLY ***");
   window.isPracticeMode = false;
-  window.practiceMode = false;
+  // Don't set window.practiceMode = false here - it may still be a PracticeMode instance that needs cleanup
+  // The returnToHome function handles proper cleanup
   
   // Hide home screen immediately
   const homeScreen = document.getElementById("homeScreen");
