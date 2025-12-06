@@ -404,14 +404,31 @@ function setupUIEvents() {
   const multiplayerBtn = document.getElementById("multiplayerBtn");
   if (multiplayerBtn) {
     console.log("Multiplayer button found, adding click handler");
-    multiplayerBtn.addEventListener("click", () => {
+    let multiplayerButtonProcessing = false;
+    
+    multiplayerBtn.addEventListener("click", (e) => {
       console.log("*** MULTIPLAYER BUTTON CLICKED ***");
+      
+      // Prevent multiple clicks while game is starting
+      if (multiplayerButtonProcessing || (window.multiplayerMode && typeof window.multiplayerMode === 'object')) {
+        console.log("Multiplayer already started or starting, ignoring click");
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+      
+      multiplayerButtonProcessing = true;
       window.isPracticeMode = false;
       window.playerName = window.simpleAuth?.getName() || "Player";
       console.log("Player name:", window.playerName);
       console.log("Calling startGameDirectly...");
       startGameDirectly();
-    });
+      
+      // Reset flag after a delay
+      setTimeout(() => {
+        multiplayerButtonProcessing = false;
+      }, 1000);
+    }, true); // Use capture phase
   } else {
     console.error("Multiplayer button NOT found!");
   }
@@ -419,11 +436,33 @@ function setupUIEvents() {
   // Practice mode button
   const practiceBtn = document.getElementById("practiceBtn");
   if (practiceBtn) {
-    practiceBtn.addEventListener("click", () => {
+    let practiceButtonProcessing = false;
+    
+    practiceBtn.addEventListener("click", (e) => {
+      console.log("*** PRACTICE BUTTON CLICKED ***");
+      console.log("Current gameStarted:", gameStarted);
+      console.log("Current window.practiceMode:", window.practiceMode);
+      console.log("Processing flag:", practiceButtonProcessing);
+      
+      // Prevent multiple clicks while game is starting
+      if (practiceButtonProcessing || gameStarted || (window.practiceMode && typeof window.practiceMode === 'object')) {
+        console.log("Game already started or starting, ignoring click");
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+      
+      practiceButtonProcessing = true;
       window.isPracticeMode = true;
       window.playerName = window.simpleAuth?.getName() || "Player";
+      console.log("Calling startGameDirectly...");
       startGameDirectly();
-    });
+      
+      // Reset flag after a delay
+      setTimeout(() => {
+        practiceButtonProcessing = false;
+      }, 1000);
+    }, true); // Use capture phase to catch event early
   }
 
   // Winner screen buttons
