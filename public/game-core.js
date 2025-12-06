@@ -1,12 +1,7 @@
 // Core Game Functions - Shared between Practice and Multiplayer
 // Game core script loaded
 
-// Early mobile detection and blocking
-if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-  document.addEventListener("DOMContentLoaded", () => {
-    blockMobileDevices();
-  });
-}
+// Mobile detection is now handled in index.html head for immediate blocking
 
 // Game variables
 let canvas;
