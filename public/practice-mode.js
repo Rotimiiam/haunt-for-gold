@@ -200,6 +200,7 @@ class PracticeMode {
   startGamepadPolling() {
     const AXIS_THRESHOLD = 0.5;
     const R2_TRIGGER_THRESHOLD = 0.5;
+    let lastPauseButtonState = false;
 
     const pollGamepad = () => {
       // Don't process game input if on-screen keyboard is active
@@ -223,6 +224,22 @@ class PracticeMode {
 
       // Store active gamepad for vibration
       this.activeGamepad = gamepad;
+
+      // Check for pause button (Start button - button 9)
+      const pauseButtonPressed = gamepad.buttons[9]?.pressed;
+      if (pauseButtonPressed && !lastPauseButtonState) {
+        // Button just pressed (rising edge)
+        if (typeof window.togglePause === 'function') {
+          window.togglePause();
+        }
+      }
+      lastPauseButtonState = pauseButtonPressed;
+
+      // Skip movement if game is paused
+      if (window.gamePaused) {
+        this.gamepadPollId = requestAnimationFrame(pollGamepad);
+        return;
+      }
 
       // Check R2 trigger for boost (button 7 or axis 5)
       let isBoosting = false;
@@ -274,6 +291,9 @@ class PracticeMode {
   }
 
   move(direction) {
+    // Don't move if paused
+    if (window.gamePaused) return;
+
     // Check movement cooldown (faster when boosting)
     const currentTime = Date.now();
     const cooldown = this.isBoosting ? this.BOOST_COOLDOWN : this.MOVE_COOLDOWN;
@@ -283,6 +303,14 @@ class PracticeMode {
     this.lastMoveTime = currentTime;
 
     this.handleMovement(direction);
+  }
+
+  pause() {
+    console.log("Practice mode paused");
+  }
+
+  resume() {
+    console.log("Practice mode resumed");
   }
 
   handleMovement(direction) {

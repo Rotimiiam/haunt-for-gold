@@ -1665,6 +1665,73 @@
       z-index: 10000;
     }
 
+    /* Pause Screen */
+    .pause-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.9);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      backdrop-filter: blur(5px);
+    }
+
+    .pause-content {
+      background: linear-gradient(135deg, #1a0a2e, #2d1b4e);
+      border: 3px solid #00ff41;
+      border-radius: 15px;
+      padding: 40px;
+      text-align: center;
+      color: white;
+      box-shadow: 0 0 30px rgba(0, 255, 65, 0.5);
+      max-width: 400px;
+      width: 90%;
+      animation: pauseSlideIn 0.3s ease-out;
+    }
+
+    @keyframes pauseSlideIn {
+      from {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .pause-title {
+      color: #ffd700;
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    }
+
+    .pause-message {
+      font-size: 1.2rem;
+      margin-bottom: 30px;
+      line-height: 1.4;
+      color: #cccccc;
+    }
+
+    .pause-buttons {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .pause-hint {
+      font-size: 0.9rem;
+      color: #888888;
+      font-style: italic;
+    }
+
     .winner-content {
       background: linear-gradient(135deg, #2c1810, #4a3728);
       border: 3px solid #daa520;
@@ -1935,6 +2002,19 @@
         <button id="playAgainBtn" class="spooky-btn orange">👻 Rise Again</button>
         <button id="homeBtn" class="spooky-btn danger">💀 Return to Crypt</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Pause Screen -->
+  <div id="pauseScreen" class="pause-screen" style="display: none;">
+    <div class="pause-content haunted-panel glow">
+      <h2 class="pause-title cursed-text">⏸️ PAUSED ⏸️</h2>
+      <p class="pause-message">Game is paused. Take a breath...</p>
+      <div class="pause-buttons">
+        <button id="resumeBtn" class="spooky-btn primary">▶️ Resume</button>
+        <button id="pauseHomeBtn" class="spooky-btn danger">💀 Quit to Menu</button>
+      </div>
+      <div class="pause-hint">Press ESC or Start button to resume</div>
     </div>
   </div>
 

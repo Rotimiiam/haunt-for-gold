@@ -12,6 +12,7 @@ if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(naviga
 let canvas;
 let ctx;
 let gameStarted = false;
+let gamePaused = false;
 let playerName = "";
 
 // Game state (will be managed by practice/multiplayer modes)
@@ -305,6 +306,31 @@ function setupUIEvents() {
     } else {
       button.textContent = "🎵";
       button.classList.remove("muted");
+    }
+  });
+
+  // Pause screen buttons
+  const resumeBtn = document.getElementById("resumeBtn");
+  const pauseHomeBtn = document.getElementById("pauseHomeBtn");
+
+  if (resumeBtn) {
+    resumeBtn.addEventListener("click", () => {
+      resumeGame();
+    });
+  }
+
+  if (pauseHomeBtn) {
+    pauseHomeBtn.addEventListener("click", () => {
+      resumeGame();
+      returnToHome();
+    });
+  }
+
+  // Global pause key handler (ESC)
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && gameStarted && !document.getElementById("winnerScreen").style.display.includes("flex")) {
+      e.preventDefault();
+      togglePause();
     }
   });
 
@@ -967,5 +993,81 @@ function exitFullscreenMode() {
     document.removeEventListener('keydown', preventFullscreenExit);
   }
 }
+
+// Pause game functionality
+function togglePause() {
+  if (!gameStarted) return;
+
+  if (gamePaused) {
+    resumeGame();
+  } else {
+    pauseGame();
+  }
+}
+
+function pauseGame() {
+  if (!gameStarted || gamePaused) return;
+
+  console.log("Pausing game");
+  gamePaused = true;
+  window.gamePaused = true;
+
+  // Show pause screen
+  const pauseScreen = document.getElementById("pauseScreen");
+  if (pauseScreen) {
+    pauseScreen.style.display = "flex";
+  }
+
+  // Pause background music
+  if (backgroundMusic && !backgroundMusic.paused) {
+    backgroundMusic.pause();
+  }
+
+  // Notify game modes about pause
+  if (window.practiceMode && window.practiceMode.pause) {
+    window.practiceMode.pause();
+  }
+  if (window.multiplayerMode && window.multiplayerMode.pause) {
+    window.multiplayerMode.pause();
+  }
+  if (window.localMultiplayerGame && window.localMultiplayerGame.pauseGame) {
+    window.localMultiplayerGame.pauseGame();
+  }
+}
+
+function resumeGame() {
+  if (!gamePaused) return;
+
+  console.log("Resuming game");
+  gamePaused = false;
+  window.gamePaused = false;
+
+  // Hide pause screen
+  const pauseScreen = document.getElementById("pauseScreen");
+  if (pauseScreen) {
+    pauseScreen.style.display = "none";
+  }
+
+  // Resume background music
+  if (backgroundMusic && musicEnabled) {
+    backgroundMusic.play().catch(() => {});
+  }
+
+  // Notify game modes about resume
+  if (window.practiceMode && window.practiceMode.resume) {
+    window.practiceMode.resume();
+  }
+  if (window.multiplayerMode && window.multiplayerMode.resume) {
+    window.multiplayerMode.resume();
+  }
+  if (window.localMultiplayerGame && window.localMultiplayerGame.resumeGame) {
+    window.localMultiplayerGame.resumeGame();
+  }
+}
+
+// Make pause functions globally accessible
+window.togglePause = togglePause;
+window.pauseGame = pauseGame;
+window.resumeGame = resumeGame;
 
 // Game core ready

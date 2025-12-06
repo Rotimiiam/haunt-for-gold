@@ -24,10 +24,16 @@ class MultiplayerMode {
     this.BOOST_COOLDOWN = 75; // Faster movement when boosting
     this.isBoosting = false;
     this.witch = null;
+    this.controlsSetup = false; // Track if controls are already set up
+    this.keydownHandler = null; // Store reference to handler
+    this.keyupHandler = null; // Store reference to handler
   }
 
   connect() {
     console.log("*** CONNECTING TO MULTIPLAYER SERVER ***");
+
+    // Set up controls early (before socket connects)
+    this.setupControls();
 
     // Connect to server
     this.socket = io();
@@ -334,14 +340,27 @@ class MultiplayerMode {
   }
 
   setupControls() {
-    // Button controls
-    document.getElementById("up").addEventListener("click", () => this.move("up"));
-    document.getElementById("down").addEventListener("click", () => this.move("down"));
-    document.getElementById("left").addEventListener("click", () => this.move("left"));
-    document.getElementById("right").addEventListener("click", () => this.move("right"));
+    // Only set up controls once to avoid duplicate listeners
+    if (this.controlsSetup) {
+      console.log("Controls already set up, skipping");
+      return;
+    }
 
-    // Keyboard controls
-    document.addEventListener("keydown", (e) => {
+    console.log("Setting up multiplayer controls");
+
+    // Button controls
+    const upBtn = document.getElementById("up");
+    const downBtn = document.getElementById("down");
+    const leftBtn = document.getElementById("left");
+    const rightBtn = document.getElementById("right");
+
+    if (upBtn) upBtn.addEventListener("click", () => this.move("up"));
+    if (downBtn) downBtn.addEventListener("click", () => this.move("down"));
+    if (leftBtn) leftBtn.addEventListener("click", () => this.move("left"));
+    if (rightBtn) rightBtn.addEventListener("click", () => this.move("right"));
+
+    // Keyboard controls - store handler reference for cleanup
+    this.keydownHandler = (e) => {
       if (!this.gameStarted) {
         return;
       }
@@ -376,21 +395,28 @@ class MultiplayerMode {
           this.isBoosting = true;
           break;
       }
-    });
+    };
 
     // Release boost on keyup
-    document.addEventListener("keyup", (e) => {
+    this.keyupHandler = (e) => {
       if (e.key === " ") {
         this.isBoosting = false;
       }
-    });
+    };
+
+    document.addEventListener("keydown", this.keydownHandler);
+    document.addEventListener("keyup", this.keyupHandler);
 
     // Controller/Gamepad support
     this.setupGamepadControls();
+
+    this.controlsSetup = true;
+    console.log("Multiplayer controls setup complete");
   }
 
   setupGamepadControls() {
     const AXIS_THRESHOLD = 0.5;
+    let lastPauseButtonState = false;
     
     const pollGamepads = () => {
       if (!this.gameStarted) {
@@ -402,6 +428,22 @@ class MultiplayerMode {
       
       for (const gamepad of gamepads) {
         if (!gamepad) continue;
+
+        // Check for pause button (Start button - button 9)
+        const pauseButtonPressed = gamepad.buttons[9]?.pressed;
+        if (pauseButtonPressed && !lastPauseButtonState) {
+          // Button just pressed (rising edge)
+          if (typeof window.togglePause === 'function') {
+            window.togglePause();
+          }
+        }
+        lastPauseButtonState = pauseButtonPressed;
+
+        // Skip movement if game is paused
+        if (window.gamePaused) {
+          this.gamepadPollId = requestAnimationFrame(pollGamepads);
+          return;
+        }
 
         // Check for boost (R2 trigger - button 7)
         if (gamepad.buttons[7]?.pressed || gamepad.buttons[7]?.value > 0.5) {
@@ -479,6 +521,9 @@ class MultiplayerMode {
   }
 
   move(direction) {
+    // Don't move if paused
+    if (window.gamePaused) return;
+
     // Check movement cooldown (faster when boosting)
     const currentTime = Date.now();
     const cooldown = this.isBoosting ? this.BOOST_COOLDOWN : this.MOVE_COOLDOWN;
@@ -490,6 +535,16 @@ class MultiplayerMode {
     if (this.socket && this.socket.connected && this.gameStarted) {
       this.socket.emit("move", direction);
     }
+  }
+
+  pause() {
+    // Pause is handled globally, but we can add mode-specific logic here if needed
+    console.log("Multiplayer mode paused");
+  }
+
+  resume() {
+    // Resume is handled globally, but we can add mode-specific logic here if needed
+    console.log("Multiplayer mode resumed");
   }
 
   startGame() {
@@ -621,8 +676,10 @@ class MultiplayerMode {
     // Start continuous render loop
     this.startRenderLoop();
 
-    // Set up controls
-    this.setupControls();
+    // Ensure controls are set up (should already be done in connect())
+    if (!this.controlsSetup) {
+      this.setupControls();
+    }
   }
 
   startRenderLoop() {
@@ -711,6 +768,17 @@ class MultiplayerMode {
     if (typeof this.stopWitchVibration === 'function') {
       this.stopWitchVibration();
     }
+    
+    // Clean up keyboard event listeners
+    if (this.keydownHandler) {
+      document.removeEventListener("keydown", this.keydownHandler);
+      this.keydownHandler = null;
+    }
+    if (this.keyupHandler) {
+      document.removeEventListener("keyup", this.keyupHandler);
+      this.keyupHandler = null;
+    }
+    this.controlsSetup = false;
     
     // Hide game elements
     const canvas = document.getElementById('gameCanvas');
