@@ -1267,6 +1267,9 @@ function returnToHome() {
 
   // Stop ALL game loops and timers
   // Practice mode cleanup
+  if (window.practiceMode && window.practiceMode.stop) {
+    window.practiceMode.stop();
+  }
   if (window.practiceGameLoop) {
     cancelAnimationFrame(window.practiceGameLoop);
     window.practiceGameLoop = null;
@@ -1277,6 +1280,9 @@ function returnToHome() {
   }
   
   // Local multiplayer cleanup
+  if (window.localMultiplayerGame && window.localMultiplayerGame.destroy) {
+    window.localMultiplayerGame.destroy();
+  }
   if (window.localRenderFrame) {
     cancelAnimationFrame(window.localRenderFrame);
     window.localRenderFrame = null;

@@ -743,12 +743,41 @@ class PracticeMode {
         }
 
         // Continue loop even when paused (so we can unpause)
-        requestAnimationFrame(gameLoop);
+        this.gameLoopId = requestAnimationFrame(gameLoop);
       }
     };
 
     // Start the loop
     gameLoop();
+  }
+
+  stop() {
+    console.log("Stopping practice mode");
+    this.gameStarted = false;
+    
+    // Cancel game loop
+    if (this.gameLoopId) {
+      cancelAnimationFrame(this.gameLoopId);
+      this.gameLoopId = null;
+    }
+    
+    // Cancel gamepad polling
+    if (this.gamepadPollId) {
+      cancelAnimationFrame(this.gamepadPollId);
+      this.gamepadPollId = null;
+    }
+    
+    // Clear AI interval
+    if (this.aiInterval) {
+      clearInterval(this.aiInterval);
+      this.aiInterval = null;
+    }
+    
+    // Clear enemy interval
+    if (this.enemyInterval) {
+      clearInterval(this.enemyInterval);
+      this.enemyInterval = null;
+    }
   }
 
   showWinner(data) {
