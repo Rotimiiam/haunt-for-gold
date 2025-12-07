@@ -11,6 +11,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Serve static files from public directory
+app.use(express.static('public'));
+
 // Request logging middleware
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
@@ -59,11 +62,13 @@ const startServer = async () => {
     // Start server
     app.listen(PORT, () => {
       console.log('=====================================');
-      console.log(`Analytics Service running on port ${PORT}`);
+      console.log(`👻 Analytics Service running on port ${PORT}`);
       console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
       console.log(`Database: ${process.env.DATABASE_PATH || './analytics.sqlite'}`);
       console.log('=====================================');
-      console.log('\nAvailable endpoints:');
+      console.log('\n📊 Dashboard:');
+      console.log(`  http://localhost:${PORT}/`);
+      console.log('\n🔌 API Endpoints:');
       console.log('  GET  /health');
       console.log('  POST /api/analytics/visit');
       console.log('  POST /api/analytics/game/start');
