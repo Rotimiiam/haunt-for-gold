@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics Integration Example</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #1a0a2e;
+      color: #e8e8e8;
+    }
+    button {
+      background: #00ff41;
+      color: #0d0d0d;
+      border: none;
+      padding: 10px 20px;
+      margin: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      border-radius: 5px;
+    }
+    button:hover {
+      background: #00cc33;
+    }
+    .log {
+      background: #16213e;
+      padding: 10px;
+      margin: 10px 0;
+      border-left: 3px solid #00ff41;
+      font-family: monospace;
+      font-size: 12px;
+    }
+    .section {
+      margin: 30px 0;
+      padding: 20px;
+      border: 2px solid #00ff41;
+      border-radius: 8px;
+    }
+    h2 {
+      color: #00ff41;
+    }
+  </style>
+</head>
+<body>
+  <h1>Analytics Service Integration Example</h1>
+  <p>This example demonstrates how to integrate the analytics service with your application.</p>
+  
+  <div class="section">
+    <h2>1. Track Events</h2>
+    <button onclick="trackVisit()">Track Visit</button>
+    <button onclick="trackPageView()">Track Page View</button>
+    <button onclick="startGame()">Start Practice Game</button>
+    <button onclick="endGame()">End Game (Win)</button>
+  </div>
+  
+  <div class="section">
+    <h2>2. Query Analytics</h2>
+    <button onclick="getDashboard()">Get Dashboard</button>
+    <button onclick="getGameModeStats()">Get Game Mode Stats</button>
+    <button onclick="getActiveSessions()">Get Active Sessions</button>
+    <button onclick="getCompletionRates()">Get Completion Rates</button>
+  </div>
+  
+  <div class="section">
+    <h2>Event Log</h2>
+    <div id="log"></div>
+  </div>
+
+  <!-- Include the analytics client library -->
+  <script src="../client-library.js"></script>
+  
+  <script>
+    // Initialize analytics client
+    // NOTE: Make sure the analytics service is running on port 3002
+    const analytics = new AnalyticsClient('http://localhost:3002');
+    window.analyticsClient = analytics;
+    
+    // Log helper
+    function log(message, data = null) {
+      const logEl = document.getElementById('log');
+      const entry = document.createElement('div');
+      entry.className = 'log';
+      const timestamp = new Date().toLocaleTimeString();
+      entry.innerHTML = `<strong>[${timestamp}]</strong> ${message}`;
+      
+      if (data) {
+        entry.innerHTML += `<br><pre>${JSON.stringify(data, null, 2)}</pre>`;
+      }
+      
+      logEl.insertBefore(entry, logEl.firstChild);
+    }
+    
+    // Track visit
+    async function trackVisit() {
+      log('Tracking visit...');
+      const result = await analytics.trackVisit('example-page');
+      log('Visit tracked', result);
+    }
+    
+    // Track page view
+    async function trackPageView() {
+      log('Tracking page view...');
+      const result = await analytics.trackPageView('example', '/example.html', 30);
+      log('Page view tracked', result);
+    }
+    
+    // Start a game
+    let currentGameId = null;
+    async function startGame() {
+      log('Starting practice game...');
+      currentGameId = `game_${Date.now()}`;
+      const result = await analytics.trackGameStart('practice', currentGameId);
+      log('Game started', result);
+    }
+    
+    // End a game
+    async function endGame() {
+      if (!currentGameId) {
+        log('Error: No game is currently running. Start a game first!');
+        return;
+      }
+      
+      log('Ending game...');
+      const result = await analytics.trackGameEnd(currentGameId, true, 500, 'win');
+      log('Game ended', result);
+      currentGameId = null;
+    }
+    
+    // Get dashboard data
+    async function getDashboard() {
+      log('Fetching dashboard data...');
+      const result = await analytics.getDashboard();
+      log('Dashboard data', result);
+    }
+    
+    // Get game mode stats
+    async function getGameModeStats() {
+      log('Fetching game mode statistics...');
+      const result = await analytics.getGameModeStats();
+      log('Game mode stats', result);
+    }
+    
+    // Get active sessions
+    async function getActiveSessions() {
+      log('Fetching active sessions...');
+      const result = await analytics.getActiveSessions();
+      log('Active sessions', result);
+    }
+    
+    // Get completion rates
+    async function getCompletionRates() {
+      log('Fetching completion rates...');
+      const result = await analytics.getCompletionRates();
+      log('Completion rates', result);
+    }
+    
+    // Auto-track initial page load
+    window.addEventListener('DOMContentLoaded', () => {
+      log('Page loaded - auto-tracking visit');
+      trackVisit();
+    });
+    
+    // Log when service is ready
+    log('Analytics service initialized', {
+      sessionId: analytics.sessionId,
+      baseUrl: analytics.baseUrl
+    });
+  </script>
+</body>
+</html>
