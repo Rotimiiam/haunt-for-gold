@@ -27,6 +27,11 @@ jobs:
           mkdir -p deploy
           rsync -av --exclude='node_modules' --exclude='.git' --exclude='*.sqlite' --exclude='.env' --exclude='test-*.js' --exclude='sync_config.jsonc' --exclude='pixel-pursuit' --exclude='deploy' . deploy/
           cd deploy && npm ci --production
+          
+          # Install analytics service dependencies
+          if [ -d "deploy/analytics-service" ]; then
+            cd deploy/analytics-service && npm ci --production
+          fi
 
       - name: Deploy to server
         uses: appleboy/scp-action@v0.1.7
@@ -68,12 +73,29 @@ jobs:
               npm install -g pm2
             fi
             
-            # Stop existing process
+            # Stop existing processes
             pm2 stop haunt-for-gold || true
             pm2 delete haunt-for-gold || true
+            pm2 stop haunt-analytics || true
+            pm2 delete haunt-analytics || true
             
-            # Start application
+            # Start main application
             pm2 start server.js --name haunt-for-gold
+            
+            # Start analytics service if it exists
+            if [ -d "analytics-service" ]; then
+              cd analytics-service
+              
+              # Create analytics .env file
+              cat > .env << ANALYTICS_EOF
+            PORT=3002
+            NODE_ENV=production
+            ANALYTICS_EOF
+              
+              pm2 start server.js --name haunt-analytics
+              cd ..
+            fi
+            
             pm2 save
             
             # Setup PM2 to start on boot
