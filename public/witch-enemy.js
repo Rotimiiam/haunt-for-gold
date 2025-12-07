@@ -204,8 +204,15 @@ class WitchEnemy {
   catchPlayer(player) {
     if (!this.active) return;
     
-    // Witch caught the player - disappear after catching
-    this.disappear();
+    // Play cackle sound
+    if (window.soundManager) {
+      window.soundManager.playWitchCackle();
+    }
+    
+    // Witch caught the player - disappear after 1 second
+    setTimeout(() => {
+      this.disappear();
+    }, 1000);
   }
 
   /**

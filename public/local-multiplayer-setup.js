@@ -314,6 +314,11 @@ class LocalMultiplayerSetup {
   }
 
   initLocalGameState(playerNames, settings) {
+    // Track game start
+    if (window.gameAnalytics) {
+      window.gameAnalytics.trackGameStart('local');
+    }
+    
     // Create local game state similar to practice mode but with multiple players
     const gameState = {
       mapWidth: settings.mapWidth,
@@ -784,6 +789,11 @@ class LocalMultiplayerSetup {
 
   endLocalGame(gameState, winner) {
     gameState.gameEnded = true;
+    
+    // Track game end
+    if (window.gameAnalytics) {
+      window.gameAnalytics.trackGameEnd(true, winner.score, 'completed');
+    }
 
     // Stop loops
     clearInterval(window.localEnemyInterval);

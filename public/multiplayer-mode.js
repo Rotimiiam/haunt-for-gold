@@ -246,6 +246,12 @@ class MultiplayerMode {
       console.log("Game won:", data);
       this.gameStarted = false;
       
+      // Track game end
+      if (window.gameAnalytics) {
+        const isWinner = data.winnerId === this.socket.id;
+        window.gameAnalytics.trackGameEnd(true, data.winnerScore, isWinner ? 'win' : 'loss');
+      }
+      
       // Stop gamepad polling
       if (this.gamepadPollId) {
         cancelAnimationFrame(this.gamepadPollId);
@@ -545,6 +551,11 @@ class MultiplayerMode {
   startGame() {
     console.log("Starting multiplayer game");
     this.gameStarted = true;
+    
+    // Track game start
+    if (window.gameAnalytics) {
+      window.gameAnalytics.trackGameStart('online');
+    }
 
     // Ensure GameRenderer is initialized before rendering
     if (!window.gameRenderer && typeof GameRenderer !== 'undefined') {

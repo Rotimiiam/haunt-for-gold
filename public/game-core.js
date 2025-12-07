@@ -737,6 +737,11 @@ function submitName() {
     nameInput.focus();
     return;
   }
+  
+  // Track user ID for analytics
+  if (window.gameAnalytics) {
+    window.gameAnalytics.setUserId(playerName);
+  }
 
   // Hide name dialog
   document.getElementById("nameDialog").style.display = "none";

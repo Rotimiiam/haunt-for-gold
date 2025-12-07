@@ -33,6 +33,11 @@ class PracticeMode {
     // Stop any existing game loops
     window.gameStarted = false;
 
+    // Track game start
+    if (window.gameAnalytics) {
+      window.gameAnalytics.trackGameStart('practice');
+    }
+
     // Get player name
     const currentPlayerName = window.playerName || "Player";
 
@@ -780,6 +785,12 @@ class PracticeMode {
   showWinner(data) {
     this.gameStarted = false;
     window.gameStarted = false;
+    
+    // Track game end
+    if (window.gameAnalytics) {
+      window.gameAnalytics.trackGameEnd(true, data.winnerScore, data.winnerId === this.gameState.myId ? 'win' : 'loss');
+    }
+    
     showWinnerScreen(data);
   }
 
