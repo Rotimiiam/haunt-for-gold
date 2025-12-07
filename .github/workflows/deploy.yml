@@ -43,7 +43,7 @@ jobs:
           source: "deploy/*"
           target: "/var/www/haunt-for-gold"
           strip_components: 1
-          rm: true
+          rm: false
 
       - name: Restart application
         uses: appleboy/ssh-action@v1.0.3
@@ -54,6 +54,21 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             cd /var/www/haunt-for-gold
+            
+            # Backup SQLite databases before deployment
+            if [ -f "database.sqlite" ]; then
+              cp database.sqlite database.sqlite.backup.$(date +%Y%m%d_%H%M%S)
+              echo "✓ Main database backed up"
+            fi
+            
+            if [ -f "analytics-service/analytics.sqlite" ]; then
+              cp analytics-service/analytics.sqlite analytics-service/analytics.sqlite.backup.$(date +%Y%m%d_%H%M%S)
+              echo "✓ Analytics database backed up"
+            fi
+            
+            # Keep only last 5 backups to save space
+            ls -t database.sqlite.backup.* 2>/dev/null | tail -n +6 | xargs rm -f 2>/dev/null || true
+            ls -t analytics-service/analytics.sqlite.backup.* 2>/dev/null | tail -n +6 | xargs rm -f 2>/dev/null || true
             
             # Create .env file with secrets
             cat > .env << EOF
