@@ -1,0 +1,67 @@
+analytics-service/
+│
+├── Core Application
+│   ├── server.js                    # Main Express server
+│   ├── package.json                 # NPM configuration
+│   └── client-library.js            # Browser JavaScript client
+│
+├── config/
+│   └── database.js                  # Sequelize SQLite config
+│
+├── models/                          # Database schema (Sequelize)
+│   ├── index.js                     # Model exports
+│   ├── VisitEvent.js                # Visit tracking
+│   ├── GameModeEvent.js             # Game session tracking
+│   ├── UserSession.js               # Session aggregation
+│   └── PageViewEvent.js             # Page navigation tracking
+│
+├── routes/
+│   └── analytics.js                 # 13 API endpoints
+│
+├── examples/                        # Examples & testing
+│   ├── integration-example.html     # Interactive browser demo
+│   └── test-api.sh                  # API test script (bash)
+│
+├── Documentation
+│   ├── OVERVIEW.md                  # Architecture overview
+│   ├── README.md                    # Complete API docs
+│   ├── QUICK_START.md               # Quick start guide
+│   ├── INTEGRATION_GUIDE.md         # Integration instructions
+│   ├── FILE_MANIFEST.md             # File descriptions
+│   └── STRUCTURE.txt                # This file
+│
+├── Configuration
+│   ├── .env.example                 # Environment template
+│   └── .gitignore                   # Git ignore patterns
+│
+└── Testing
+    └── test-structure.js            # Structure validation
+
+Database (created at runtime):
+└── analytics.sqlite                 # SQLite database file
+
+API Endpoints Summary:
+├── POST /api/analytics/visit        # Track visits
+├── POST /api/analytics/game/start   # Track game start
+├── POST /api/analytics/game/end     # Track game end
+├── POST /api/analytics/pageview     # Track page views
+├── POST /api/analytics/session/end  # End session
+├── GET  /api/analytics/visits/total # Get total visits
+├── GET  /api/analytics/games/modes  # Get game mode stats
+├── GET  /api/analytics/sessions/active  # Get active sessions
+├── GET  /api/analytics/games/completion # Get completion rates
+├── GET  /api/analytics/pageviews    # Get page views
+├── GET  /api/analytics/engagement   # Get engagement metrics
+├── GET  /api/analytics/peak-usage   # Get peak usage times
+└── GET  /api/analytics/dashboard    # Get dashboard data
+
+Metrics Tracked:
+├── Total visit counts
+├── Unique sessions
+├── Game mode usage (practice, online, local)
+├── Active user sessions
+├── Concurrent players
+├── Game completion rates
+├── Page views
+├── User engagement duration
+└── Peak usage times (hourly & daily)

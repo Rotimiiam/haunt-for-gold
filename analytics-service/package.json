@@ -1,0 +1,20 @@
+{
+  "name": "haunt-for-gold-analytics",
+  "version": "1.0.0",
+  "description": "Analytics service for Haunt For Gold game",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["analytics", "game", "metrics"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^5.1.0",
+    "sequelize": "^6.37.7",
+    "sqlite3": "^5.1.7"
+  }
+}
