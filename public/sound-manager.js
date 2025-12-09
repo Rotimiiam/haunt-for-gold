@@ -79,10 +79,23 @@ class SoundManager {
   }
 
   /**
+   * Get random background track
+   */
+  getRandomBackgroundTrack() {
+    const tracks = ['halloween-music', 'haunted-house'];
+    return tracks[Math.floor(Math.random() * tracks.length)];
+  }
+
+  /**
    * Play background music
    */
-  playBackgroundMusic(trackName = 'halloween-music', loop = true) {
+  playBackgroundMusic(trackName = null, loop = true) {
     if (!this.musicEnabled) return;
+    
+    // If no track specified, pick a random one
+    if (!trackName) {
+      trackName = this.getRandomBackgroundTrack();
+    }
     
     // Stop current music if playing
     if (this.backgroundMusic) {
